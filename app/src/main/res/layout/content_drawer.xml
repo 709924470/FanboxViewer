@@ -5,7 +5,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".drawer"
+    tools:context=".MainPageAct"
     tools:showIn="@layout/app_bar_drawer">
 
+    <android.support.design.widget.TabLayout
+        android:id="@+id/main_page_tab"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.design.widget.TabItem
+            android:id="@+id/tab-posts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_posts" />
+
+        <android.support.design.widget.TabItem
+            android:id="@+id/tab-subs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_creators" />
+
+        <android.support.design.widget.TabItem
+            android:id="@+id/tab-messages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_messages" />
+    </android.support.design.widget.TabLayout>
+    <!--app:tabMode="scrollable"-->
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_page_tab" />
 </android.support.constraint.ConstraintLayout>

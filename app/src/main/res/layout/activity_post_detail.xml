@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".PostDetailActivity"
+    tools:context=".PostDetails.PostDetailActivity"
     tools:ignore="MergeRootFrame">
 
     <android.support.design.widget.AppBarLayout
@@ -28,8 +28,15 @@
                 android:id="@+id/detail_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:background="#00FFFFFF"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+            <ImageView
+                android:id="@+id/detailbackImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:srcCompat="#0471FF" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -41,14 +48,36 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+    <ImageView
+        android:id="@+id/detail_avatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
         android:layout_margin="@dimen/fab_margin"
-        app:layout_anchor="@+id/post_detail_container"
-        app:layout_anchorGravity="top|end"
-        app:srcCompat="@android:drawable/stat_notify_chat" />
+        app:layout_anchor="@+id/app_bar"
+        app:layout_anchorGravity="start|bottom"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="TextView"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="18sp"
+        app:layout_anchor="@+id/app_bar"
+        app:layout_anchorGravity="bottom|center" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        app:backgroundTint="#2196F3"
+        app:layout_anchor="@+id/app_bar"
+        app:layout_anchorGravity="end|bottom"
+        app:srcCompat="@android:drawable/stat_sys_download" />
 
 </android.support.design.widget.CoordinatorLayout>
