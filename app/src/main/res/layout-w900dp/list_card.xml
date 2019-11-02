@@ -10,7 +10,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context=".PostListActivity">
+    tools:context=".PostDetail.PostListActivity">
 
     <!--
     This layout is a two-pane layout for the Posts
@@ -20,15 +20,15 @@
 
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/post_list"
+        android:id="@+id/card_list"
         android:name="cn.settile.fanboxviewer.PostListFragment"
         android:layout_width="@dimen/item_width"
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
-        tools:context="cn.settile.fanboxviewer.PostListActivity"
-        tools:listitem="@layout/post_list_content" />
+        tools:context="cn.settile.fanboxviewer.PostDetail.PostListActivity"
+        tools:listitem="@layout/component_item_card" />
 
     <FrameLayout
         android:id="@+id/post_detail_container"

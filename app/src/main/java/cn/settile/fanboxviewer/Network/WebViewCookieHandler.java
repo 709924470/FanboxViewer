@@ -1,10 +1,10 @@
-package cn.settile.fanboxviewer;
+package cn.settile.fanboxviewer.Network;
+
+import android.webkit.CookieManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import android.webkit.CookieManager;
 
 import okhttp3.Cookie;
 import okhttp3.CookieJar;

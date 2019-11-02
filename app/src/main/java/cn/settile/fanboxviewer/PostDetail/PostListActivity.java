@@ -1,22 +1,27 @@
-package cn.settile.fanboxviewer;
+package cn.settile.fanboxviewer.PostDetail;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import cn.settile.fanboxviewer.dummy.DummyContent;
+import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import cn.settile.fanboxviewer.Bean.CardItem;
+import cn.settile.fanboxviewer.R;
 
 /**
  * An activity representing a list of Posts. This activity
@@ -37,20 +42,16 @@ public class PostListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post_list);
+        setContentView(R.layout.activity_card_list);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> Snackbar
+                .make(view, R.string.downloading, Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
 
         if (findViewById(R.id.post_detail_container) != null) {
             // The detail container view will be present only in the
@@ -60,28 +61,28 @@ public class PostListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        View recyclerView = findViewById(R.id.post_list);
+        View recyclerView = findViewById(R.id.card_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, new ArrayList<>(), mTwoPane));
     }
 
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final PostListActivity mParentActivity;
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<CardItem> mValues;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DummyContent.DummyItem item = (DummyContent.DummyItem) view.getTag();
+                CardItem item = (CardItem) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(PostDetailFragment.ARG_ITEM_ID, item.id);
+                    arguments.putParcelable(PostDetailFragment.ARG_1, item);
                     PostDetailFragment fragment = new PostDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -90,7 +91,7 @@ public class PostListActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, PostDetailActivity.class);
-                    intent.putExtra(PostDetailFragment.ARG_ITEM_ID, item.id);
+                    intent.putExtra(PostDetailFragment.ARG_1, item);
 
                     context.startActivity(intent);
                 }
@@ -98,7 +99,7 @@ public class PostListActivity extends AppCompatActivity {
         };
 
         SimpleItemRecyclerViewAdapter(PostListActivity parent,
-                                      List<DummyContent.DummyItem> items,
+                                      List<CardItem> items,
                                       boolean twoPane) {
             mValues = items;
             mParentActivity = parent;
@@ -108,14 +109,22 @@ public class PostListActivity extends AppCompatActivity {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.post_list_content, parent, false);
+                    .inflate(R.layout.component_item_card, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(mValues.get(position).creator);
+            holder.mContentView.setText(mValues.get(position).url);
+
+            Picasso.get()
+                    .load(mValues.get(position).avatar)
+                    .into(holder.mAvatar);
+
+            Picasso.get()
+                    .load(mValues.get(position).header)
+                    .into(holder.mHeader);
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
@@ -127,13 +136,17 @@ public class PostListActivity extends AppCompatActivity {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
+            final ImageView mAvatar;
+            final ImageView mHeader;
             final TextView mIdView;
             final TextView mContentView;
 
             ViewHolder(View view) {
                 super(view);
-                mIdView = (TextView) view.findViewById(R.id.id_text);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                mAvatar = view.findViewById(R.id.creatorAvatar);
+                mHeader = view.findViewById(R.id.headerImage);
+                mIdView = view.findViewById(R.id.id_text);
+                mContentView = view.findViewById(R.id.content);
             }
         }
     }

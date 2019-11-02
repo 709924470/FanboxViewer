@@ -1,2 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">FanboxViewer</string>
+    <string name="menu_logout">登出</string>
+    <string name="nav_header_title">登录</string>
+    <string name="nav_header_subtitle">登录Pixiv帐号以查看更多内容</string>
+    <string name="login_to_proceed">登录以继续浏览</string>
+    <string name="menu_share">分享</string>
+    <string name="menu_gallery">粉丝卡</string>
+    <string name="tab_posts">全部投稿</string>
+    <string name="menu_tools">设定</string>
+    <string name="action_settings">设置</string>
+    <string name="menu_slideshow">搜索</string>
+    <string name="tab_messages">通知</string>
+    <string name="tab_creators">已订阅</string>
+    <string name="menu_home">主页</string>
+    <string name="downloading">正在下载...</string>
+    <string name="loading">正在加载...</string>
+    <string name="refresh">刷新</string>
+</resources>

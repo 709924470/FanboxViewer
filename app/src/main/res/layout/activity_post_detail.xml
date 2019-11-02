@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".PostDetails.PostDetailActivity"
+    tools:context=".PostDetail.PostDetailActivity"
     tools:ignore="MergeRootFrame">
 
     <android.support.design.widget.AppBarLayout
@@ -36,17 +36,11 @@
                 android:id="@+id/detailbackImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:srcCompat="#0471FF" />
+                app:srcCompat="@drawable/side_nav_bar" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/post_detail_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <ImageView
         android:id="@+id/detail_avatar"
@@ -59,18 +53,20 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/detail_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center|top"
         android:layout_margin="16dp"
-        android:text="TextView"
+        android:text="UserName"
+        android:textAlignment="viewStart"
         android:textColor="@android:color/primary_text_light"
-        android:textSize="18sp"
+        android:textSize="24sp"
         app:layout_anchor="@+id/app_bar"
         app:layout_anchorGravity="bottom|center" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/detail_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
