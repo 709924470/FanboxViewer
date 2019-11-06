@@ -2,18 +2,23 @@ package cn.settile.fanboxviewer.TabFragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import cn.settile.fanboxviewer.Adapters.MyMessageRecyclerViewAdapter;
-import cn.settile.fanboxviewer.Bean.CardItem;
+import java.util.List;
+import java.util.concurrent.Executors;
+
+import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
+import cn.settile.fanboxviewer.Adapters.RecyclerView.MessageRecyclerViewAdapter;
+import cn.settile.fanboxviewer.Network.FanboxParser;
 import cn.settile.fanboxviewer.R;
 
 /**
@@ -24,36 +29,28 @@ import cn.settile.fanboxviewer.R;
  */
 public class MessageFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
+    private SwipeRefreshLayout srl;
+
+    private int lastVisibleItem;
+    private List<MessageItem> lmi;
+    private View v;
+    public Context c;
+    private RecyclerView recyclerView = null;
+    private MessageRecyclerViewAdapter msgAdapter;
+
     public MessageFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static MessageFragment newInstance(int columnCount) {
+    public static MessageFragment newInstance() {
         MessageFragment fragment = new MessageFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
     }
 
     @Override
@@ -61,18 +58,77 @@ public class MessageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_message_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        v = view;
+        c = view.getContext();
+
+        recyclerView = v.findViewById(R.id.frag_msg_list);
+        LinearLayoutManager llm = new LinearLayoutManager(c);
+        recyclerView.setLayoutManager(llm);
+        msgAdapter = new MessageRecyclerViewAdapter(this, lmi, mListener);
+        recyclerView.setAdapter(msgAdapter);
+
+        srl = v.findViewById(R.id.frag_msg_refresh);
+
+        //noinspection deprecation
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == msgAdapter.getItemCount()) {
+                    if (srl.isRefreshing()) {
+                        return;
+                    }
+                    srl.setRefreshing(true);
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        List<MessageItem> lmi = FanboxParser.getMessages(false);
+                        srl.setRefreshing(false);
+                        if (lmi != null) {
+                            update(lmi, false);
+                        }
+                        return null;
+                    });
+                }
             }
-            recyclerView.setAdapter(new MyMessageRecyclerViewAdapter(new ArrayList<>(), mListener));
-        }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = llm.findLastVisibleItemPosition();
+            }
+        });
+
+        srl.setOnRefreshListener(() -> Executors.newSingleThreadExecutor().submit(() -> {
+            List<MessageItem> lmi = FanboxParser.getMessages(true);
+            srl.setRefreshing(false);
+            if (lmi != null) {
+                update(lmi, true);
+            }
+            return null;
+        }));
+
         return view;
+    }
+
+    public void update(List<MessageItem> lmi, boolean refreshAll) {
+        if (v == null || c == null) {
+            return;
+        }
+        if (recyclerView == null) {
+            recyclerView = v.findViewById(R.id.frag_msg_list);
+            recyclerView.setLayoutManager(new LinearLayoutManager(c));
+            msgAdapter = new MessageRecyclerViewAdapter(this, lmi, mListener);
+            recyclerView.setAdapter(msgAdapter);
+            getActivity().runOnUiThread(() -> {
+                msgAdapter.updateItems(lmi, refreshAll);
+            });
+        } else {
+            getActivity().runOnUiThread(() -> {
+                msgAdapter.updateItems(lmi, refreshAll);
+            });
+        }
+        new Handler().postDelayed(() -> {
+            srl.setRefreshing(false);
+        }, 200);
     }
 
 
@@ -93,8 +149,15 @@ public class MessageFragment extends Fragment {
         mListener = null;
     }
 
+    public void setRefreshing() {
+        if (v == null || c == null) {
+            return;
+        }
+        srl = v.findViewById(R.id.frag_msg_refresh);
+        srl.setRefreshing(true);
+    }
+
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(CardItem item);
+        void onListFragmentInteraction(MessageItem item);
     }
 }

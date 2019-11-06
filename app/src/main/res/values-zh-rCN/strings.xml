@@ -12,9 +12,15 @@
     <string name="action_settings">设置</string>
     <string name="menu_slideshow">搜索</string>
     <string name="tab_messages">通知</string>
-    <string name="tab_creators">已订阅</string>
+    <string name="tab_subscribed">已订阅</string>
     <string name="menu_home">主页</string>
     <string name="downloading">正在下载...</string>
     <string name="loading">正在加载...</string>
     <string name="refresh">刷新</string>
+    <string name="hello_blank_fragment">Blank</string>
+    <string name="menu_recommend">为你推荐的创作者</string>
+    <string name="plan_public">对所有人公开</string>
+    <string name="date_formatting">yyyy年MM月dd日 HH:mm</string>
+    <string name="published">已公开!</string>
+    <string name="nothing_here">这里什么都没有呢...</string>
 </resources>

@@ -1,16 +1,13 @@
 package cn.settile.fanboxviewer.PostDetail;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import androidx.fragment.app.Fragment;
 
-import cn.settile.fanboxviewer.Bean.CardItem;
+import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.R;
 
 /**
@@ -23,11 +20,8 @@ public class PostDetailFragment extends Fragment {
     public static final String ARG_1 = "CardItem";
     private CardItem bean;
 
-    public static PostDetailFragment newInstance(CardItem pc) {
+    public static PostDetailFragment newInstance() {
         PostDetailFragment fragment = new PostDetailFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_1, pc);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -49,18 +43,6 @@ public class PostDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.component_item_card, container, false);
-        ImageView iv = rootView.findViewById(R.id.headerImage);
-        Picasso.get()
-                .load(bean.header)
-                .into(iv);
-        ImageView aiv = rootView.findViewById(R.id.creatorAvatar);
-        Picasso.get()
-                .load(bean.avatar)
-                .into(aiv);
-        TextView mName = rootView.findViewById(R.id.id_text);
-        mName.setText(bean.creator);
-        TextView mDesc = rootView.findViewById(R.id.content);
-        mDesc.setText(bean.url);
         return rootView;
     }
 }

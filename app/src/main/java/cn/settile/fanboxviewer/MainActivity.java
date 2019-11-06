@@ -1,91 +1,229 @@
 package cn.settile.fanboxviewer;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.webkit.CookieManager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
+import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
+import cn.settile.fanboxviewer.Adapters.Fragment.MainTabAdapter;
 import cn.settile.fanboxviewer.Network.Common;
-import cn.settile.fanboxviewer.Network.WebViewCookieHandler;
-import okhttp3.OkHttpClient;
+import cn.settile.fanboxviewer.Network.FanboxParser;
+import cn.settile.fanboxviewer.TabFragments.AllPostFragment;
+import cn.settile.fanboxviewer.TabFragments.MessageFragment;
+import cn.settile.fanboxviewer.TabFragments.SubscPostFragment;
+import okhttp3.Request;
+import okhttp3.Response;
 
-import static cn.settile.fanboxviewer.Network.Common.isLoggedIn;
-
-public class MainActivity extends AppCompatActivity {
-    public static SharedPreferences sp;
-    final String TAG = "Main";
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, AllPostFragment.OnListFragmentInteractionListener,
+        SubscPostFragment.OnListFragmentInteractionListener, MessageFragment.OnListFragmentInteractionListener {
+    Context c;
+    static boolean flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        c = this;
+        setContentView(R.layout.activity_main_page);
+        setTitle(R.string.app_name);
 
-        sp = getSharedPreferences("Configs", MODE_PRIVATE);
-        boolean firstRun = false;
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        if (!sp.getBoolean("FirstRun", false)){
-            firstRun = true;
-            sp.edit().putBoolean("FirstRun", true)
-                    .apply();
+        ViewPager mVp = findViewById(R.id.main_tab_pager); // inflating the main page
+
+        mVp.setSaveEnabled(true);
+        mVp.setOffscreenPageLimit(2);
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(0).setChecked(true);
+        //TODO: IMAGE Editing for card.
+        navigationView.getMenu().getItem(1).setEnabled(false);
+
+        TabLayout tl = findViewById(R.id.main_page_tab);
+
+        MainTabAdapter tabPageAdapter = new MainTabAdapter(getSupportFragmentManager(), this);
+
+        AllPostFragment allPostFragment = AllPostFragment.newInstance();
+        tabPageAdapter.addFragment(allPostFragment, getResources().getString(R.string.tab_posts));
+
+        SubscPostFragment subscPostFragment = SubscPostFragment.newInstance();
+        tabPageAdapter.addFragment(subscPostFragment, getResources().getString(R.string.tab_subscribed));
+
+        MessageFragment messageFragment = MessageFragment.newInstance();
+        tabPageAdapter.addFragment(messageFragment, getResources().getString(R.string.tab_messages));
+
+        mVp.setAdapter(tabPageAdapter);
+        tl.setupWithViewPager(mVp);
+
+        setResult(-1);
+
+        if (getIntent().getBooleanExtra("isLoggedIn", false)
+                && !getIntent().getBooleanExtra("NO_NETWORK", false)) {
+            fetchUserInfo();
+            new Thread(() -> {
+                getNotifications(messageFragment);
+                allPostFragment.updateList(FanboxParser.getAllPosts(false, this), FanboxParser.getPlans(false), true);
+                subscPostFragment.updateList(FanboxParser.getSupportingPosts(false, this), true);
+            }).start();
         }
 
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        boolean isConnected =  (networkInfo != null && networkInfo.isConnected());
+        tl.addOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mVp.setCurrentItem(tab.getPosition(), true);
+                if (tab.getPosition() == 2 && !flag){
+                    messageFragment.update(FanboxParser.lastMessageList, true);
+                    flag = !flag;
+                }
+            }
 
-        if (!isConnected){
-            Intent i = new Intent(this, MainPageAct.class);
-            i.putExtra("isUser", false);
-            i.putExtra("NO_NETWORK", 1);
-            startActivity(i);
-            return;
-        }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
 
-        //String cookies = sp.getString("cookie", "F");
-        if(firstRun || !isLoggedIn()) {
-            Toast.makeText(this, R.string.login_to_proceed, Toast.LENGTH_LONG)
-                    .show();
-            Log.d(TAG, "First Run");
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivityForResult(i, Constants.requestCodes.LOGIN);
-            return;
-        }
-        Constants.cookie = CookieManager.getInstance().getCookie(getString(R.string.index));
-        Log.d(TAG, Constants.cookie);
-        Common.cl = new OkHttpClient.Builder()
-                .cookieJar(new WebViewCookieHandler())
-                .build();
-        Intent i = new Intent(this, MainPageAct.class);
-        i.putExtra("isUser", isLoggedIn());
-        startActivity(i);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
+    }
+
+    private void getNotifications(MessageFragment mf) {
+        mf.update(FanboxParser.lastMessageList, true);
+    }
+
+    private void fetchUserInfo() {
+        new Thread(() -> {
+            Request req = new Request.Builder()
+                    .url("https://www.pixiv.net/fanbox/")
+                    .build();
+            try (Response resp = Common.client.newCall(req).execute()) {
+                Document document = Jsoup.parse(resp.body().string());
+                Element metadata = document.getElementById("metadata");
+                String jsonStr = metadata.attr("content");
+
+                Common.userInfo = new JSONObject(jsonStr);
+                JSONObject user = Common.userInfo.getJSONObject("context").getJSONObject("user");
+                String iconUrl = user.getString("iconUrl");
+                String userName = user.getString("name");
+                String userId = user.getString("userId");
+
+                runOnUiThread(() -> {
+                    TextView textView = findViewById(R.id.userName);
+                    textView.setText(userName);
+                    textView = findViewById(R.id.userId);
+                    textView.setText(userId);
+
+                    Picasso.get()
+                            .load(iconUrl)
+                            .placeholder(R.drawable.load_24dp)
+                            .resize(200, 200)
+                            .into((ImageView) findViewById(R.id.userIcon));
+                });
+            } catch (Exception ex) {
+                Toast.makeText(c, "Can't get user info.", Toast.LENGTH_LONG).show();
+            }
+        }).start();
     }
 
     @Override
-    protected void onActivityResult(int request, int result, Intent data){
-        switch (request){
-            case Constants.requestCodes.LOGIN:
-                Common.cl = new OkHttpClient.Builder()
-                        .cookieJar(new WebViewCookieHandler())
-                        .build();
-                if(result == Constants.resultCodes.USER) {
-                    Intent i = new Intent(this, MainPageAct.class);
-                    i.putExtra("isUser", true);
-                    startActivity(i);
-                }else{
-                    Intent i = new Intent(this, MainPageAct.class);
-                    i.putExtra("isUser", false);
-                    startActivity(i);
-                }
-                break;
-            default:
-                break;
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.drawer_options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        } else if (id == R.id.action_refresh) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
+        if (id == R.id.nav_home) {
+            Toast.makeText(this, "HOME", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_cards) {
+            Toast.makeText(this, "Fan Cards", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_search) {
+            Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_settings) {
+            Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_logout) {
+            Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_recommend) {
+            Toast.makeText(this, "Recommended", Toast.LENGTH_SHORT).show();
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onListFragmentInteraction(MessageItem item) {
+
+    }
+
+    @Override
+    public void onListFragmentInteraction(CardItem cardItem) {
+
     }
 }

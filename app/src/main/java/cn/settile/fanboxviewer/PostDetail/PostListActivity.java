@@ -3,24 +3,24 @@ package cn.settile.fanboxviewer.PostDetail;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.settile.fanboxviewer.Bean.CardItem;
+import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.R;
 
 /**
@@ -81,17 +81,13 @@ public class PostListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 CardItem item = (CardItem) view.getTag();
                 if (mTwoPane) {
-                    Bundle arguments = new Bundle();
-                    arguments.putParcelable(PostDetailFragment.ARG_1, item);
                     PostDetailFragment fragment = new PostDetailFragment();
-                    fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
                             .replace(R.id.post_detail_container, fragment)
                             .commit();
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, PostDetailActivity.class);
-                    intent.putExtra(PostDetailFragment.ARG_1, item);
 
                     context.startActivity(intent);
                 }
@@ -115,16 +111,16 @@ public class PostListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).creator);
-            holder.mContentView.setText(mValues.get(position).url);
+            holder.mIdView.setText(mValues.get(position).getCreator());
+            holder.mContentView.setText(mValues.get(position).getUrl());
 
-            Picasso.get()
-                    .load(mValues.get(position).avatar)
-                    .into(holder.mAvatar);
-
-            Picasso.get()
-                    .load(mValues.get(position).header)
-                    .into(holder.mHeader);
+//            Picasso.get()
+//                    .load(mValues.get(position).avatar)
+//                    .into(holder.mAvatar);
+//
+//            Picasso.get()
+//                    .load(mValues.get(position).header)
+//                    .into(holder.mHeader);
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
@@ -143,10 +139,10 @@ public class PostListActivity extends AppCompatActivity {
 
             ViewHolder(View view) {
                 super(view);
-                mAvatar = view.findViewById(R.id.creatorAvatar);
-                mHeader = view.findViewById(R.id.headerImage);
-                mIdView = view.findViewById(R.id.id_text);
-                mContentView = view.findViewById(R.id.content);
+                mAvatar = view.findViewById(R.id.item_card_avatar);
+                mHeader = view.findViewById(R.id.item_header_image);
+                mIdView = view.findViewById(R.id.item_card_user_name);
+                mContentView = view.findViewById(R.id.item_card_title);
             }
         }
     }

@@ -4,12 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
     Context ctx;
@@ -40,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        setResult(Constants.resultCodes.GUEST);
+        setResult(Constants.loginResultCodes.GUEST);
         super.onBackPressed();
     }
 
@@ -53,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
                 Constants.cookie = CookieManager.getInstance().getCookie(url);
                 Log.d(TAG, Constants.cookie);
                 CookieSyncManager.getInstance().sync();
-                setResult(Constants.resultCodes.USER);
+                setResult(Constants.loginResultCodes.USER);
                 finish();
             }
         }

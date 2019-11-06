@@ -29,11 +29,12 @@
                 android:value="cn.settile.fanboxviewer.PostDetail.PostListActivity" />
         </activity>
         <activity
-            android:name=".MainPageAct"
+            android:name=".MainActivity"
             android:label="@string/title_activity_drawer"
+            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".LoginActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
