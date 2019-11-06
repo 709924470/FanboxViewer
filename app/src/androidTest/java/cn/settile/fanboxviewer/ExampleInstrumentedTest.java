@@ -20,8 +20,8 @@ public class ExampleInstrumentedTest {
     @Test
     public void useAppContext() {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
-
-        assertEquals("cn.settile.fanboxviewer", appContext.getPackageName());
+//        Context appContext = InstrumentationRegistry.getTargetContext();
+//
+//        assertEquals("cn.settile.fanboxviewer", appContext.getPackageName());
     }
 }
