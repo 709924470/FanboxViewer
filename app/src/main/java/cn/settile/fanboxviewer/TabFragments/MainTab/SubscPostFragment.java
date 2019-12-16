@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
-import cn.settile.fanboxviewer.Adapters.RecyclerView.SubscPostsRecyclerViewAdapter;
+import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.SubscPostsRecyclerViewAdapter;
 import cn.settile.fanboxviewer.Network.FanboxParser;
 import cn.settile.fanboxviewer.R;
 

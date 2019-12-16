@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
-import cn.settile.fanboxviewer.Adapters.RecyclerView.MessageRecyclerViewAdapter;
+import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.MessageRecyclerViewAdapter;
 import cn.settile.fanboxviewer.Network.FanboxParser;
 import cn.settile.fanboxviewer.R;
 

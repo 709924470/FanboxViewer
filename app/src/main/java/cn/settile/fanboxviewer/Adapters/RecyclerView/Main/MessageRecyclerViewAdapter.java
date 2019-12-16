@@ -1,4 +1,4 @@
-package cn.settile.fanboxviewer.Adapters.RecyclerView;
+package cn.settile.fanboxviewer.Adapters.RecyclerView.Main;
 
 import android.view.LayoutInflater;
 import android.view.View;

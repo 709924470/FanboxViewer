@@ -2,26 +2,21 @@ package cn.settile.fanboxviewer;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
-import com.squareup.picasso.Picasso;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import com.google.android.material.tabs.TabLayout;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.util.List;
-
+import cn.settile.fanboxviewer.Adapters.Fragment.UserDetailTabAdapter;
 import cn.settile.fanboxviewer.Network.FanboxParser;
+import cn.settile.fanboxviewer.TabFragments.UserDetail.UserDetail;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -54,6 +49,13 @@ public class UserDetailActivity extends AppCompatActivity {
 
         TabLayout tabLayout = findViewById(R.id.detail_tab_layout);
         ViewPager viewPager = findViewById(R.id.detail_pager);
+
+        UserDetailTabAdapter adapter = new UserDetailTabAdapter(getSupportFragmentManager(), this);
+
+        UserDetail userDetail = UserDetail.newInstance();
+        adapter.addFragment(userDetail, getResources().getString(R.string.user_info));
+
+
 
         tabLayout.setupWithViewPager(viewPager);
 

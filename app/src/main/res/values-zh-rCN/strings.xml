@@ -25,4 +25,6 @@
     <string name="nothing_here">这里什么都没有呢...</string>
     <string name="supporting_creators">正在赞助的创作者</string>
     <string name="posts">投稿</string>
+    <string name="user_info">详细信息</string>
+    <string name="user_posts">投稿</string>
 </resources>

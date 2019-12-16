@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import cn.settile.fanboxviewer.R;
 
 public class UserDetail extends Fragment {
@@ -41,7 +40,7 @@ public class UserDetail extends Fragment {
         return view;
     }
 
-    public UserDetail newInstance(){
+    public static UserDetail newInstance(){
         return new UserDetail();
     }
 

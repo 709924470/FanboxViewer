@@ -1,7 +1,7 @@
 # pixivFanbox viewer
 
 **__本应用仅可查看您已赞助(订阅)的创作者的内容与各创作者的公开内容!__**\
-**__This application is only able to check the content posted by creators you've donated to and public contents!__**
+**__This application can only check the contents posted by creators you've donated to and public contents!__**
 
 开发者很懒, 不想每次都在手机上打开网页再下载, 所以写了这个软件\
 Developer is too lazy to open the web page and download them one by one,\
@@ -31,7 +31,7 @@ Checked | 中文 | English
 :heavy_check_mark: | 获取当前所有赞助计划 | Get current supporting plans
 :heavy_check_mark: | 获取粉丝卡 | Get fan card
 :white_check_mark: | 获取当前创作者所有投稿 | Get all posts from single creator
-:white_check_mark: | ~~实现搜索创作者~~ | ~~Search for a creator~~
+:white_check_mark: | 实现搜索创作者 | Search for a creator
 :white_check_mark: | __实现下载图片__ | Downloading images
 :heavy_check_mark: | __将获取到的通知显示出来__ | Display notification
 :heavy_check_mark: | __将获取到的(全部&已赞助)投稿显示出来__ | Display posts

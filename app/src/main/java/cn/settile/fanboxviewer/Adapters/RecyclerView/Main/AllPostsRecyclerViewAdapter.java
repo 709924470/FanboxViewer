@@ -1,4 +1,4 @@
-package cn.settile.fanboxviewer.Adapters.RecyclerView;
+package cn.settile.fanboxviewer.Adapters.RecyclerView.Main;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -70,26 +70,18 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
-        if(position == cardItems.size()){
-            onBottomReachedListener.onBottomReached(position);
-        }
-        super.onBindViewHolder(holder, position, payloads);
-    }
-
-    @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int i) {
         if(i == cardItems.size() - 1){
             onBottomReachedListener.onBottomReached(i);
         }
         if(getItemViewType(i) == 0){
-            planViewOnBind((planViewHolder) holder, i);
+            planViewOnBind((planViewHolder) holder);
         }else{
-            origOnBindViewHolder((itemViewHolder) holder, i - 1);
+            originalOnBind((itemViewHolder) holder, i - 1);
         }
     }
 
-    public void planViewOnBind(@NonNull planViewHolder holder, int i){
+    public void planViewOnBind(@NonNull planViewHolder holder){
         holder.nothing.setVisibility(View.VISIBLE);
         holder.layout.removeAllViewsInLayout();
         planViewHolder pv =  holder;
@@ -115,21 +107,18 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                     .placeholder(R.drawable.load_24dp)
                     .into(icon);
 
-            icon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(holder.itemView.getContext(), UserDetailActivity.class);
-                    i.putExtra("NAME", userToName.get(mi.getUrl()));
-                    i.putExtra("ICON", mi.getIconUrl());
-                    i.putExtra("URL", getUrl(mi.getUrl()));
-                    v.getContext().startActivity(i);
-                }
+            icon.setOnClickListener(v -> {
+                Intent i1 = new Intent(holder.itemView.getContext(), UserDetailActivity.class);
+                i1.putExtra("NAME", userToName.get(mi.getUrl()));
+                i1.putExtra("ICON", mi.getIconUrl());
+                i1.putExtra("URL", getUrl(mi.getUrl()));
+                v.getContext().startActivity(i1);
             });
         }
         pv.layout.invalidate();
     }
 
-    public void origOnBindViewHolder(@NonNull itemViewHolder holder, int i) {
+    public void originalOnBind(@NonNull itemViewHolder holder, int i) {
 
         holder.item = cardItems.get(i);
 
