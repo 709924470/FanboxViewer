@@ -1,14 +1,18 @@
 package cn.settile.fanboxviewer.Adapters.RecyclerView;
 
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
@@ -18,21 +22,26 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
+import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.R;
-import cn.settile.fanboxviewer.TabFragments.AllPostFragment;
-import cn.settile.fanboxviewer.TabFragments.AllPostFragment.OnListFragmentInteractionListener;
+import cn.settile.fanboxviewer.TabFragments.MainTab.AllPostFragment;
+import cn.settile.fanboxviewer.TabFragments.MainTab.AllPostFragment.OnListFragmentInteractionListener;
+import cn.settile.fanboxviewer.UserDetailActivity;
 import lombok.extern.slf4j.Slf4j;
 
+import static cn.settile.fanboxviewer.Network.FanboxParser.getUrl;
+import static cn.settile.fanboxviewer.Network.FanboxParser.userToName;
+
 @Slf4j
-public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<AllPostsRecyclerViewAdapter.viewHolder> {
+public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private AllPostFragment allPostFragment;
     private List<CardItem> cardItems;
     private OnListFragmentInteractionListener mListener;
 
     OnBottomReachedListener onBottomReachedListener;
-    OnLastShownListener onLastShownListener;
+    private List<MessageItem> lmi;
 
     public AllPostsRecyclerViewAdapter(AllPostFragment apf, List<CardItem> cardItems, AllPostFragment.OnListFragmentInteractionListener mListener){
         allPostFragment = apf;
@@ -44,25 +53,83 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<AllPostsRe
         this.onBottomReachedListener = onBottomReachedListener;
     }
 
-    public void setOnLastShownListener(OnLastShownListener onLastShownListener){
-        this.onLastShownListener = onLastShownListener;
+    @Override
+    public int getItemViewType(int position) {
+        return position == 0 ? 0 : 1;
     }
 
     @NonNull
     @Override
-    public viewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        if(i == 0){
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.component_post_plan_view, viewGroup, false);
+            return new planViewHolder(v);
+        }
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.component_item_card, viewGroup, false);
-        return new viewHolder(v);
+        return new itemViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull viewHolder holder, int i) {
-//        if(i == cardItems.size() - 1){
-//            onBottomReachedListener.onBottomReached(i);
-//            if(holder.view.isShown()){
-//                onLastShownListener.onLastShown(i);
-//            }
-//        }
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
+        if(position == cardItems.size()){
+            onBottomReachedListener.onBottomReached(position);
+        }
+        super.onBindViewHolder(holder, position, payloads);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int i) {
+        if(i == cardItems.size() - 1){
+            onBottomReachedListener.onBottomReached(i);
+        }
+        if(getItemViewType(i) == 0){
+            planViewOnBind((planViewHolder) holder, i);
+        }else{
+            origOnBindViewHolder((itemViewHolder) holder, i - 1);
+        }
+    }
+
+    public void planViewOnBind(@NonNull planViewHolder holder, int i){
+        holder.nothing.setVisibility(View.VISIBLE);
+        holder.layout.removeAllViewsInLayout();
+        planViewHolder pv =  holder;
+        if(lmi.size() == 0){
+            pv.nothing.setVisibility(View.VISIBLE);
+            return;
+        }
+        pv.nothing.setVisibility(View.GONE);
+        pv.layout.setVisibility(View.VISIBLE);
+        pv.layout.removeAllViewsInLayout();
+        for(MessageItem mi: lmi){
+            RoundedImageView icon = new RoundedImageView(holder.itemView.getContext());
+            icon.setLayoutParams(pv.param);
+            icon.setVisibility(View.VISIBLE);
+            icon.setCornerRadius(128.0f);
+            icon.setBorderColor(ColorStateList.valueOf(0xCCCCCC));
+            icon.setBorderWidth(2.0f);
+
+            pv.layout.addView(icon);
+
+            Picasso.get()
+                    .load(mi.getIconUrl())
+                    .placeholder(R.drawable.load_24dp)
+                    .into(icon);
+
+            icon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(holder.itemView.getContext(), UserDetailActivity.class);
+                    i.putExtra("NAME", userToName.get(mi.getUrl()));
+                    i.putExtra("ICON", mi.getIconUrl());
+                    i.putExtra("URL", getUrl(mi.getUrl()));
+                    v.getContext().startActivity(i);
+                }
+            });
+        }
+        pv.layout.invalidate();
+    }
+
+    public void origOnBindViewHolder(@NonNull itemViewHolder holder, int i) {
 
         holder.item = cardItems.get(i);
 
@@ -72,9 +139,13 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<AllPostsRe
         holder.title.setText(cardItems.get(i).getTitle());
 
         String desc = cardItems.get(i).getDesc();
-        if(Objects.equals(desc, ""))
+        if(Objects.equals(desc, "")) {
             holder.desc.setVisibility(View.GONE);
-        else
+            int padding_in_dp = 8;
+            final float scale = holder.view.getResources().getDisplayMetrics().density;
+            int padding_in_px = (int) (padding_in_dp * scale + 0.5f);
+            holder.title.setPadding(0, 0, 0, padding_in_px);
+        }else
             holder.desc.setText(desc);
 
         Picasso.get()
@@ -120,7 +191,11 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<AllPostsRe
         notifyDataSetChanged();
     }
 
-    public class viewHolder extends RecyclerView.ViewHolder {
+    public void refreshPlanView(List<MessageItem> lmi) {
+        this.lmi = lmi;
+    }
+
+    public class itemViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.item_header_image) ImageView header;
         @BindView(R.id.item_card_avatar) ImageView userIcon;
@@ -129,13 +204,36 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<AllPostsRe
         @BindView(R.id.item_card_title) TextView title;
         @BindView(R.id.item_card_desc) TextView desc;
         @BindView(R.id.item_card_plan) TextView plan;
+        @BindView(R.id.item_card_plan_div) View div;
+        @BindView(R.id.item_card_plan_detail) TextView detail;
         public CardItem item;
         public final View view;
 
-        public viewHolder(@NonNull View itemView) {
+        public itemViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             view = itemView;
+            div.setVisibility(View.GONE);
+            detail.setVisibility(View.GONE);
+        }
+    }
+
+    public class planViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.frag_post_plans)
+        LinearLayout layout;
+
+        @BindView(R.id.frag_post_plan_icon)
+        RoundedImageView riv;
+        @BindView(R.id.frag_post_icon_nothing)
+        TextView nothing;
+
+        public ViewGroup.LayoutParams param;
+
+        public planViewHolder(@NonNull View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+            param = riv.getLayoutParams();
         }
     }
 

@@ -14,8 +14,8 @@ import java.util.List;
 
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
 import cn.settile.fanboxviewer.R;
-import cn.settile.fanboxviewer.TabFragments.MessageFragment;
-import cn.settile.fanboxviewer.TabFragments.MessageFragment.OnListFragmentInteractionListener;
+import cn.settile.fanboxviewer.TabFragments.MainTab.MessageFragment;
+import cn.settile.fanboxviewer.TabFragments.MainTab.MessageFragment.OnListFragmentInteractionListener;
 
 public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecyclerViewAdapter.ViewHolder> {
 

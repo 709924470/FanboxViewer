@@ -1,4 +1,4 @@
-package cn.settile.fanboxviewer.TabFragments;
+package cn.settile.fanboxviewer.TabFragments.MainTab;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -56,7 +56,7 @@ public class MessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_message_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_main_msg_list, container, false);
 
         v = view;
         c = view.getContext();
@@ -147,14 +147,6 @@ public class MessageFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    public void setRefreshing() {
-        if (v == null || c == null) {
-            return;
-        }
-        srl = v.findViewById(R.id.frag_msg_refresh);
-        srl.setRefreshing(true);
     }
 
     public interface OnListFragmentInteractionListener {

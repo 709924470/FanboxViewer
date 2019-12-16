@@ -1,7 +1,8 @@
-package cn.settile.fanboxviewer;
+package cn.settile.fanboxviewer.Util;
 
 public class Constants {
     public static String cookie = "";
+    public static boolean DEBUG = true;
 
     public final class requestCodes {
         public static final int LOGIN = 0;

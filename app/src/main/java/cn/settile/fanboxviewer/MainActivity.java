@@ -29,9 +29,9 @@ import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
 import cn.settile.fanboxviewer.Adapters.Fragment.MainTabAdapter;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.FanboxParser;
-import cn.settile.fanboxviewer.TabFragments.AllPostFragment;
-import cn.settile.fanboxviewer.TabFragments.MessageFragment;
-import cn.settile.fanboxviewer.TabFragments.SubscPostFragment;
+import cn.settile.fanboxviewer.TabFragments.MainTab.AllPostFragment;
+import cn.settile.fanboxviewer.TabFragments.MainTab.MessageFragment;
+import cn.settile.fanboxviewer.TabFragments.MainTab.SubscPostFragment;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
-        //TODO: IMAGE Editing for card.
+        //TODO: IMAGE Editing for club card.
         navigationView.getMenu().getItem(1).setEnabled(false);
 
         TabLayout tl = findViewById(R.id.main_page_tab);
@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity
 
         AllPostFragment allPostFragment = AllPostFragment.newInstance();
         tabPageAdapter.addFragment(allPostFragment, getResources().getString(R.string.tab_posts));
+
 
         SubscPostFragment subscPostFragment = SubscPostFragment.newInstance();
         tabPageAdapter.addFragment(subscPostFragment, getResources().getString(R.string.tab_subscribed));

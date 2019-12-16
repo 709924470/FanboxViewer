@@ -1,4 +1,4 @@
-package cn.settile.fanboxviewer.Adapters.RecyclerView;
+package cn.settile.fanboxviewer.Adapters.RecyclerView.UserDetail;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +25,7 @@ import cn.settile.fanboxviewer.TabFragments.MainTab.SubscPostFragment.OnListFrag
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class SubscPostsRecyclerViewAdapter extends RecyclerView.Adapter<SubscPostsRecyclerViewAdapter.viewHolder> {
+public class UserPostsAdapter extends RecyclerView.Adapter<UserPostsAdapter.viewHolder> {
 
     private SubscPostFragment allPostFragment;
     private List<CardItem> cardItems;
@@ -33,7 +33,7 @@ public class SubscPostsRecyclerViewAdapter extends RecyclerView.Adapter<SubscPos
     private OnBottomReachedListener onBottomReachedListener;
     private  OnLastShownListener onLastShownListener;
 
-    public SubscPostsRecyclerViewAdapter(SubscPostFragment spf, List<CardItem> cardItems, OnListFragmentInteractionListener mListener){
+    public UserPostsAdapter(SubscPostFragment spf, List<CardItem> cardItems, OnListFragmentInteractionListener mListener){
         allPostFragment = spf;
         this.cardItems = cardItems;
         this.mListener = mListener;

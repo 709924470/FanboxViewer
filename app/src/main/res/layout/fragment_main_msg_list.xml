@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/card_refresh"
+    android:id="@+id/frag_msg_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/card_list"
-        android:name="cn.settile.fanboxviewer.PostListFragment"
+        android:id="@+id/frag_msg_list"
+        android:name="cn.settile.fanboxviewer.MessageFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
-        tools:context=".PostDetail.PostListActivity"
-        tools:listitem="@layout/component_item_card" />
+        tools:context=".TabFragments.MainTab.MessageFragment"
+        tools:listitem="@layout/component_item_message" />
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

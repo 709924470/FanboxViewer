@@ -12,6 +12,8 @@ import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import cn.settile.fanboxviewer.Util.Constants;
+
 public class LoginActivity extends AppCompatActivity {
     Context ctx;
     final String TAG = "Login";
@@ -20,6 +22,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        setTitle(R.string.login_to_proceed);
 
         ctx = this;
 

@@ -9,16 +9,20 @@
 
     <application
         android:allowBackup="true"
-        android:largeHeap="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".UserDetailActivity"
+            android:label="@string/title_activity_user_detail"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".PostDetail.PostListActivity"
             android:label="@string/title_post_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".PostDetail.PostDetailActivity"
             android:label="@string/title_post_detail"
@@ -32,7 +36,7 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_drawer"
             android:noHistory="true"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".SplashActivity">
             <intent-filter>

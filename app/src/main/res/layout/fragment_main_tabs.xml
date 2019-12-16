@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity"
-    tools:showIn="@layout/fragment_home_tabs">
+    tools:showIn="@layout/fragment_main">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/main_page_tab"

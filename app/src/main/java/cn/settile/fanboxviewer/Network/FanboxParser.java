@@ -2,6 +2,7 @@ package cn.settile.fanboxviewer.Network;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -15,7 +16,7 @@ import java.util.List;
 
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
-import cn.settile.fanboxviewer.Constants;
+import cn.settile.fanboxviewer.Util.Constants;
 import cn.settile.fanboxviewer.R;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
@@ -27,6 +28,7 @@ public class FanboxParser {
     private static String messageUrl = "https://www.pixiv.net/ajax/fanbox/hhw/notification?page=1&skipConvertUnreadNotification=0&commentOnly=0";
     private static String messageFirstPage = messageUrl;
     private static HashMap<String, String> userToIcon = new HashMap<>();
+    public static HashMap<String, String> userToName = new HashMap<>();
 
     public static List<MessageItem> lastMessageList = new ArrayList<>();
 
@@ -96,8 +98,10 @@ public class FanboxParser {
     }
 
     public static boolean updateIndex() {
+//        android.util.Log.d("updateIndex","updating index...");
         try {
             index = getJSON("https://www.pixiv.net/ajax/fanbox/index");
+//            android.util.Log.d("updateIndex", "JSON fetched successfully");
             if (index == null) {
                 throw new Exception("Look previous error");
             }
@@ -129,6 +133,16 @@ public class FanboxParser {
         return getPosts(refresh, false, c);
     }
 
+    public static JSONObject getUserDetail(String url){
+        try{
+            return getJSON(url);
+
+        }catch(Exception ex){
+            log.error("ERROR: ", ex);
+        }
+        return null;
+    }
+
     public static List<MessageItem> getPlans(boolean refresh) {
         try {
             if(refresh){
@@ -137,6 +151,7 @@ public class FanboxParser {
                 }
             }
             List<MessageItem> result = new ArrayList<>();
+//            android.util.Log.d("getPlans", "init");
 
             for(int i = 0; i < plans.length(); i++){
                 JSONObject plan = plans.getJSONObject(i);
@@ -154,12 +169,14 @@ public class FanboxParser {
                     iconUrl = userToIcon.get(userId);
                 }
 
-                String url = "https://www.pixiv.net/fanbox/creator/" + userId;
+//                String url = "https://www.pixiv.net/fanbox/creator/" + userId;
 
                 MessageItem mi;
-                mi = new MessageItem(title, msg, url, iconUrl);
+                mi = new MessageItem(title, msg, userId, iconUrl);
                 result.add(mi);
             }
+
+//            android.util.Log.d("getPlans", "Returning ..." + result.size());
 
             return result;
         } catch (Exception ex) {
@@ -168,9 +185,14 @@ public class FanboxParser {
         }
     }
 
+    public static String getUrl(String userId){
+        return "https://www.pixiv.net/fanbox/creator/" + userId;
+    }
+
     @SuppressLint("SimpleDateFormat")
     public static List<CardItem> getPosts(boolean refresh, boolean all, Context c) {
         try {
+//            android.util.Log.d("getPosts", (refresh ? "t" : "f") + (all ? "t" : "f"));
             if (refresh) {
                 if (!updateIndex()) {
                     throw new Exception("Look previous error");
@@ -196,13 +218,11 @@ public class FanboxParser {
                 supporting = tmp.getJSONArray("items");
                 supportingNext = tmp.getString("nextUrl");
             }
-
             tmp = null;
-
 
             for (int i = 0; i < post.length(); i++) {
                 JSONObject json = post.getJSONObject(i);
-                log.debug(i + " -> " + json.toString());
+//                android.util.Log.d("getPosts", i + " -> " + json.toString());
                 String title = json.getString("title");
                 String desc = json.getString("excerpt");
                 int fee = json.getInt("feeRequired");
@@ -217,6 +237,10 @@ public class FanboxParser {
                     userToIcon.put(userId, iconUrl);
                 } else {
                     iconUrl = userToIcon.get(userId);
+                }
+
+                if (userToName.get(userId) == null) {
+                    userToName.put(userId, userName);
                 }
 
                 String date = json.getString("updatedDatetime");
@@ -239,6 +263,8 @@ public class FanboxParser {
 
                 lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan));
             }
+
+//            android.util.Log.d("getPosts", "Returning ...");
 
             return lci;
         } catch (Exception ex) {
