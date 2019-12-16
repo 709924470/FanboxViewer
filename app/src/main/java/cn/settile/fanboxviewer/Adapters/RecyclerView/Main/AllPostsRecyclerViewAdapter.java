@@ -83,13 +83,13 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             onBottomReachedListener.onBottomReached(i);
         }
         if(getItemViewType(i) == 0){
-            planViewOnBind((planViewHolder) holder, i);
+            planViewOnBind((planViewHolder) holder);
         }else{
             origOnBindViewHolder((itemViewHolder) holder, i - 1);
         }
     }
 
-    public void planViewOnBind(@NonNull planViewHolder holder, int i){
+    public void planViewOnBind(@NonNull planViewHolder holder){
         holder.nothing.setVisibility(View.VISIBLE);
         holder.layout.removeAllViewsInLayout();
         planViewHolder pv =  holder;
@@ -115,15 +115,12 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                     .placeholder(R.drawable.load_24dp)
                     .into(icon);
 
-            icon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(holder.itemView.getContext(), UserDetailActivity.class);
-                    i.putExtra("NAME", userToName.get(mi.getUrl()));
-                    i.putExtra("ICON", mi.getIconUrl());
-                    i.putExtra("URL", getUrl(mi.getUrl()));
-                    v.getContext().startActivity(i);
-                }
+            icon.setOnClickListener(v -> {
+                Intent i1 = new Intent(holder.itemView.getContext(), UserDetailActivity.class);
+                i1.putExtra("NAME", userToName.get(mi.getUrl()));
+                i1.putExtra("ICON", mi.getIconUrl());
+                i1.putExtra("URL", getUrl(mi.getUrl()));
+                v.getContext().startActivity(i1);
             });
         }
         pv.layout.invalidate();
