@@ -1,5 +1,6 @@
 package cn.settile.fanboxviewer.Adapters.RecyclerView.Main;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
@@ -39,6 +40,8 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     private AllPostFragment allPostFragment;
     private List<CardItem> cardItems;
     private OnListFragmentInteractionListener mListener;
+
+    private Context ctx;
 
     OnBottomReachedListener onBottomReachedListener;
     private List<MessageItem> lmi;
@@ -108,7 +111,7 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                     .into(icon);
 
             icon.setOnClickListener(v -> {
-                Intent i1 = new Intent(holder.itemView.getContext(), UserDetailActivity.class);
+                Intent i1 = new Intent(allPostFragment.c, UserDetailActivity.class);
                 i1.putExtra("NAME", userToName.get(mi.getUrl()));
                 i1.putExtra("ICON", mi.getIconUrl());
                 i1.putExtra("URL", getUrl(mi.getUrl()));

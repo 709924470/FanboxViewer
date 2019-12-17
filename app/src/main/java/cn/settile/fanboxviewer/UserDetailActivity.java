@@ -2,6 +2,7 @@ package cn.settile.fanboxviewer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -57,11 +58,14 @@ public class UserDetailActivity extends AppCompatActivity {
         UserDetail userDetail = UserDetail.newInstance();
         adapter.addFragment(userDetail, getResources().getString(R.string.user_info));
 
-
-
         tabLayout.setupWithViewPager(viewPager);
 
         setup();
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     private void setup(){
@@ -70,6 +74,8 @@ public class UserDetailActivity extends AppCompatActivity {
                 JSONObject detail = FanboxParser.getUserDetail(this.url);
                 JSONObject body = detail.getJSONObject("body");
                 JSONObject user = body.getJSONObject("creator").getJSONObject("user");
+
+                Log.d("UserDetail", user.toString(4));
 
                 String uid = user.getString("userId");
                 String name = user.getString("name");
@@ -81,13 +87,13 @@ public class UserDetailActivity extends AppCompatActivity {
                         .into((ImageView) findViewById(R.id.detail_icon));
 
                 runOnUiThread(() -> {
-                    ((TextView) findViewById(R.id.detail_user_name)).setText(name);
                     ((TextView) findViewById(R.id.detail_user_id)).setText(uid);
+                    ((TextView) findViewById(R.id.detail_user_name)).setText(name);
                 });
 
             }catch (Exception ex){
                 log.error("EXCEPTION: ", ex);
             }
-        });
+        }).start();
     }
 }

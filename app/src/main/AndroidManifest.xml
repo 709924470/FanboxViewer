@@ -20,19 +20,6 @@
             android:label="@string/title_activity_user_detail"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".PostDetail.PostListActivity"
-            android:label="@string/title_post_list"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".PostDetail.PostDetailActivity"
-            android:label="@string/title_post_detail"
-            android:parentActivityName=".PostDetail.PostListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="cn.settile.fanboxviewer.PostDetail.PostListActivity" />
-        </activity>
-        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_drawer"
             android:noHistory="true"
