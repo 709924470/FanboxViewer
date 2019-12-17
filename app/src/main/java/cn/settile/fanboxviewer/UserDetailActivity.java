@@ -33,6 +33,8 @@ public class UserDetailActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        setTitle("");
+
         Intent intent = getIntent();
 
         this.url = intent.getStringExtra("URL");

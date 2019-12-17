@@ -25,9 +25,8 @@ import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.R;
 
-public class CardRecyclerViewAdapterBase<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
+public class CardRecyclerViewAdapterBase extends RecyclerView.Adapter<CardRecyclerViewAdapterBase.PostViewHolder> {
 
-    private final Constructor<? extends T> ctor;
     private List<CardItem> lci = new ArrayList<>();
 
     OnBottomReachedListener onBottomReachedListener;
@@ -39,6 +38,10 @@ public class CardRecyclerViewAdapterBase<T extends RecyclerView.ViewHolder> exte
 
     public void setOnItemClickListener(@NonNull AdapterView.OnItemClickListener listener){
         this.onClickListener = listener;
+    }
+
+    public void setOnBottomReachedListener(OnBottomReachedListener onBottomReachedListener){
+        this.onBottomReachedListener = onBottomReachedListener;
     }
 
     public void updateItems(List<CardItem> cardItems, boolean refreshAll) {
@@ -53,34 +56,19 @@ public class CardRecyclerViewAdapterBase<T extends RecyclerView.ViewHolder> exte
         notifyDataSetChanged();
     }
 
-    public CardRecyclerViewAdapterBase(Class<? extends T> viewHolderClass) throws NoSuchMethodException{
+    public CardRecyclerViewAdapterBase(){
         super();
-        ctor = viewHolderClass.getConstructor(View.class);
     }
 
     @NonNull
     @Override
-    public T onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.component_item_card, parent, false);
-        return safeConstructor(v);
-    }
-
-    @NonNull
-    private T safeConstructor(View v){
-        try {
-            return ctor.newInstance(v);
-        }catch (Exception ex){
-            Log.e("PostRVBase", "Can't create new instance: \n", ex);
-            return (T) new PostViewHolder(v);
-        }
+        return new PostViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull T holderPlaceholder, int position) {
-        if(!holderPlaceholder.getClass().isInstance(PostViewHolder.class)){
-            throw new ClassCastException("Implement this method for different viewHolder.");
-        }
-        PostViewHolder holder = (PostViewHolder) holderPlaceholder;
+    public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         if(position == lci.size() - 1){
             onBottomReachedListener.onBottomReached(position);
         }
@@ -121,7 +109,6 @@ public class CardRecyclerViewAdapterBase<T extends RecyclerView.ViewHolder> exte
                     .into(holder.header);
         }
     }
-
 
     @Override
     public int getItemCount() {

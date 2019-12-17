@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
-import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.SubscPostsRecyclerViewAdapter;
+import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.SubscribedPostsRVA;
 import cn.settile.fanboxviewer.Network.FanboxParser;
 import cn.settile.fanboxviewer.R;
+import lombok.SneakyThrows;
 
 
 public class SubscPostFragment extends Fragment {
@@ -30,7 +30,7 @@ public class SubscPostFragment extends Fragment {
     private View v;
     public Context c;
     private RecyclerView recyclerView;
-    private SubscPostsRecyclerViewAdapter adapter;
+    private SubscribedPostsRVA adapter;
     private SwipeRefreshLayout srl;
     public SubscPostFragment() {
     }
@@ -57,7 +57,7 @@ public class SubscPostFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(c);
         recyclerView.setLayoutManager(llm);
 
-        adapter = new SubscPostsRecyclerViewAdapter(this, new ArrayList<>(), mListener);
+        adapter = new SubscribedPostsRVA();
         recyclerView.setAdapter(adapter);
 
         srl = v.findViewById(R.id.frag_post_refresh);
@@ -96,7 +96,8 @@ public class SubscPostFragment extends Fragment {
         if (recyclerView == null) {
             recyclerView = v.findViewById(R.id.frag_msg_list);
             recyclerView.setLayoutManager(new LinearLayoutManager(c));
-            adapter = new SubscPostsRecyclerViewAdapter(this, lci, mListener);
+            adapter = new SubscribedPostsRVA();
+            adapter.updateItems(lci, true);
             recyclerView.setAdapter(adapter);
         } else {
             getActivity().runOnUiThread(() -> {
