@@ -56,6 +56,12 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
             default:
                 break;
         }
+        super.onActivityResult(request, result, data);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
     }
 
     @Override
@@ -139,6 +145,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         } catch (Exception ex) {
             i.putExtra("isLoggedIn", false);
         }
-        startActivityForResult(i, Constants.requestCodes.EXIT);
+        startActivity(i);
+        finish();
     }
 }

@@ -17,6 +17,7 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,11 +25,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
+import cn.settile.fanboxviewer.MainActivity;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.R;
 import cn.settile.fanboxviewer.TabFragments.MainTab.AllPostFragment;
 import cn.settile.fanboxviewer.TabFragments.MainTab.AllPostFragment.OnListFragmentInteractionListener;
 import cn.settile.fanboxviewer.UserDetailActivity;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import static cn.settile.fanboxviewer.Network.FanboxParser.getUrl;
@@ -43,8 +46,13 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     private Context ctx;
 
+    @Setter
     OnBottomReachedListener onBottomReachedListener;
+    @Setter
+    OnItemClickListener itemClickListener;
     private List<MessageItem> lmi;
+
+    public HashMap<Integer, MessageItem> idToMsgItem = new HashMap<>();
 
     public AllPostsRecyclerViewAdapter(AllPostFragment apf, List<CardItem> cardItems, AllPostFragment.OnListFragmentInteractionListener mListener){
         allPostFragment = apf;
@@ -52,8 +60,8 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         this.mListener = mListener;
     }
 
-    public void setOnBottomReachedListener(OnBottomReachedListener onBottomReachedListener){
-        this.onBottomReachedListener = onBottomReachedListener;
+    public interface OnItemClickListener{
+        void onCardClick(View v, CardItem ci);
     }
 
     @Override
@@ -110,11 +118,12 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                     .placeholder(R.drawable.load_24dp)
                     .into(icon);
 
+            idToMsgItem.put(icon.getId(), mi);
             icon.setOnClickListener(v -> {
-                Intent i1 = new Intent(allPostFragment.c, UserDetailActivity.class);
+                Intent i1 = new Intent(v.getContext(), UserDetailActivity.class);
                 i1.putExtra("NAME", userToName.get(mi.getUrl()));
                 i1.putExtra("ICON", mi.getIconUrl());
-                i1.putExtra("URL", getUrl(mi.getUrl()));
+                i1.putExtra("URL", mi.getUrl());
                 v.getContext().startActivity(i1);
             });
         }
@@ -187,7 +196,7 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         this.lmi = lmi;
     }
 
-    public class itemViewHolder extends RecyclerView.ViewHolder {
+    public class itemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.item_header_image) ImageView header;
         @BindView(R.id.item_card_avatar) ImageView userIcon;
@@ -207,6 +216,12 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             view = itemView;
             div.setVisibility(View.GONE);
             detail.setVisibility(View.GONE);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            itemClickListener.onCardClick(v, item);
         }
     }
 
@@ -220,10 +235,15 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         @BindView(R.id.frag_post_icon_nothing)
         TextView nothing;
 
+        public MessageItem mi = new MessageItem("","","","");
+
+        public final Context ctx;
+
         public ViewGroup.LayoutParams param;
 
         public planViewHolder(@NonNull View itemView) {
             super(itemView);
+            ctx = itemView.getContext();
             ButterKnife.bind(this, itemView);
             param = riv.getLayoutParams();
         }

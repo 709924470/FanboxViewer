@@ -1,9 +1,11 @@
 package cn.settile.fanboxviewer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +29,7 @@ import org.jsoup.nodes.Element;
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
 import cn.settile.fanboxviewer.Adapters.Fragment.MainTabAdapter;
+import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.AllPostsRecyclerViewAdapter;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.FanboxParser;
 import cn.settile.fanboxviewer.TabFragments.MainTab.AllPostFragment;
@@ -38,8 +41,10 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AllPostFragment.OnListFragmentInteractionListener,
         SubscPostFragment.OnListFragmentInteractionListener, MessageFragment.OnListFragmentInteractionListener {
-    Context c;
+    public static MainActivity c;
     static boolean flag = false;
+
+    AllPostFragment allPostFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +79,7 @@ public class MainActivity extends AppCompatActivity
 
         MainTabAdapter tabPageAdapter = new MainTabAdapter(getSupportFragmentManager(), this);
 
-        AllPostFragment allPostFragment = AllPostFragment.newInstance();
+        allPostFragment = AllPostFragment.newInstance();
         tabPageAdapter.addFragment(allPostFragment, getResources().getString(R.string.tab_posts));
 
 
@@ -118,7 +123,6 @@ public class MainActivity extends AppCompatActivity
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-
     }
 
     private void getNotifications(MessageFragment mf) {

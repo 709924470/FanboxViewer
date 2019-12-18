@@ -1,6 +1,8 @@
 package cn.settile.fanboxviewer.TabFragments.MainTab;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,9 +30,9 @@ public class AllPostFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
 
     private View v;
-    public Context c;
+    public Activity c;
     private RecyclerView recyclerView;
-    private AllPostsRecyclerViewAdapter adapter;
+    public AllPostsRecyclerViewAdapter adapter;
     private SwipeRefreshLayout srl;
 
     public AllPostFragment() {
@@ -44,6 +46,7 @@ public class AllPostFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        c = getActivity();
     }
 
     @Override
@@ -52,7 +55,7 @@ public class AllPostFragment extends Fragment {
         android.view.View inflate = inflater.inflate(R.layout.fragment_main_post_list, container, false);
 
         v = inflate;
-        c = inflate.getContext();
+//        c = inflate.getContext();
 
         recyclerView = v.findViewById(R.id.frag_post_list);
         LinearLayoutManager llm = new LinearLayoutManager(c);

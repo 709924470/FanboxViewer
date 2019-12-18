@@ -26,6 +26,7 @@ public class UserDetailActivity extends AppCompatActivity {
     private String url;
     private String iconUrl;
     private String userName;
+    private UserDetail userDetail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +56,12 @@ public class UserDetailActivity extends AppCompatActivity {
 
         UserDetailTabAdapter adapter = new UserDetailTabAdapter(getSupportFragmentManager(), this);
 
-        UserDetail userDetail = UserDetail.newInstance();
+        userDetail = UserDetail.newInstance();
         adapter.addFragment(userDetail, getResources().getString(R.string.user_info));
 
         tabLayout.setupWithViewPager(viewPager);
+
+        setResult(-1);
 
         setup();
     }
@@ -73,20 +76,24 @@ public class UserDetailActivity extends AppCompatActivity {
             try {
                 JSONObject detail = FanboxParser.getUserDetail(this.url);
                 JSONObject body = detail.getJSONObject("body");
-                JSONObject user = body.getJSONObject("creator").getJSONObject("user");
+                JSONObject creator = body.getJSONObject("creator");
+                JSONObject user = creator.getJSONObject("user");
 
-                Log.d("UserDetail", user.toString(4));
-
+                String coverImage = creator.getString("coverImageUrl");
                 String uid = user.getString("userId");
                 String name = user.getString("name");
                 String iconUrl = user.getString("iconUrl");
 
-                Picasso.get()
-                        .load(iconUrl)
-                        .placeholder(R.drawable.load_24dp)
-                        .into((ImageView) findViewById(R.id.detail_icon));
-
                 runOnUiThread(() -> {
+                    Picasso.get()
+                            .load(iconUrl)
+                            .placeholder(R.drawable.load_24dp)
+                            .into((ImageView) findViewById(R.id.detail_icon));
+                    Picasso.get()
+                            .load(coverImage)
+                            .placeholder(R.drawable.load_24dp)
+                            .into((ImageView) findViewById(R.id.detail_header));
+
                     ((TextView) findViewById(R.id.detail_user_id)).setText(uid);
                     ((TextView) findViewById(R.id.detail_user_name)).setText(name);
                 });

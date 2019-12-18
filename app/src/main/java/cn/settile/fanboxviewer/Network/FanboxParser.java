@@ -133,9 +133,9 @@ public class FanboxParser {
         return getPosts(refresh, false, c);
     }
 
-    public static JSONObject getUserDetail(String url){
+    public static JSONObject getUserDetail(String userId){
         try{
-            return getJSON(url);
+            return getJSON("https://www.pixiv.net/ajax/fanbox/creator?userId=" + userId);
 
         }catch(Exception ex){
             log.error("ERROR: ", ex);
