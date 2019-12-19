@@ -27,8 +27,6 @@ import cn.settile.fanboxviewer.R;
 //@Slf4j
 public class AllPostFragment extends Fragment {
 
-    private OnListFragmentInteractionListener mListener;
-
     private View v;
     public Activity c;
     private RecyclerView recyclerView;
@@ -61,7 +59,7 @@ public class AllPostFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(c);
         recyclerView.setLayoutManager(llm);
 
-        adapter = new AllPostsRecyclerViewAdapter(this, new ArrayList<>(), mListener);
+        adapter = new AllPostsRecyclerViewAdapter(this, new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
         srl = v.findViewById(R.id.frag_post_refresh);
@@ -102,7 +100,7 @@ public class AllPostFragment extends Fragment {
         if (recyclerView == null) {
             recyclerView = v.findViewById(R.id.frag_msg_list);
             recyclerView.setLayoutManager(new LinearLayoutManager(c));
-            adapter = new AllPostsRecyclerViewAdapter(this, lci, mListener);
+            adapter = new AllPostsRecyclerViewAdapter(this, lci);
             recyclerView.setAdapter(adapter);
         } else {
             getActivity().runOnUiThread(() -> {
@@ -112,30 +110,13 @@ public class AllPostFragment extends Fragment {
         }
     }
 
-    public void onButtonPressed(CardItem cardItem) {
-        if (mListener != null) {
-            mListener.onListFragmentInteraction(cardItem);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(CardItem cardItem);
     }
 }

@@ -24,12 +24,10 @@ import cn.settile.fanboxviewer.R;
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the
  * interface.
  */
 public class MessageFragment extends Fragment {
-
-    private OnListFragmentInteractionListener mListener;
 
     private SwipeRefreshLayout srl;
 
@@ -64,7 +62,7 @@ public class MessageFragment extends Fragment {
         recyclerView = v.findViewById(R.id.frag_msg_list);
         LinearLayoutManager llm = new LinearLayoutManager(c);
         recyclerView.setLayoutManager(llm);
-        msgAdapter = new MessageRecyclerViewAdapter(this, lmi, mListener);
+        msgAdapter = new MessageRecyclerViewAdapter(this, lmi);
         recyclerView.setAdapter(msgAdapter);
 
         srl = v.findViewById(R.id.frag_msg_refresh);
@@ -116,7 +114,7 @@ public class MessageFragment extends Fragment {
         if (recyclerView == null) {
             recyclerView = v.findViewById(R.id.frag_msg_list);
             recyclerView.setLayoutManager(new LinearLayoutManager(c));
-            msgAdapter = new MessageRecyclerViewAdapter(this, lmi, mListener);
+            msgAdapter = new MessageRecyclerViewAdapter(this, lmi);
             recyclerView.setAdapter(msgAdapter);
             getActivity().runOnUiThread(() -> {
                 msgAdapter.updateItems(lmi, refreshAll);
@@ -129,27 +127,5 @@ public class MessageFragment extends Fragment {
         new Handler().postDelayed(() -> {
             srl.setRefreshing(false);
         }, 200);
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(MessageItem item);
     }
 }

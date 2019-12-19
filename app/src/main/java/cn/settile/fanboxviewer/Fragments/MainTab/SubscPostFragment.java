@@ -23,8 +23,6 @@ import lombok.SneakyThrows;
 
 public class SubscPostFragment extends Fragment {
 
-    private OnListFragmentInteractionListener mListener;
-
     private int lastVisibleItem;
 
     private View v;
@@ -106,31 +104,8 @@ public class SubscPostFragment extends Fragment {
         }
     }
 
-    // TODO: Rename method, updateList argument and hook method into UI event
-    public void onButtonPressed(CardItem cardItem) {
-        if (mListener != null) {
-            mListener.onListFragmentInteraction(cardItem);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(CardItem cardItem);
     }
 }

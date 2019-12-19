@@ -15,7 +15,6 @@ import cn.settile.fanboxviewer.R;
 
 public class UserDetail extends Fragment {
 
-    private OnListFragmentInteractionListener mListener;
     private View v;
     private Context c;
 
@@ -43,26 +42,4 @@ public class UserDetail extends Fragment {
     public static UserDetail newInstance(){
         return new UserDetail();
     }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Object item);
-    }
-
 }
