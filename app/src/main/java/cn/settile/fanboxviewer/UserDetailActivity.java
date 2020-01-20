@@ -2,7 +2,7 @@ package cn.settile.fanboxviewer;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,11 +13,19 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
 import cn.settile.fanboxviewer.Adapters.Fragment.UserDetailTabAdapter;
+import cn.settile.fanboxviewer.Fragments.MainTab.SubscPostFragment;
+import cn.settile.fanboxviewer.Fragments.UserDetail.UserDetail;
 import cn.settile.fanboxviewer.Network.FanboxParser;
-import cn.settile.fanboxviewer.TabFragments.UserDetail.UserDetail;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,13 +35,14 @@ public class UserDetailActivity extends AppCompatActivity {
     private String iconUrl;
     private String userName;
     private UserDetail userDetail;
+    private SubscPostFragment posts;
+    List<DetailItem> details = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_detail);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar toolbar = findViewById(R.id.detail_toolBar);
 
         setTitle("");
 
@@ -42,6 +51,8 @@ public class UserDetailActivity extends AppCompatActivity {
         this.url = intent.getStringExtra("URL");
         this.userName = intent.getStringExtra("NAME");
         this.iconUrl = intent.getStringExtra("ICON");
+//        toolbar.setTitle(userName);
+//        toolbar.setSubtitle(url);
 
         Picasso.get()
                 .load(iconUrl)
@@ -59,6 +70,10 @@ public class UserDetailActivity extends AppCompatActivity {
         userDetail = UserDetail.newInstance();
         adapter.addFragment(userDetail, getResources().getString(R.string.user_info));
 
+        posts = SubscPostFragment.newInstance();
+        adapter.addFragment(posts, getResources().getString(R.string.posts));
+
+        viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
 
         setResult(-1);
@@ -79,6 +94,20 @@ public class UserDetailActivity extends AppCompatActivity {
                 JSONObject creator = body.getJSONObject("creator");
                 JSONObject user = creator.getJSONObject("user");
 
+                String description = creator.optString("description");
+                JSONArray links = creator.optJSONArray("profileLinks");
+                JSONArray items = creator.optJSONArray("profileItems");
+
+                details = new ArrayList<>();
+                for(int i = 0; i < links.length(); i++){
+                    details.add(new DetailItem(DetailItem.Type.TEXT, links.getString(i)));
+                }
+                for(int i = 0; i < items.length(); i++){
+                    details.add(new DetailItem(items.getJSONObject(i).getString("type").equals("image") ? DetailItem.Type.IMAGE : DetailItem.Type.TEXT,
+                            items.getJSONObject(i).optString("imageUrl")));
+                }
+                details.add(new DetailItem(DetailItem.Type.TEXT, description));
+
                 String coverImage = creator.getString("coverImageUrl");
                 String uid = user.getString("userId");
                 String name = user.getString("name");
@@ -97,7 +126,16 @@ public class UserDetailActivity extends AppCompatActivity {
                     ((TextView) findViewById(R.id.detail_user_id)).setText(uid);
                     ((TextView) findViewById(R.id.detail_user_name)).setText(name);
                 });
-
+                Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> {
+                    runOnUiThread(() -> {
+                        while(userDetail.uda == null){}
+                        findViewById(R.id.detail_loading).setVisibility(View.GONE);
+                        userDetail.uda.updateItems(details);
+                    });
+                    return null;
+                });
+                while(!tmp.isDone()){}
+                tmp.get();
             }catch (Exception ex){
                 log.error("EXCEPTION: ", ex);
             }

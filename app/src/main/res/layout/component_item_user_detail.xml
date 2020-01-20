@@ -2,20 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/com_user_detail_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/large_text"
+        android:text="@string/empty"
+        android:autoLink="web"
+        android:linksClickable="true"
         tools:visibility="gone" />
 
     <ImageView
         android:id="@+id/com_user_detail_img"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         tools:src="@tools:sample/backgrounds/scenic"
         tools:visibility="gone" />
 </LinearLayout>

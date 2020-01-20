@@ -1,5 +1,6 @@
 package cn.settile.fanboxviewer.Adapters.RecyclerView;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
+import cn.settile.fanboxviewer.R;
 
 public class DetailAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -53,12 +55,14 @@ public class DetailAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHol
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.component_item_user_detail, parent, false);
         if (TYPE_IMAGE == viewType){
-            return new ImageVH(parent.getRootView());
+            return new ImageVH(v);
         }else if (TYPE_TEXT == viewType){
-            return new TextVH(parent.getRootView());
+            return new TextVH(v);
         }
-        return new TextVH(parent.getRootView());
+        return new TextVH(v);
     }
 
     @Override
@@ -67,7 +71,8 @@ public class DetailAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (TYPE_IMAGE == getItemType(position)){
             ImageVH ivh = (ImageVH) holder;
             Picasso.get()
-                    .load(detailItem.getImageUri())
+                    .load(detailItem.content)
+                    .placeholder(R.drawable.load_24dp)
                     .into(ivh.iv);
         }else if (TYPE_TEXT == getItemType(position)){
             TextVH tvh = (TextVH) holder;
@@ -85,7 +90,9 @@ public class DetailAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         public ImageVH(@NonNull View itemView) {
             super(itemView);
-            iv = new ImageView(itemView.getContext());
+            iv = itemView.findViewById(R.id.com_user_detail_img);
+            iv.setVisibility(View.VISIBLE);
+            itemView.findViewById(R.id.com_user_detail_text).setVisibility(View.GONE);
 
         }
     }
@@ -95,7 +102,9 @@ public class DetailAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         public TextVH(@NonNull View itemView) {
             super(itemView);
-            tv = new TextView(itemView.getContext());
+            tv = itemView.findViewById(R.id.com_user_detail_text);
+            tv.setVisibility(View.VISIBLE);
+            itemView.findViewById(R.id.com_user_detail_img).setVisibility(View.GONE);
         }
     }
 }

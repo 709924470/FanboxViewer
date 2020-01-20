@@ -129,4 +129,5 @@
     <string name="posts">Posts</string>
     <string name="user_info">Detail</string>
     <string name="user_posts">Posts</string>
+    <string name="empty" translatable="false">.</string>
 </resources>

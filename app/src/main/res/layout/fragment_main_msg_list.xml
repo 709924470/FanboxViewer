@@ -13,8 +13,10 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:layoutAnimation="@anim/layout_default"
         app:layoutManager="LinearLayoutManager"
-        tools:context=".TabFragments.MainTab.MessageFragment"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".Fragments.MainTab.MessageFragment"
         tools:listitem="@layout/component_item_message" />
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

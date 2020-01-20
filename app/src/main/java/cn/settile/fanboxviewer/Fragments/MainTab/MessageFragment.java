@@ -1,4 +1,4 @@
-package cn.settile.fanboxviewer.TabFragments.MainTab;
+package cn.settile.fanboxviewer.Fragments.MainTab;
 
 import android.content.Context;
 import android.os.Bundle;

@@ -17,7 +17,6 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,16 +24,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
-import cn.settile.fanboxviewer.MainActivity;
+import cn.settile.fanboxviewer.Fragments.MainTab.AllPostFragment;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.R;
-import cn.settile.fanboxviewer.TabFragments.MainTab.AllPostFragment;
-import cn.settile.fanboxviewer.TabFragments.MainTab.AllPostFragment.OnListFragmentInteractionListener;
 import cn.settile.fanboxviewer.UserDetailActivity;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import static cn.settile.fanboxviewer.Network.FanboxParser.getUrl;
 import static cn.settile.fanboxviewer.Network.FanboxParser.userToName;
 
 @Slf4j
@@ -42,26 +38,15 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     private AllPostFragment allPostFragment;
     private List<CardItem> cardItems;
-    private OnListFragmentInteractionListener mListener;
-
-    private Context ctx;
 
     @Setter
     OnBottomReachedListener onBottomReachedListener;
-    @Setter
-    OnItemClickListener itemClickListener;
     private List<MessageItem> lmi;
 
-    public HashMap<Integer, MessageItem> idToMsgItem = new HashMap<>();
 
-    public AllPostsRecyclerViewAdapter(AllPostFragment apf, List<CardItem> cardItems, AllPostFragment.OnListFragmentInteractionListener mListener){
+    public AllPostsRecyclerViewAdapter(AllPostFragment apf, List<CardItem> cardItems){
         allPostFragment = apf;
         this.cardItems = cardItems;
-        this.mListener = mListener;
-    }
-
-    public interface OnItemClickListener{
-        void onCardClick(View v, CardItem ci);
     }
 
     @Override
@@ -92,33 +77,31 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         }
     }
 
-    public void planViewOnBind(@NonNull planViewHolder holder){
+    private void planViewOnBind(@NonNull planViewHolder holder){
         holder.nothing.setVisibility(View.VISIBLE);
         holder.layout.removeAllViewsInLayout();
-        planViewHolder pv =  holder;
         if(lmi.size() == 0){
-            pv.nothing.setVisibility(View.VISIBLE);
+            holder.nothing.setVisibility(View.VISIBLE);
             return;
         }
-        pv.nothing.setVisibility(View.GONE);
-        pv.layout.setVisibility(View.VISIBLE);
-        pv.layout.removeAllViewsInLayout();
+        holder.nothing.setVisibility(View.GONE);
+        holder.layout.setVisibility(View.VISIBLE);
+        holder.layout.removeAllViewsInLayout();
         for(MessageItem mi: lmi){
             RoundedImageView icon = new RoundedImageView(holder.itemView.getContext());
-            icon.setLayoutParams(pv.param);
+            icon.setLayoutParams(holder.param);
             icon.setVisibility(View.VISIBLE);
             icon.setCornerRadius(128.0f);
             icon.setBorderColor(ColorStateList.valueOf(0xCCCCCC));
             icon.setBorderWidth(2.0f);
 
-            pv.layout.addView(icon);
+            holder.layout.addView(icon);
 
             Picasso.get()
                     .load(mi.getIconUrl())
                     .placeholder(R.drawable.load_24dp)
                     .into(icon);
 
-            idToMsgItem.put(icon.getId(), mi);
             icon.setOnClickListener(v -> {
                 Intent i1 = new Intent(v.getContext(), UserDetailActivity.class);
                 i1.putExtra("NAME", userToName.get(mi.getUrl()));
@@ -127,10 +110,10 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 v.getContext().startActivity(i1);
             });
         }
-        pv.layout.invalidate();
+        holder.layout.invalidate();
     }
 
-    public void originalOnBind(@NonNull itemViewHolder holder, int i) {
+    private void originalOnBind(@NonNull itemViewHolder holder, int i) {
 
         holder.item = cardItems.get(i);
 
@@ -167,12 +150,6 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                     .centerCrop()
                     .into(holder.header);
         }
-
-        holder.view.setOnClickListener(v -> {
-            if (null != mListener) {
-                mListener.onListFragmentInteraction(holder.item);
-            }
-        });
     }
 
     @Override
@@ -196,7 +173,7 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         this.lmi = lmi;
     }
 
-    public class itemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class itemViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.item_header_image) ImageView header;
         @BindView(R.id.item_card_avatar) ImageView userIcon;
@@ -216,12 +193,6 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             view = itemView;
             div.setVisibility(View.GONE);
             detail.setVisibility(View.GONE);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            itemClickListener.onCardClick(v, item);
         }
     }
 
@@ -235,11 +206,8 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         @BindView(R.id.frag_post_icon_nothing)
         TextView nothing;
 
-        public MessageItem mi = new MessageItem("","","","");
-
-        public final Context ctx;
-
-        public ViewGroup.LayoutParams param;
+        final Context ctx;
+        ViewGroup.LayoutParams param;
 
         public planViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -251,9 +219,5 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     public interface OnBottomReachedListener{
         void onBottomReached(int pos);
-    }
-
-    public interface OnLastShownListener{
-        void onLastShown(int pos);
     }
 }

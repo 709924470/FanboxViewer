@@ -1,11 +1,8 @@
 package cn.settile.fanboxviewer;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,22 +23,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
-import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
 import cn.settile.fanboxviewer.Adapters.Fragment.MainTabAdapter;
-import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.AllPostsRecyclerViewAdapter;
+import cn.settile.fanboxviewer.Fragments.MainTab.AllPostFragment;
+import cn.settile.fanboxviewer.Fragments.MainTab.MessageFragment;
+import cn.settile.fanboxviewer.Fragments.MainTab.SubscPostFragment;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.FanboxParser;
-import cn.settile.fanboxviewer.TabFragments.MainTab.AllPostFragment;
-import cn.settile.fanboxviewer.TabFragments.MainTab.MessageFragment;
-import cn.settile.fanboxviewer.TabFragments.MainTab.SubscPostFragment;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AllPostFragment.OnListFragmentInteractionListener,
-        SubscPostFragment.OnListFragmentInteractionListener, MessageFragment.OnListFragmentInteractionListener {
-    public static MainActivity c;
+        implements NavigationView.OnNavigationItemSelectedListener {
+    MainActivity c;
     static boolean flag = false;
 
     AllPostFragment allPostFragment;
@@ -72,6 +65,7 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
+
         //TODO: IMAGE Editing for club card.
         navigationView.getMenu().getItem(1).setEnabled(false);
 
@@ -220,15 +214,5 @@ public class MainActivity extends AppCompatActivity
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public void onListFragmentInteraction(MessageItem item) {
-
-    }
-
-    @Override
-    public void onListFragmentInteraction(CardItem cardItem) {
-
     }
 }

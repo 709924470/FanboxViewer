@@ -13,19 +13,16 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
+import cn.settile.fanboxviewer.Fragments.MainTab.MessageFragment;
 import cn.settile.fanboxviewer.R;
-import cn.settile.fanboxviewer.TabFragments.MainTab.MessageFragment;
-import cn.settile.fanboxviewer.TabFragments.MainTab.MessageFragment.OnListFragmentInteractionListener;
 
 public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecyclerViewAdapter.ViewHolder> {
 
     private List<MessageItem> messageItems;
-    private final OnListFragmentInteractionListener mListener;
     private final MessageFragment parentView;
 
-    public MessageRecyclerViewAdapter(MessageFragment mf, List<MessageItem> items, OnListFragmentInteractionListener listener) {
+    public MessageRecyclerViewAdapter(MessageFragment mf, List<MessageItem> items) {
         messageItems = items;
-        mListener = listener;
         this.parentView = mf;
     }
 
@@ -57,17 +54,8 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
         Picasso.get()
                 .load(messageItems.get(position).getIconUrl())
                 .placeholder(R.drawable.load_24dp)
-//                .resize(200, 200)
                 .fit().centerCrop()
                 .into(holder.mImgView);
-
-        holder.mView.setOnClickListener(v -> {
-            if (null != mListener) {
-                // Notify the active callbacks interface (the activity, if the
-                // fragment is attached to one) that an item has been selected.
-                mListener.onListFragmentInteraction(holder.mItem);
-            }
-        });
     }
 
     @Override

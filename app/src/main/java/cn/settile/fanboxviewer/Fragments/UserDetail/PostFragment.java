@@ -1,10 +1,12 @@
-package cn.settile.fanboxviewer.Fragments.MainTab;
+package cn.settile.fanboxviewer.Fragments.UserDetail;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,47 +17,51 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
-import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.SubscribedPostsRVA;
+import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
+import cn.settile.fanboxviewer.Adapters.RecyclerView.CardRecyclerViewAdapterBase;
 import cn.settile.fanboxviewer.Network.FanboxParser;
 import cn.settile.fanboxviewer.R;
 
 
-public class SubscPostFragment extends Fragment {
-
-    private int lastVisibleItem;
+//@Slf4j
+public class PostFragment extends Fragment {
 
     private View v;
-    public Context c;
+    public Activity c;
     private RecyclerView recyclerView;
-    private SubscribedPostsRVA adapter;
+    public CardRecyclerViewAdapterBase adapter;
     private SwipeRefreshLayout srl;
-    public SubscPostFragment() {
+
+    public PostFragment() {
     }
 
-    public static SubscPostFragment newInstance() {
-        SubscPostFragment fragment = new SubscPostFragment();
+    public static PostFragment newInstance() {
+        PostFragment fragment = new PostFragment();
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        c = getActivity();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        android.view.View inflate = inflater.inflate(R.layout.fragment_main_post_list, container, false);
+        View inflate = inflater.inflate(R.layout.fragment_main_post_list, container, false);
 
         v = inflate;
-        c = inflate.getContext();
 
         recyclerView = v.findViewById(R.id.frag_post_list);
+
         LinearLayoutManager llm = new LinearLayoutManager(c);
         recyclerView.setLayoutManager(llm);
 
-        adapter = new SubscribedPostsRVA();
+        adapter = new CardRecyclerViewAdapterBase();
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(v.getContext(), R.anim.layout_default));
+        recyclerView.scheduleLayoutAnimation();
 
         srl = v.findViewById(R.id.frag_post_refresh);
 
@@ -65,20 +71,22 @@ public class SubscPostFragment extends Fragment {
             }
             srl.setRefreshing(true);
             Executors.newSingleThreadExecutor().submit(() -> {
-                List<CardItem> lci = FanboxParser.getSupportingPosts(false, c);
+                List<CardItem> lci = FanboxParser.getAllPosts(false, c);
+                List<MessageItem> lmi = FanboxParser.getPlans(false);
                 getActivity().runOnUiThread(() -> srl.setRefreshing(false));
                 if (lci != null) {
-                    updateList(lci, false);
+                    updateList(lci, lmi, false);
                 }
                 return null;
             });
         });
 
         srl.setOnRefreshListener(() -> Executors.newSingleThreadExecutor().submit(() -> {
-            List<CardItem> lci = FanboxParser.getSupportingPosts(true, c);
+            List<CardItem> lci = FanboxParser.getAllPosts(true, c);
+            List<MessageItem> lmi = FanboxParser.getPlans(false);
             getActivity().runOnUiThread(() -> srl.setRefreshing(false));
             if (lci != null) {
-                updateList(lci, true);
+                updateList(lci, lmi, true);
             }
             return null;
         }));
@@ -86,21 +94,23 @@ public class SubscPostFragment extends Fragment {
         return inflate;
     }
 
-    public void updateList(List<CardItem> lci, boolean refreshAll) {
+    public void updateList(List<CardItem> lci, List<MessageItem> lmi, boolean refreshAll) {
         if (v == null || c == null) {
             return;
         }
         if (recyclerView == null) {
             recyclerView = v.findViewById(R.id.frag_msg_list);
             recyclerView.setLayoutManager(new LinearLayoutManager(c));
-            adapter = new SubscribedPostsRVA();
-            adapter.updateItems(lci, true);
+            adapter = new CardRecyclerViewAdapterBase();
             recyclerView.setAdapter(adapter);
         } else {
-            getActivity().runOnUiThread(() -> {
-                adapter.updateItems(lci, refreshAll);
-            });
+            getActivity().runOnUiThread(() -> adapter.updateItems(lci, refreshAll));
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
     }
 
     @Override

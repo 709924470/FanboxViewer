@@ -1,12 +1,12 @@
-package cn.settile.fanboxviewer.TabFragments.MainTab;
+package cn.settile.fanboxviewer.Fragments.MainTab;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -53,14 +53,16 @@ public class AllPostFragment extends Fragment {
         android.view.View inflate = inflater.inflate(R.layout.fragment_main_post_list, container, false);
 
         v = inflate;
-//        c = inflate.getContext();
 
         recyclerView = v.findViewById(R.id.frag_post_list);
+
         LinearLayoutManager llm = new LinearLayoutManager(c);
         recyclerView.setLayoutManager(llm);
 
         adapter = new AllPostsRecyclerViewAdapter(this, new ArrayList<>());
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(v.getContext(), R.anim.layout_default));
+        recyclerView.scheduleLayoutAnimation();
 
         srl = v.findViewById(R.id.frag_post_refresh);
 

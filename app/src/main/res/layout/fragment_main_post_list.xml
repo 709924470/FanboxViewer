@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TabFragments.MainTab.AllPostFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragments.MainTab.AllPostFragment">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/frag_post_refresh"
@@ -14,6 +15,8 @@
             android:id="@+id/frag_post_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layoutAnimation="@anim/layout_default"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:listitem="@layout/component_item_card">
 
         </androidx.recyclerview.widget.RecyclerView>

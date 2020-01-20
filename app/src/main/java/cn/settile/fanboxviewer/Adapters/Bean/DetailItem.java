@@ -1,15 +1,12 @@
 package cn.settile.fanboxviewer.Adapters.Bean;
 
-import android.net.Uri;
-
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 public class DetailItem {
     public enum Type {
         IMAGE,
-        TEXT;
+        TEXT
     }
 
     @Getter
@@ -20,14 +17,9 @@ public class DetailItem {
     @Setter
     public String content;
 
-    @Getter
-    @Setter
-    public Uri imageUri;
-
-    public DetailItem(Type type, String content, Uri imageUri) {
+    public DetailItem(Type type, String content) {
         this.type = type;
         this.content = content;
-        this.imageUri = imageUri;
     }
 
     @Override
