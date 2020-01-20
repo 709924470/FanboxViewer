@@ -130,4 +130,6 @@
     <string name="user_info">Detail</string>
     <string name="user_posts">Posts</string>
     <string name="empty" translatable="false">.</string>
+    <string name="title_activity_post_detail" translatable="false">PostDetailActivity</string>
+    <string name="plan_formatting">Support at least %d yen/month to unlock</string>
 </resources>

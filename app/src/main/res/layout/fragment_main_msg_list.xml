@@ -16,7 +16,7 @@
         android:layoutAnimation="@anim/layout_default"
         app:layoutManager="LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".Fragments.MainTab.MessageFragment"
+        tools:context=".Fragments.Main.MessageFragment"
         tools:listitem="@layout/component_item_message" />
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

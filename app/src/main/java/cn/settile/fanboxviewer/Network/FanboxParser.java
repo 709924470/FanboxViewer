@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
+import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
 import cn.settile.fanboxviewer.R;
 import cn.settile.fanboxviewer.Util.Constants;
@@ -259,7 +260,7 @@ public class FanboxParser {
                     }
                 }
 
-                String url = "https://www.pixiv.net/fanbox/creator/" + userId + "/post/" + json.getString("id");
+                String url = "https://fanbox.pixiv.net/api/post.info?postId=" + json.getString("id");
 
                 lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan));
             }
@@ -337,7 +338,7 @@ public class FanboxParser {
                     }
                 }
 
-                String url = "https://www.pixiv.net/fanbox/creator/" + userId + "/post/" + json.getString("id");
+                String url = "https://fanbox.pixiv.net/api/post.info?postId=" + json.getString("id");
 
                 lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan));
             }
@@ -351,6 +352,56 @@ public class FanboxParser {
             log.error("EXCEPTION: " , ex);
             return null;
         }
+    }
+
+    public static List<DetailItem> getPostDetail(String url, Context c) throws Exception{
+        List<DetailItem> items = new ArrayList<>();
+
+        JSONObject req = getJSON(url);
+
+        JSONObject body = req.getJSONObject("body");
+        if(!body.getString("restrictedFor").equals("null")){
+            items.add(new DetailItem(DetailItem.Type.TEXT, String.format(c.getString(R.string.plan_formatting), body.getInt("feeRequired"))));
+            items.add(new DetailItem(DetailItem.Type.IMAGE, "false"));
+            return items;
+        }
+        if(body.getString("type").equals("image")){
+            JSONArray images = body.getJSONObject("body").getJSONArray("images");
+
+            for(int i = 0; i < images.length(); i++){
+                DetailItem tmp = new DetailItem(DetailItem.Type.IMAGE, images.getJSONObject(i).getString("thumbnailUrl"));
+                tmp.setExtra(images.getJSONObject(i).getString("originalUrl"));
+                items.add(tmp);
+            }
+            items.add(new DetailItem(DetailItem.Type.TEXT, body.getString("text")));
+        }
+        else if(body.getString("type").equals("article")){
+            JSONArray blocks = body.getJSONObject("body").getJSONArray("blocks");
+
+            for(int i = 0; i < blocks.length(); i++){
+                JSONObject block = blocks.getJSONObject(i);
+                if(block.getString("type").equals("p")){
+                    items.add(new DetailItem(DetailItem.Type.TEXT, block.getString("text")));
+                }
+                else if(block.getString("type").equals("image")){
+                    String imageId = block.getString("imageId");
+                    JSONObject img = body.getJSONObject("body").getJSONObject("imageMap").getJSONObject(imageId);
+
+                    DetailItem tmp = new DetailItem(DetailItem.Type.IMAGE, img.getString("thumbnailUrl"));
+                    tmp.setExtra(img.getString("originalUrl"));
+                    items.add(tmp);
+                }
+                else if(block.getString("type").equals("file")){
+                    String fileId = block.getString("fileId");
+
+                    JSONObject file = body.getJSONObject("body").getJSONObject("fileMap").getJSONObject(fileId);
+                    DetailItem tmp = new DetailItem(DetailItem.Type.OTHER, file.getString("url"));
+                    tmp.setExtra(file.getInt("size"));
+                    items.add(tmp);
+                }
+            }
+        }
+        return items;
     }
 
     private static JSONObject getJSON(String url, String refer){

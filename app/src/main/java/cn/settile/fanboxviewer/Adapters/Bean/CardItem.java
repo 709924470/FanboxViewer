@@ -8,6 +8,7 @@ import lombok.ToString;
 public class CardItem {
     @Getter
     @Setter
+    @ToString.Include
     private String iconUrl, title, createTime, plan, headerUrl, url, desc, creator;
 
     public CardItem(String iconUrl, String headerUrl, String url,

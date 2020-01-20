@@ -12,21 +12,21 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import cn.settile.fanboxviewer.Adapters.RecyclerView.UserDetail.UserDetailAdapter;
+import cn.settile.fanboxviewer.Adapters.RecyclerView.UserDetail.UserDetailRecyclerViewAdapter;
 import cn.settile.fanboxviewer.R;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class UserDetail extends Fragment {
+public class UserDetailFragment extends Fragment {
 
     private View v;
     private Context c;
 
     RecyclerView rv = null;
-    public UserDetailAdapter uda = null;
+    public UserDetailRecyclerViewAdapter uda = null;
 
 
-    public UserDetail(){
+    public UserDetailFragment(){
     }
 
     public int getFragID(){
@@ -50,13 +50,13 @@ public class UserDetail extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(c);
         rv.setLayoutManager(llm);
 
-        uda = new UserDetailAdapter();
+        uda = new UserDetailRecyclerViewAdapter();
         rv.setAdapter(uda);
 
         return view;
     }
 
-    public static UserDetail newInstance(){
-        return new UserDetail();
+    public static UserDetailFragment newInstance(){
+        return new UserDetailFragment();
     }
 }

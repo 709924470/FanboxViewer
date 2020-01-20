@@ -36,6 +36,7 @@ dependencies {
     implementation 'org.json:json:20190722'
     implementation 'com.makeramen:roundedimageview:2.3.0'
     implementation 'com.jakewharton:butterknife:10.2.0'
+    implementation 'com.veinhorn.scrollgalleryview:library:1.2.8'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
     implementation 'org.slf4j:slf4j-android:1.7.29'

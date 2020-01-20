@@ -9,12 +9,12 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDetailTabAdapter extends FragmentStatePagerAdapter {
+public class MainFragmentAdapter extends FragmentStatePagerAdapter {
     private final List<Fragment> myFragments = new ArrayList<>();
     private final List<String> myFragmentTitles = new ArrayList<>();
     private Context context;
 
-    public UserDetailTabAdapter(FragmentManager fm, Context context) {
+    public MainFragmentAdapter(FragmentManager fm, Context context) {
         super(fm);
         this.context = context;
     }

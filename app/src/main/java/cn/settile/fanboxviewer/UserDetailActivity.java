@@ -24,9 +24,9 @@ import java.util.concurrent.Future;
 
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
-import cn.settile.fanboxviewer.Adapters.Fragment.UserDetailTabAdapter;
+import cn.settile.fanboxviewer.Adapters.Fragment.UserDetailFragmentAdapter;
 import cn.settile.fanboxviewer.Fragments.UserDetail.PostFragment;
-import cn.settile.fanboxviewer.Fragments.UserDetail.UserDetail;
+import cn.settile.fanboxviewer.Fragments.UserDetail.UserDetailFragment;
 import cn.settile.fanboxviewer.Network.FanboxParser;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +36,7 @@ public class UserDetailActivity extends AppCompatActivity {
     private String url;
     private String iconUrl;
     private String userName;
-    private UserDetail userDetail;
+    private UserDetailFragment userDetail;
     private PostFragment posts;
     List<DetailItem> details = null;
 
@@ -66,9 +66,9 @@ public class UserDetailActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.detail_tab_layout);
         ViewPager viewPager = findViewById(R.id.detail_pager);
 
-        UserDetailTabAdapter adapter = new UserDetailTabAdapter(getSupportFragmentManager(), this);
+        UserDetailFragmentAdapter adapter = new UserDetailFragmentAdapter(getSupportFragmentManager(), this);
 
-        userDetail = UserDetail.newInstance();
+        userDetail = UserDetailFragment.newInstance();
         adapter.addFragment(userDetail, getResources().getString(R.string.user_info));
 
         posts = PostFragment.newInstance();

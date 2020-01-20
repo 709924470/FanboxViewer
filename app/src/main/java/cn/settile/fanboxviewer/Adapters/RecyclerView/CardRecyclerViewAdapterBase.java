@@ -1,6 +1,6 @@
 package cn.settile.fanboxviewer.Adapters.RecyclerView;
 
-import android.util.Log;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.Common;
+import cn.settile.fanboxviewer.PostDetailActivity;
 import cn.settile.fanboxviewer.R;
 
 public class CardRecyclerViewAdapterBase extends RecyclerView.Adapter<CardRecyclerViewAdapterBase.PostViewHolder> {
@@ -108,6 +108,17 @@ public class CardRecyclerViewAdapterBase extends RecyclerView.Adapter<CardRecycl
                     .centerCrop()
                     .into(holder.header);
         }
+        holder.view.setOnClickListener(v -> {
+            Intent i1 = new Intent(v.getContext(), PostDetailActivity.class);
+            i1.putExtra("NAME", lci.get(position).getCreator());
+            i1.putExtra("ICON", lci.get(position).getIconUrl());
+            i1.putExtra("URL", lci.get(position).getUrl());
+            i1.putExtra("COVER", lci.get(position).getHeaderUrl());
+            i1.putExtra("TITLE", lci.get(position).getTitle());
+            i1.putExtra("TIME", lci.get(position).getCreateTime());
+            i1.putExtra("FEE", lci.get(position).getPlan());
+            v.getContext().startActivity(i1);
+        });
     }
 
     @Override
@@ -116,11 +127,9 @@ public class CardRecyclerViewAdapterBase extends RecyclerView.Adapter<CardRecycl
     }
 
     public class PostViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.item_header_image)
-        ImageView header;
+        @BindView(R.id.item_header_image) ImageView header;
         @BindView(R.id.item_card_avatar) ImageView userIcon;
-        @BindView(R.id.item_card_user_name)
-        TextView userName;
+        @BindView(R.id.item_card_user_name) TextView userName;
         @BindView(R.id.item_card_create_time) TextView time;
         @BindView(R.id.item_card_title) TextView title;
         @BindView(R.id.item_card_desc) TextView desc;

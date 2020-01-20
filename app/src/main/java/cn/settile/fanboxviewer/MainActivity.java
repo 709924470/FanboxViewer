@@ -23,10 +23,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import cn.settile.fanboxviewer.Adapters.Fragment.MainTabAdapter;
-import cn.settile.fanboxviewer.Fragments.MainTab.AllPostFragment;
-import cn.settile.fanboxviewer.Fragments.MainTab.MessageFragment;
-import cn.settile.fanboxviewer.Fragments.MainTab.SubscPostFragment;
+import cn.settile.fanboxviewer.Adapters.Fragment.MainFragmentAdapter;
+import cn.settile.fanboxviewer.Fragments.Main.AllPostFragment;
+import cn.settile.fanboxviewer.Fragments.Main.MessageFragment;
+import cn.settile.fanboxviewer.Fragments.Main.SubscPostFragment;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.FanboxParser;
 import okhttp3.Request;
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity
 
         TabLayout tl = findViewById(R.id.main_page_tab);
 
-        MainTabAdapter tabPageAdapter = new MainTabAdapter(getSupportFragmentManager(), this);
+        MainFragmentAdapter tabPageAdapter = new MainFragmentAdapter(getSupportFragmentManager(), this);
 
         allPostFragment = AllPostFragment.newInstance();
         tabPageAdapter.addFragment(allPostFragment, getResources().getString(R.string.tab_posts));

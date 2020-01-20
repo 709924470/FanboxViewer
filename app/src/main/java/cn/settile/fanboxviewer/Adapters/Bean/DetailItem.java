@@ -6,7 +6,8 @@ import lombok.Setter;
 public class DetailItem {
     public enum Type {
         IMAGE,
-        TEXT
+        TEXT,
+        OTHER
     }
 
     @Getter
@@ -16,6 +17,10 @@ public class DetailItem {
     @Getter
     @Setter
     public String content;
+
+    @Getter
+    @Setter
+    public Object extra;
 
     public DetailItem(Type type, String content) {
         this.type = type;

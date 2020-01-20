@@ -13,7 +13,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
-import cn.settile.fanboxviewer.Fragments.MainTab.MessageFragment;
+import cn.settile.fanboxviewer.Fragments.Main.MessageFragment;
 import cn.settile.fanboxviewer.R;
 
 public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecyclerViewAdapter.ViewHolder> {

@@ -18,18 +18,18 @@ import java.util.Objects;
 import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
 import cn.settile.fanboxviewer.R;
 
-public class DetailAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final int TYPE_IMAGE = 0;
     private final int TYPE_TEXT = 1;
 
     private List<DetailItem> detailItems;
 
-    public DetailAdapterBase(List<DetailItem> detailItems) {
+    public DetailRecyclerViewAdapterBase(List<DetailItem> detailItems) {
         this.detailItems = detailItems;
     }
 
-    public DetailAdapterBase() {
+    public DetailRecyclerViewAdapterBase() {
         this.detailItems = new ArrayList<>();
     }
 
@@ -70,6 +70,10 @@ public class DetailAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHol
         DetailItem detailItem = detailItems.get(position);
         if (TYPE_IMAGE == getItemType(position)){
             ImageVH ivh = (ImageVH) holder;
+            if(detailItem.content.equals("false")){
+                ivh.iv.setImageDrawable(holder.itemView.getResources().getDrawable(R.drawable.ic_lock_black_24dp));
+                return;
+            }
             Picasso.get()
                     .load(detailItem.content)
                     .placeholder(R.drawable.load_24dp)

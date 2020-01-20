@@ -24,8 +24,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
-import cn.settile.fanboxviewer.Fragments.MainTab.AllPostFragment;
+import cn.settile.fanboxviewer.Fragments.Main.AllPostFragment;
 import cn.settile.fanboxviewer.Network.Common;
+import cn.settile.fanboxviewer.PostDetailActivity;
 import cn.settile.fanboxviewer.R;
 import cn.settile.fanboxviewer.UserDetailActivity;
 import lombok.Setter;
@@ -150,6 +151,17 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                     .centerCrop()
                     .into(holder.header);
         }
+        holder.view.setOnClickListener(v -> {
+            Intent i1 = new Intent(v.getContext(), PostDetailActivity.class);
+            i1.putExtra("NAME", cardItems.get(i).getCreator());
+            i1.putExtra("ICON", cardItems.get(i).getIconUrl());
+            i1.putExtra("URL", cardItems.get(i).getUrl());
+            i1.putExtra("COVER", cardItems.get(i).getHeaderUrl());
+            i1.putExtra("TITLE", cardItems.get(i).getTitle());
+            i1.putExtra("TIME", cardItems.get(i).getCreateTime());
+            i1.putExtra("FEE", cardItems.get(i).getPlan());
+            v.getContext().startActivity(i1);
+        });
     }
 
     @Override
