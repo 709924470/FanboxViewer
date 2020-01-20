@@ -2,8 +2,8 @@ package cn.settile.fanboxviewer.Network;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,11 +13,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
-import cn.settile.fanboxviewer.Util.Constants;
 import cn.settile.fanboxviewer.R;
+import cn.settile.fanboxviewer.Util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -186,7 +187,7 @@ public class FanboxParser {
     }
 
     public static String getUrl(String userId){
-        return "https://www.pixiv.net/fanbox/creator/" + userId;
+        return "https://www.pixiv.net/ajax/fanbox/creator?userId=" + userId;
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -218,7 +219,6 @@ public class FanboxParser {
                 supporting = tmp.getJSONArray("items");
                 supportingNext = tmp.getString("nextUrl");
             }
-            tmp = null;
 
             for (int i = 0; i < post.length(); i++) {
                 JSONObject json = post.getJSONObject(i);
@@ -273,10 +273,90 @@ public class FanboxParser {
         }
     }
 
-    private static JSONObject getJSON(String url) {
+    @SuppressLint("SimpleDateFormat")
+    public static HashMap<Integer, Object> getUserPosts(@NotNull String userId, String useUrl, @NotNull Context c) {
+        try {
+//            android.util.Log.d("getPosts", (refresh ? "t" : "f") + (all ? "t" : "f"));
+
+            List<CardItem> lci = new ArrayList<>();
+
+            JSONArray posts;
+            JSONObject tmp;
+
+            String nextUrl;
+
+            if(Objects.equals(useUrl, null)){
+                tmp = getJSON(getUrl(userId));
+                tmp = tmp.getJSONObject("body");
+                tmp = tmp.getJSONObject("post");
+                posts = tmp.getJSONArray("items");
+                nextUrl = tmp.getString("nextUrl");
+            }else {
+                String refer = "https://www.pixiv.net/fanbox/creator/" + userId + "/post";
+                tmp = getJSON(useUrl, refer);
+                tmp = tmp.getJSONObject("body");
+                posts = tmp.getJSONArray("items");
+                nextUrl = tmp.getString("nextUrl");
+            }
+
+            for (int i = 0; i < posts.length(); i++) {
+                JSONObject json = posts.getJSONObject(i);
+//                android.util.Log.d("getPosts", i + " -> " + json.toString());
+                String title = json.getString("title");
+                String desc = json.getString("excerpt");
+                int fee = json.getInt("feeRequired");
+                String plan = fee == 0 ? c.getString(R.string.plan_public) : " ¥" + fee + " ";
+
+                JSONObject user = json.getJSONObject("user");
+                String userName = user.getString("name");
+
+                String iconUrl = user.getString("iconUrl");
+                if (userToIcon.get(userId) == null) {
+                    userToIcon.put(userId, iconUrl);
+                } else {
+                    iconUrl = userToIcon.get(userId);
+                }
+
+                if (userToName.get(userId) == null) {
+                    userToName.put(userId, userName);
+                }
+
+                String date = json.getString("updatedDatetime");
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
+                SimpleDateFormat sdf = new SimpleDateFormat(c.getString(R.string.date_formatting));
+                date = sdf.format(df.parse(date));
+
+                String headerUrl = json.getString("coverImageUrl");
+                if(headerUrl == null || headerUrl.equals("null")){
+                    JSONObject body = json.optJSONObject("body");
+                    if(body != null){
+                        JSONArray image = body.optJSONArray("images");
+                        if(image != null){
+                            headerUrl = image.getJSONObject(0).getString("thumbnailUrl");
+                        }
+                    }
+                }
+
+                String url = "https://www.pixiv.net/fanbox/creator/" + userId + "/post/" + json.getString("id");
+
+                lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan));
+            }
+
+            HashMap<Integer, Object> result = new HashMap<>();
+            result.put(0, nextUrl);
+            result.put(1, lci);
+
+            return result;
+        } catch (Exception ex) {
+            log.error("EXCEPTION: " , ex);
+            return null;
+        }
+    }
+
+    private static JSONObject getJSON(String url, String refer){
         Request req = new Request.Builder()
                 .url(url)
-                .addHeader("Refer", "https://www.pixiv.net/fanbox/")
+                .addHeader("Refer", refer)
                 .addHeader("Origin", "https://www.pixiv.net")
                 .build();
         try (Response resp = Common.client.newCall(req).execute()) {
@@ -287,5 +367,9 @@ public class FanboxParser {
             log.error("EXCEPTION: " , ex);
             return null;
         }
+    }
+
+    private static JSONObject getJSON(String url) {
+        return getJSON(url, "https://www.pixiv.net/fanbox/");
     }
 }

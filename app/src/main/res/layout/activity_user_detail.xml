@@ -18,7 +18,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="190dp"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:toolbarId="@id/detail_toolBar">
@@ -38,8 +38,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
+                android:fitsSystemWindows="true"
                 android:gravity="bottom|start"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingBottom="4dp">
 
                 <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/detail_icon"
@@ -57,35 +59,25 @@
                     app:riv_tile_mode="clamp"
                     app:srcCompat="@mipmap/ic_launcher_round" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:id="@+id/detail_user_name"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        android:paddingTop="@dimen/nav_header_vertical_spacing"
+                        android:text="username"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-                        <TextView
-                            android:id="@+id/detail_user_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="@dimen/nav_header_vertical_spacing"
-                            android:text="username"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-                        <TextView
-                            android:id="@+id/detail_user_id"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="userid" />
-                    </LinearLayout>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/detail_user_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="userid" />
+                </LinearLayout>
 
             </LinearLayout>
 

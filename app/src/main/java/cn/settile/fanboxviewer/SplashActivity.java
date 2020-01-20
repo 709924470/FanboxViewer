@@ -5,20 +5,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.CookieManager;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.FanboxParser;
@@ -108,6 +106,8 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         Common.client = new OkHttpClient.Builder()
                 .cookieJar(new WebViewCookieHandler())
                 .cache(cache)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
                 .addInterceptor(chain -> {
                     final Request orig = chain.request();
                     final Request withCookie = orig.newBuilder()

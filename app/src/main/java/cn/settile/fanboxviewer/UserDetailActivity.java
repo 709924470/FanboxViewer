@@ -17,13 +17,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
 import cn.settile.fanboxviewer.Adapters.Fragment.UserDetailTabAdapter;
-import cn.settile.fanboxviewer.Fragments.MainTab.SubscPostFragment;
+import cn.settile.fanboxviewer.Fragments.UserDetail.PostFragment;
 import cn.settile.fanboxviewer.Fragments.UserDetail.UserDetail;
 import cn.settile.fanboxviewer.Network.FanboxParser;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +37,7 @@ public class UserDetailActivity extends AppCompatActivity {
     private String iconUrl;
     private String userName;
     private UserDetail userDetail;
-    private SubscPostFragment posts;
+    private PostFragment posts;
     List<DetailItem> details = null;
 
     @Override
@@ -43,6 +45,7 @@ public class UserDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_detail);
         Toolbar toolbar = findViewById(R.id.detail_toolBar);
+        toolbar.setVisibility(View.GONE);
 
         setTitle("");
 
@@ -51,8 +54,6 @@ public class UserDetailActivity extends AppCompatActivity {
         this.url = intent.getStringExtra("URL");
         this.userName = intent.getStringExtra("NAME");
         this.iconUrl = intent.getStringExtra("ICON");
-//        toolbar.setTitle(userName);
-//        toolbar.setSubtitle(url);
 
         Picasso.get()
                 .load(iconUrl)
@@ -70,7 +71,7 @@ public class UserDetailActivity extends AppCompatActivity {
         userDetail = UserDetail.newInstance();
         adapter.addFragment(userDetail, getResources().getString(R.string.user_info));
 
-        posts = SubscPostFragment.newInstance();
+        posts = PostFragment.newInstance();
         adapter.addFragment(posts, getResources().getString(R.string.posts));
 
         viewPager.setAdapter(adapter);
@@ -109,7 +110,17 @@ public class UserDetailActivity extends AppCompatActivity {
                 details.add(new DetailItem(DetailItem.Type.TEXT, description));
 
                 String coverImage = creator.getString("coverImageUrl");
+
                 String uid = user.getString("userId");
+                posts.setUserID(uid);
+                Executors.newSingleThreadExecutor().submit(() -> {
+                            HashMap<Integer, Object> result = FanboxParser.getUserPosts(uid, null, this);
+                            List<CardItem> lci = (List<CardItem>) result.get(1);
+                            posts.updateList(lci, true);
+                            posts.nextUrl = (String) result.get(0);
+                            return null;
+                        });
+
                 String name = user.getString("name");
                 String iconUrl = user.getString("iconUrl");
 

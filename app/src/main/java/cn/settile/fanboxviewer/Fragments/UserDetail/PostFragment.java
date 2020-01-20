@@ -13,14 +13,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
-import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.CardRecyclerViewAdapterBase;
 import cn.settile.fanboxviewer.Network.FanboxParser;
 import cn.settile.fanboxviewer.R;
+import lombok.Setter;
 
 
 //@Slf4j
@@ -31,6 +32,9 @@ public class PostFragment extends Fragment {
     private RecyclerView recyclerView;
     public CardRecyclerViewAdapterBase adapter;
     private SwipeRefreshLayout srl;
+    @Setter
+    public String userID;
+    public String nextUrl = null;
 
     public PostFragment() {
     }
@@ -71,22 +75,24 @@ public class PostFragment extends Fragment {
             }
             srl.setRefreshing(true);
             Executors.newSingleThreadExecutor().submit(() -> {
-                List<CardItem> lci = FanboxParser.getAllPosts(false, c);
-                List<MessageItem> lmi = FanboxParser.getPlans(false);
+                HashMap<Integer, Object> result = FanboxParser.getUserPosts(userID, nextUrl, getContext());
+                nextUrl = (String) result.get(0);
+                List<CardItem> lci = (List<CardItem>) result.get(1);
                 getActivity().runOnUiThread(() -> srl.setRefreshing(false));
                 if (lci != null) {
-                    updateList(lci, lmi, false);
+                    updateList(lci, false);
                 }
                 return null;
             });
         });
 
         srl.setOnRefreshListener(() -> Executors.newSingleThreadExecutor().submit(() -> {
-            List<CardItem> lci = FanboxParser.getAllPosts(true, c);
-            List<MessageItem> lmi = FanboxParser.getPlans(false);
+            HashMap<Integer, Object> result = FanboxParser.getUserPosts(userID, null, getContext());
+            nextUrl = (String) result.get(0);
+            List<CardItem> lci = (List<CardItem>) result.get(1);
             getActivity().runOnUiThread(() -> srl.setRefreshing(false));
             if (lci != null) {
-                updateList(lci, lmi, true);
+                updateList(lci, true);
             }
             return null;
         }));
@@ -94,8 +100,8 @@ public class PostFragment extends Fragment {
         return inflate;
     }
 
-    public void updateList(List<CardItem> lci, List<MessageItem> lmi, boolean refreshAll) {
-        if (v == null || c == null) {
+    public void updateList(List<CardItem> lci, boolean refreshAll) {
+        if (v == null || c == null || userID == null) {
             return;
         }
         if (recyclerView == null) {
