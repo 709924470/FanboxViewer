@@ -10,10 +10,9 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/post_detail_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="196dp"
+        android:layout_height="226dp"
         android:fitsSystemWindows="true"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:elevation="4dp">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -26,8 +25,9 @@
             <ImageView
                 android:id="@+id/post_detail_header"
                 android:layout_width="match_parent"
-                android:layout_height="130dp"
+                android:layout_height="160dp"
                 android:layout_gravity="top"
+                android:elevation="4dp"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"

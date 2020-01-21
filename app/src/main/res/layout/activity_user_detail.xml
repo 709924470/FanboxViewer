@@ -9,7 +9,7 @@
     tools:context=".UserDetailActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
+        android:id="@+id/user_detail_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
@@ -28,6 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="130dp"
                 android:layout_gravity="top"
+                android:elevation="4dp"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"

@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
 
         CookieSyncManager.createInstance(this);
 
-        WebView wv = findViewById(R.id.login_webview);
+        WebView wv = findViewById(R.id.login_web_view);
 
         if(Build.VERSION.SDK_INT > 21)
             CookieManager.getInstance().setAcceptThirdPartyCookies(wv, true);
@@ -55,8 +55,8 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, url);
             if(url.equals("https://www.pixiv.net/")){
                 Log.d(TAG, "Done Loading");
-                Constants.cookie = CookieManager.getInstance().getCookie(url);
-                Log.d(TAG, Constants.cookie);
+                Constants.Cookie = CookieManager.getInstance().getCookie(url);
+                Log.d(TAG, Constants.Cookie);
                 CookieSyncManager.getInstance().sync();
                 setResult(Constants.loginResultCodes.USER);
                 finish();

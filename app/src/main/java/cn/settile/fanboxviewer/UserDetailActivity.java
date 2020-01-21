@@ -8,9 +8,12 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.palette.graphics.Palette;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -29,6 +32,8 @@ import cn.settile.fanboxviewer.Fragments.UserDetail.PostFragment;
 import cn.settile.fanboxviewer.Fragments.UserDetail.UserDetailFragment;
 import cn.settile.fanboxviewer.Network.FanboxParser;
 import lombok.extern.slf4j.Slf4j;
+
+import static cn.settile.fanboxviewer.Util.Util.toBitmap;
 
 @Slf4j
 public class UserDetailActivity extends AppCompatActivity {
@@ -129,10 +134,29 @@ public class UserDetailActivity extends AppCompatActivity {
                             .load(iconUrl)
                             .placeholder(R.drawable.load_24dp)
                             .into((ImageView) findViewById(R.id.detail_icon));
+
+                    ImageView header = findViewById(R.id.detail_header);
+                    View view = findViewById(R.id.user_detail_app_bar);
                     Picasso.get()
                             .load(coverImage)
                             .placeholder(R.drawable.load_24dp)
-                            .into((ImageView) findViewById(R.id.detail_header));
+                            .into(header, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    if(view == null){
+                                        return;
+                                    }
+                                    view.setBackgroundColor(
+                                            Palette.from(toBitmap(header.getDrawable()))
+                                                    .generate()
+                                                    .getDarkMutedColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimaryDark)));
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+
+                                }
+                            });
 
                     ((TextView) findViewById(R.id.detail_user_id)).setText(uid);
                     ((TextView) findViewById(R.id.detail_user_name)).setText(name);

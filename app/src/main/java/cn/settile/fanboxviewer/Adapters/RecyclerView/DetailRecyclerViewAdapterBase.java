@@ -1,5 +1,6 @@
 package cn.settile.fanboxviewer.Adapters.RecyclerView;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
+import cn.settile.fanboxviewer.ImageViewActivity;
 import cn.settile.fanboxviewer.R;
 
 public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -23,10 +25,14 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
     private final int TYPE_IMAGE = 0;
     private final int TYPE_TEXT = 1;
 
-    private List<DetailItem> detailItems;
+    private String detail = "undefined";
 
-    public DetailRecyclerViewAdapterBase(List<DetailItem> detailItems) {
-        this.detailItems = detailItems;
+    private List<DetailItem> detailItems;
+    public List<String> images = new ArrayList<>();
+
+    public DetailRecyclerViewAdapterBase(String detail) {
+        this.detail = detail;
+        this.detailItems = new ArrayList<>();
     }
 
     public DetailRecyclerViewAdapterBase() {
@@ -36,10 +42,16 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
     public void updateItems(List<DetailItem> detailItems){
         if(Objects.equals(detailItems, null) || detailItems.isEmpty()){
             this.detailItems.clear();
+            images.clear();
             notifyDataSetChanged();
             return;
         }
         this.detailItems = detailItems;
+        for(DetailItem di: detailItems){
+            if(di.getType() == DetailItem.Type.IMAGE){
+                images.add((String) di.extra);
+            }
+        }
         notifyDataSetChanged();
     }
 
@@ -78,6 +90,13 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
                     .load(detailItem.content)
                     .placeholder(R.drawable.load_24dp)
                     .into(ivh.iv);
+            ivh.iv.setOnClickListener(v -> {
+                Intent i = new Intent(holder.itemView.getContext(), ImageViewActivity.class);
+                i.putExtra("Position", position);
+                i.putStringArrayListExtra("Images", (ArrayList<String>) images);
+                i.putExtra("Details", detail);
+                holder.itemView.getContext().startActivity(i);
+            });
         }else if (TYPE_TEXT == getItemType(position)){
             TextVH tvh = (TextVH) holder;
             tvh.tv.setText(detailItem.getContent());

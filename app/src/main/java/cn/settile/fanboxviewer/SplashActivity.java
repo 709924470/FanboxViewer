@@ -94,8 +94,8 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         }
 
         CookieManager cm = CookieManager.getInstance();
-        Constants.cookie = cm.getCookie(getString(R.string.index));
-        if(Constants.cookie == null){
+        Constants.Cookie = cm.getCookie(getString(R.string.index));
+        if(Constants.Cookie == null){
             Intent i = new Intent(this, LoginActivity.class);
             startActivityForResult(i, Constants.requestCodes.LOGIN);
             return;
@@ -111,16 +111,17 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
                 .addInterceptor(chain -> {
                     final Request orig = chain.request();
                     final Request withCookie = orig.newBuilder()
-                            .addHeader("Cookie", Constants.cookie).build();
+                            .addHeader("Cookie", Constants.Cookie).build();
                     return chain.proceed(withCookie);
                 })
                 .build();
 
-        Picasso picasso = new Picasso.Builder(this)
-                .downloader(new OkHttp3Downloader(Common.client))
-//                .loggingEnabled(true)
-                .build();
-        Picasso.setSingletonInstance(picasso);
+        if(Common.singleton == null) {
+            Common.singleton = new Picasso.Builder(this)
+                    .downloader(new OkHttp3Downloader(Common.client))
+                    .build();
+            Picasso.setSingletonInstance(Common.singleton);
+        }
 
         Intent i = new Intent(this, MainActivity.class);
         Future<Boolean> loginFuture = isLoggedIn();

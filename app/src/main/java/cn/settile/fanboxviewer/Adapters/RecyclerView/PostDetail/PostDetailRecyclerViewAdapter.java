@@ -6,4 +6,7 @@ public class PostDetailRecyclerViewAdapter extends DetailRecyclerViewAdapterBase
     public PostDetailRecyclerViewAdapter(){
         super();
     }
+    public PostDetailRecyclerViewAdapter(String detail) {
+        super(detail);
+    }
 }

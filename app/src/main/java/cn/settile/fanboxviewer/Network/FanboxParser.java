@@ -373,7 +373,7 @@ public class FanboxParser {
                 tmp.setExtra(images.getJSONObject(i).getString("originalUrl"));
                 items.add(tmp);
             }
-            items.add(new DetailItem(DetailItem.Type.TEXT, body.getString("text")));
+            items.add(new DetailItem(DetailItem.Type.TEXT, body.getJSONObject("body").getString("text")));
         }
         else if(body.getString("type").equals("article")){
             JSONArray blocks = body.getJSONObject("body").getJSONArray("blocks");
@@ -411,7 +411,7 @@ public class FanboxParser {
                 .addHeader("Origin", "https://www.pixiv.net")
                 .build();
         try (Response resp = Common.client.newCall(req).execute()) {
-            Constants.cookie = resp.header("Set-Cookie", Constants.cookie);
+            Constants.Cookie = resp.header("Set-Cookie", Constants.Cookie);
             String response = resp.body().string();
             return new JSONObject(response);
         } catch (Exception ex) {

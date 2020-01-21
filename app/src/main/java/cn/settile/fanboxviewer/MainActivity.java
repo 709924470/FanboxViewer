@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity
                             .into((ImageView) findViewById(R.id.userIcon));
                 });
             } catch (Exception ex) {
-                Toast.makeText(c, "Can't get user info.", Toast.LENGTH_LONG).show();
+                runOnUiThread(() -> Toast.makeText(c, "Can't get user info.", Toast.LENGTH_LONG).show());
             }
         }).start();
     }
