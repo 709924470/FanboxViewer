@@ -24,10 +24,13 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static cn.settile.fanboxviewer.App.getContext;
+import static cn.settile.fanboxviewer.Network.Common.initClient;
+
 @Slf4j
 public class FanboxParser {
 
-    private static String messageUrl = "https://www.pixiv.net/ajax/fanbox/hhw/notification?page=1&skipConvertUnreadNotification=0&commentOnly=0";
+    private static String messageUrl = "https://fanbox.pixiv.net/api/bell.list?page=1&skipConvertUnreadNotification=0&commentOnly=0";
     private static String messageFirstPage = messageUrl;
     private static HashMap<String, String> userToIcon = new HashMap<>();
     public static HashMap<String, String> userToName = new HashMap<>();
@@ -50,7 +53,7 @@ public class FanboxParser {
     public static List<MessageItem> getMessages(Boolean refresh) {
         try {
             JSONObject notification = getJSON(refresh ? messageFirstPage : messageUrl);
-            messageUrl = "https://www.pixiv.net" + notification.getJSONObject("body").getString("nextUrl");
+            messageUrl = notification.getJSONObject("body").getString("nextUrl");
             if (notification == null) {
                 throw new Exception("Look previous error");
             }
@@ -99,11 +102,14 @@ public class FanboxParser {
         }
     }
 
+    public static int getUnreadMessage(){
+        JSONObject body = getJSON("https://fanbox.pixiv.net/api/bell.countUnread");
+        return body.optInt("count");
+    }
+
     public static boolean updateIndex() {
-//        android.util.Log.d("updateIndex","updating index...");
         try {
             index = getJSON("https://www.pixiv.net/ajax/fanbox/index");
-//            android.util.Log.d("updateIndex", "JSON fetched successfully");
             if (index == null) {
                 throw new Exception("Look previous error");
             }
@@ -194,7 +200,6 @@ public class FanboxParser {
     @SuppressLint("SimpleDateFormat")
     public static List<CardItem> getPosts(boolean refresh, boolean all, Context c) {
         try {
-//            android.util.Log.d("getPosts", (refresh ? "t" : "f") + (all ? "t" : "f"));
             if (refresh) {
                 if (!updateIndex()) {
                     throw new Exception("Look previous error");
@@ -207,6 +212,9 @@ public class FanboxParser {
             JSONObject tmp;
 
             if (all) {
+                if (Objects.equals(allPosts, null)){
+                    getPosts(true, true, getContext());
+                }
                 post = new JSONArray(allPosts.toString());
                 tmp = getJSON(allPostsNext);
                 tmp = tmp.getJSONObject("body");
@@ -214,6 +222,9 @@ public class FanboxParser {
                 allPostsNext = tmp.getString("nextUrl");
 
             } else {
+                if (Objects.equals(supporting, null)){
+                    getPosts(true, true, getContext());
+                }
                 post = new JSONArray(supporting.toString());
                 tmp = getJSON(supportingNext);
                 tmp = tmp.getJSONObject("body");
@@ -223,7 +234,6 @@ public class FanboxParser {
 
             for (int i = 0; i < post.length(); i++) {
                 JSONObject json = post.getJSONObject(i);
-//                android.util.Log.d("getPosts", i + " -> " + json.toString());
                 String title = json.getString("title");
                 String desc = json.getString("excerpt");
                 int fee = json.getInt("feeRequired");
@@ -410,6 +420,9 @@ public class FanboxParser {
                 .addHeader("Refer", refer)
                 .addHeader("Origin", "https://www.pixiv.net")
                 .build();
+        if (Objects.equals(Common.client, null)){
+            initClient();
+        }
         try (Response resp = Common.client.newCall(req).execute()) {
             Constants.Cookie = resp.header("Set-Cookie", Constants.Cookie);
             String response = resp.body().string();

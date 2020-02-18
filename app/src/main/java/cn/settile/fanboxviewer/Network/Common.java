@@ -11,17 +11,24 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
+import cn.settile.fanboxviewer.Util.Constants;
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static cn.settile.fanboxviewer.App.getContext;
 
 public class Common {
     public static OkHttpClient client = null;
     public static Picasso singleton = null;
     private static String TAG = "NetworkCommon";
+    private static File cacheDir = null;
 
     public static JSONObject userInfo = null;
 
@@ -46,6 +53,36 @@ public class Common {
         });
     }
 
+    public static void initClient(){
+        if (!Objects.equals(client, null)){
+            return;
+        }
+        Cache cache = new Cache(getContext().getCacheDir(), 1024 * 1024 * 8);
+        Common.client = new OkHttpClient.Builder()
+                .cookieJar(new WebViewCookieHandler())
+                .cache(cache)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .addInterceptor(chain -> {
+                    final Request orig = chain.request();
+                    final Request withCookie = orig.newBuilder()
+                            .addHeader("Cookie", Constants.Cookie).build();
+                    return chain.proceed(withCookie);
+                })
+                .build();Common.client = new OkHttpClient.Builder()
+                .cookieJar(new WebViewCookieHandler())
+                .cache(cache)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .addInterceptor(chain -> {
+                    final Request orig = chain.request();
+                    final Request withCookie = orig.newBuilder()
+                            .addHeader("Cookie", Constants.Cookie).build();
+                    return chain.proceed(withCookie);
+                })
+                .build();
+    }
+
     public static void downloadThread(String url, File file, Runnable success, Runnable fail){
         new Thread(() -> download(url, file, success, fail)).start();
     }
@@ -53,6 +90,10 @@ public class Common {
     public static boolean download(String url, File output, Runnable success, Runnable fail){
         if (client == null){
             Log.d(TAG, "client is not defined!");
+            initClient();
+            if(download(url, output, success, fail)){
+                return true;
+            }
             fail.run();
             return false;
         }

@@ -16,16 +16,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.FanboxParser;
-import cn.settile.fanboxviewer.Network.WebViewCookieHandler;
 import cn.settile.fanboxviewer.Util.Constants;
-import okhttp3.Cache;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
+import static cn.settile.fanboxviewer.Network.Common.initClient;
 import static cn.settile.fanboxviewer.Network.Common.isLoggedIn;
 
 public class SplashActivity extends AppCompatActivity implements Runnable {
@@ -101,20 +97,8 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
             return;
         }
 
-        Cache cache = new Cache(getCacheDir(), 1024 * 1024 * 8);
+        initClient();
 
-        Common.client = new OkHttpClient.Builder()
-                .cookieJar(new WebViewCookieHandler())
-                .cache(cache)
-                .readTimeout(5, TimeUnit.SECONDS)
-                .retryOnConnectionFailure(true)
-                .addInterceptor(chain -> {
-                    final Request orig = chain.request();
-                    final Request withCookie = orig.newBuilder()
-                            .addHeader("Cookie", Constants.Cookie).build();
-                    return chain.proceed(withCookie);
-                })
-                .build();
 
         if(Common.singleton == null) {
             Common.singleton = new Picasso.Builder(this)

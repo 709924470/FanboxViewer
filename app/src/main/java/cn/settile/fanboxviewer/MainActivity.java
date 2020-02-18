@@ -32,12 +32,15 @@ import cn.settile.fanboxviewer.Network.FanboxParser;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static cn.settile.fanboxviewer.Network.FanboxParser.getUnreadMessage;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     MainActivity c;
     static boolean flag = false;
 
     AllPostFragment allPostFragment;
+    private MainFragmentAdapter tabPageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +74,7 @@ public class MainActivity extends AppCompatActivity
 
         TabLayout tl = findViewById(R.id.main_page_tab);
 
-        MainFragmentAdapter tabPageAdapter = new MainFragmentAdapter(getSupportFragmentManager(), this);
+        tabPageAdapter = new MainFragmentAdapter(getSupportFragmentManager(), this);
 
         allPostFragment = AllPostFragment.newInstance();
         tabPageAdapter.addFragment(allPostFragment, getResources().getString(R.string.tab_posts));
@@ -139,6 +142,8 @@ public class MainActivity extends AppCompatActivity
                 String userName = user.getString("name");
                 String userId = user.getString("userId");
 
+                int unread = getUnreadMessage();
+
                 runOnUiThread(() -> {
                     TextView textView = findViewById(R.id.userName);
                     textView.setText(userName);
@@ -150,9 +155,13 @@ public class MainActivity extends AppCompatActivity
                             .placeholder(R.drawable.load_24dp)
                             .resize(200, 200)
                             .into((ImageView) findViewById(R.id.userIcon));
+
+                    if(unread != 0){
+
+                    }
                 });
             } catch (Exception ex) {
-                runOnUiThread(() -> Toast.makeText(c, "Can't get user info.", Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> Toast.makeText(getBaseContext(), "Can't get user info.\n" + ex.getMessage(), Toast.LENGTH_LONG).show());
             }
         }).start();
     }

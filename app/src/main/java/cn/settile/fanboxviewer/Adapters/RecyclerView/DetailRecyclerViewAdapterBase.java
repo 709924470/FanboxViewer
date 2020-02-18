@@ -29,6 +29,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
 
     private List<DetailItem> detailItems;
     public List<String> images = new ArrayList<>();
+    public List<String> thumbs = new ArrayList<>();
 
     public DetailRecyclerViewAdapterBase(String detail) {
         this.detail = detail;
@@ -43,6 +44,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         if(Objects.equals(detailItems, null) || detailItems.isEmpty()){
             this.detailItems.clear();
             images.clear();
+            thumbs.clear();
             notifyDataSetChanged();
             return;
         }
@@ -50,6 +52,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         for(DetailItem di: detailItems){
             if(di.getType() == DetailItem.Type.IMAGE){
                 images.add((String) di.extra);
+                thumbs.add(di.getContent());
             }
         }
         notifyDataSetChanged();
@@ -94,6 +97,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
                 Intent i = new Intent(holder.itemView.getContext(), ImageViewActivity.class);
                 i.putExtra("Position", position);
                 i.putStringArrayListExtra("Images", (ArrayList<String>) images);
+                i.putStringArrayListExtra("Thumbnails", (ArrayList<String>) thumbs);
                 i.putExtra("Details", detail);
                 holder.itemView.getContext().startActivity(i);
             });

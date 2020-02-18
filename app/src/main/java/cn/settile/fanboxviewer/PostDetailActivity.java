@@ -128,8 +128,8 @@ public class PostDetailActivity extends AppCompatActivity {
                             images.get(position)
                                     .substring(images.get(position).lastIndexOf('.') - 1));
                     Common.downloadThread(images.get(position), image,
-                            () -> Snackbar.make(view1, "Downloaded " + image.getName(), Snackbar.LENGTH_LONG).show(),
-                            () -> Snackbar.make(view1, "Fail to download " + image.getName(), Snackbar.LENGTH_LONG).show());
+                            () -> Snackbar.make(getWindow().getDecorView(), "Downloaded " + image.getName(), Snackbar.LENGTH_LONG).show(),
+                            () -> Snackbar.make(getWindow().getDecorView(), "Fail to download " + image.getName(), Snackbar.LENGTH_LONG).show());
                     galleryAddPic(image.getAbsolutePath(), this);
                 }catch (Exception ex){
                     Log.e(TAG, "onCreate: ", ex);
@@ -151,7 +151,7 @@ public class PostDetailActivity extends AppCompatActivity {
                 while(!tmp.isDone()){}
                 tmp.get();
             }catch (Exception ex){
-                Snackbar.make(getCurrentFocus(), "Cannot load page: " + ex.getMessage(), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(getWindow().getDecorView(), "Cannot load page: " + ex.getMessage(), Snackbar.LENGTH_LONG).show();
                 log.error("EXCEPTION", ex);
             }
         }).start();
