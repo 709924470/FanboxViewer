@@ -34,6 +34,7 @@ public class FanboxParser {
     private static String messageFirstPage = messageUrl;
     private static HashMap<String, String> userToIcon = new HashMap<>();
     public static HashMap<String, String> userToName = new HashMap<>();
+    public static HashMap<String, String> postToCover = new HashMap<>();
 
     public static List<MessageItem> lastMessageList = new ArrayList<>();
 
@@ -53,10 +54,10 @@ public class FanboxParser {
     public static List<MessageItem> getMessages(Boolean refresh) {
         try {
             JSONObject notification = getJSON(refresh ? messageFirstPage : messageUrl);
-            messageUrl = notification.getJSONObject("body").getString("nextUrl");
             if (notification == null) {
                 throw new Exception("Look previous error");
             }
+            messageUrl = notification.getJSONObject("body").getString("nextUrl");
             JSONArray items = notification.getJSONObject("body").getJSONArray("items");
             List<MessageItem> lmi = new ArrayList<>();
 
@@ -76,8 +77,9 @@ public class FanboxParser {
                     }
                 }
 
-                String userId = item.getJSONObject("post").getString("id");
+                String postId = item.getJSONObject("post").getString("id");
                 String iconUrl = user.getString("iconUrl");
+                String userId = user.getString("userId");
 
                 if (userToIcon.get(userId) == null) {
                     userToIcon.put(userId, iconUrl);
@@ -87,9 +89,7 @@ public class FanboxParser {
 
                 MessageItem mi = new MessageItem(item.getJSONObject("post").getString("title"),
                         msg,
-                        "https://www.pixiv.net/fanbox/creator/" +
-                                user.getString("userId") + "/post/" +
-                                userId,
+                        "https://fanbox.pixiv.net/api/post.info?postId=" + postId,
                         iconUrl);
                 lmi.add(mi);
             }
@@ -103,8 +103,7 @@ public class FanboxParser {
     }
 
     public static int getUnreadMessage(){
-        JSONObject body = getJSON("https://fanbox.pixiv.net/api/bell.countUnread");
-        return body.optInt("count");
+        return Objects.requireNonNull(getJSON("https://fanbox.pixiv.net/api/bell.countUnread")).optInt("count");
     }
 
     public static boolean updateIndex() {
@@ -113,19 +112,18 @@ public class FanboxParser {
             if (index == null) {
                 throw new Exception("Look previous error");
             }
-            JSONObject body = index.optJSONObject("body");
-            JSONObject temp = body.optJSONObject("postListForHome");
+            JSONObject temp = getJSON("https://fanbox.pixiv.net/api/post.listHome?limit=10").getJSONObject("body");
 
             allPosts = temp.optJSONArray("items");
             allPostsNext = temp.optString("nextUrl");
 
-            temp = body.optJSONObject("postListOfSupporting");
+            temp = getJSON("https://fanbox.pixiv.net/api/post.listSupporting?limit=10").getJSONObject("body");
             supporting = temp.optJSONArray("items");
             supportingNext = temp.optString("nextUrl");
 
-            recommended = body.optJSONArray("recommendedCreators");
+            recommended = getJSON("https://fanbox.pixiv.net/api/creator.listRecommended").optJSONArray("body");
 
-            plans = body.optJSONArray("supportingPlans");
+            plans = getJSON("https://fanbox.pixiv.net/api/plan.listSupporting").optJSONArray("body");
         } catch (Exception ex) {
             log.error("EXCEPTION: " , ex);
             return false;
@@ -272,6 +270,10 @@ public class FanboxParser {
 
                 String url = "https://fanbox.pixiv.net/api/post.info?postId=" + json.getString("id");
 
+                if (!postToCover.containsKey(json.getString("id"))){
+                    postToCover.put(json.getString("id"), headerUrl);
+                }
+
                 lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan));
             }
 
@@ -350,6 +352,10 @@ public class FanboxParser {
 
                 String url = "https://fanbox.pixiv.net/api/post.info?postId=" + json.getString("id");
 
+                if (!postToCover.containsKey(json.getString("id"))){
+                    postToCover.put(json.getString("id"), headerUrl);
+                }
+
                 lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan));
             }
 
@@ -414,6 +420,7 @@ public class FanboxParser {
         return items;
     }
 
+    @Nullable
     private static JSONObject getJSON(String url, String refer){
         Request req = new Request.Builder()
                 .url(url)
@@ -433,7 +440,8 @@ public class FanboxParser {
         }
     }
 
-    private static JSONObject getJSON(String url) {
+    @Nullable
+    public static JSONObject getJSON(String url) {
         return getJSON(url, "https://www.pixiv.net/fanbox/");
     }
 }

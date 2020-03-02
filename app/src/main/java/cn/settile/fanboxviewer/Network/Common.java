@@ -40,11 +40,11 @@ public class Common {
                 return false;
             }
             Request req = new Request.Builder()
-                    .url("https://www.pixiv.net/ajax/fanbox/notification/unread_count")
+                    .url("https://fanbox.pixiv.net/api/bell.countUnread")
                     .build();
             try(Response resp = client.newCall(req).execute()) {
                 JSONObject json = new JSONObject(resp.body().string());
-                boolean result = !json.getBoolean("error");
+                boolean result = Objects.equals(json.getString("error"), "general_error");
                 return result;
             }catch (Exception ex){
                 Log.e(TAG, "EXCEPTION: ", ex);
