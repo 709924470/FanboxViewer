@@ -3,6 +3,9 @@
 **__本应用仅可查看您已赞助(订阅)的创作者的内容与各创作者的公开内容!__**\
 **__This application can only check the contents posted by creators you've donated to and public contents!__**
 
+Any question related to this project you can either use issue or join my [telegram group](https://t.me/joinchat/KP2S20Y99ihwPaYeeHabBQ)\
+任何关于本工程的问题可以用Issue提交或加入[我的电报群](https://t.me/joinchat/KP2S20Y99ihwPaYeeHabBQ)
+
 开发者很懒, 不想每次都在手机上打开网页再下载, 所以写了这个软件\
 Developer is too lazy to open the web page and download them one by one,\
 So he wrote this application
