@@ -5,13 +5,19 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <com.potyvideo.library.AndExoPlayerView
+        android:id="@+id/com_user_detail_video"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/com_user_detail_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/empty"
         android:autoLink="web"
         android:linksClickable="true"
+        android:text="@string/empty"
         tools:visibility="gone" />
 
     <ImageView
@@ -19,5 +25,14 @@
         android:layout_width="match_parent"
         android:layout_height="300dp"
         tools:src="@tools:sample/backgrounds/scenic"
+        tools:visibility="gone" />
+
+    <Button
+        android:id="@+id/com_user_detail_dl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|center_vertical"
+        android:text="@string/download"
+        android:textAlignment="center"
         tools:visibility="gone" />
 </LinearLayout>

@@ -23,6 +23,7 @@
         <activity android:name=".ImageViewActivity"/>
         <activity
             android:name=".PostDetailActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:label="@string/title_activity_post_detail"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

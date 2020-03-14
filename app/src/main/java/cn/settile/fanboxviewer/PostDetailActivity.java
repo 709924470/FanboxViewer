@@ -97,7 +97,7 @@ public class PostDetailActivity extends AppCompatActivity {
                 });
 
         String fee = intent.getStringExtra("FEE");
-        fee = intent.getStringExtra("TIME") + " -" + fee;
+        fee = intent.getStringExtra("TIME") + " - " + fee;
 
         ((TextView) findViewById(R.id.post_detail_user_id)).setText(fee);
 

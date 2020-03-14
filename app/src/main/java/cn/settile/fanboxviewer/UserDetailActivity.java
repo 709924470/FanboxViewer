@@ -97,24 +97,25 @@ public class UserDetailActivity extends AppCompatActivity {
             try {
                 JSONObject detail = FanboxParser.getUserDetail(this.url);
                 JSONObject body = detail.getJSONObject("body");
-                JSONObject creator = body.getJSONObject("creator");
-                JSONObject user = creator.getJSONObject("user");
+                JSONObject user = body.getJSONObject("user");
 
-                String description = creator.optString("description");
-                JSONArray links = creator.optJSONArray("profileLinks");
-                JSONArray items = creator.optJSONArray("profileItems");
+                String description = body.optString("description");
+                JSONArray links = body.optJSONArray("profileLinks");
+                JSONArray items = body.optJSONArray("profileItems");
 
                 details = new ArrayList<>();
                 for(int i = 0; i < links.length(); i++){
                     details.add(new DetailItem(DetailItem.Type.TEXT, links.getString(i)));
                 }
                 for(int i = 0; i < items.length(); i++){
-                    details.add(new DetailItem(items.getJSONObject(i).getString("type").equals("image") ? DetailItem.Type.IMAGE : DetailItem.Type.TEXT,
-                            items.getJSONObject(i).optString("imageUrl")));
+                    DetailItem item = new DetailItem(items.getJSONObject(i).getString("type").equals("image") ? DetailItem.Type.IMAGE : DetailItem.Type.TEXT,
+                            items.getJSONObject(i).optString("imageUrl"));
+                    item.extra.add(0, items.getJSONObject(i).optString("thumbnailUrl"));
+                    details.add(item);
                 }
                 details.add(new DetailItem(DetailItem.Type.TEXT, description));
 
-                String coverImage = creator.getString("coverImageUrl");
+                String coverImage = body.getString("coverImageUrl");
 
                 String uid = user.getString("userId");
                 posts.setUserID(uid);

@@ -8,6 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.spi.FileTypeDetector;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -141,7 +145,7 @@ public class FanboxParser {
 
     public static JSONObject getUserDetail(String userId){
         try{
-            return getJSON("https://www.pixiv.net/ajax/fanbox/creator?userId=" + userId);
+            return getJSON("https://fanbox.pixiv.net/api/creator.get?userId=" + userId);
 
         }catch(Exception ex){
             log.error("ERROR: ", ex);
@@ -192,7 +196,7 @@ public class FanboxParser {
     }
 
     public static String getUrl(String userId){
-        return "https://www.pixiv.net/ajax/fanbox/creator?userId=" + userId;
+        return "https://fanbox.pixiv.net/api/post.listCreator?userId=" + userId + "&limit=10";
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -301,7 +305,7 @@ public class FanboxParser {
             if(Objects.equals(useUrl, null)){
                 tmp = getJSON(getUrl(userId));
                 tmp = tmp.getJSONObject("body");
-                tmp = tmp.getJSONObject("post");
+//                tmp = tmp.getJSONObject("post");
                 posts = tmp.getJSONArray("items");
                 nextUrl = tmp.getString("nextUrl");
             }else {
@@ -386,7 +390,7 @@ public class FanboxParser {
 
             for(int i = 0; i < images.length(); i++){
                 DetailItem tmp = new DetailItem(DetailItem.Type.IMAGE, images.getJSONObject(i).getString("thumbnailUrl"));
-                tmp.setExtra(images.getJSONObject(i).getString("originalUrl"));
+                tmp.extra.add(images.getJSONObject(i).getString("originalUrl"));
                 items.add(tmp);
             }
             items.add(new DetailItem(DetailItem.Type.TEXT, body.getJSONObject("body").getString("text")));
@@ -404,7 +408,7 @@ public class FanboxParser {
                     JSONObject img = body.getJSONObject("body").getJSONObject("imageMap").getJSONObject(imageId);
 
                     DetailItem tmp = new DetailItem(DetailItem.Type.IMAGE, img.getString("thumbnailUrl"));
-                    tmp.setExtra(img.getString("originalUrl"));
+                    tmp.extra.add(img.getString("originalUrl"));
                     items.add(tmp);
                 }
                 else if(block.getString("type").equals("file")){
@@ -412,9 +416,32 @@ public class FanboxParser {
 
                     JSONObject file = body.getJSONObject("body").getJSONObject("fileMap").getJSONObject(fileId);
                     DetailItem tmp = new DetailItem(DetailItem.Type.OTHER, file.getString("url"));
-                    tmp.setExtra(file.getInt("size"));
+                    tmp.extra.add(file.getInt("size"));
                     items.add(tmp);
                 }
+            }
+        }
+        else if(body.getString("type").equals("file")){
+            items.add(new DetailItem(DetailItem.Type.TEXT, body.getJSONObject("body").getString("text")));
+
+            JSONArray blocks = body.getJSONObject("body").getJSONArray("files");
+
+            for(int i = 0; i < blocks.length(); i++){
+                JSONObject innerBody = blocks.getJSONObject(i);
+                String ext = innerBody.getString("extension");
+                String file = innerBody.getString("url");
+//                int size = innerBody.getInt("size");
+
+                DetailItem tmp;
+                if (URLConnection.guessContentTypeFromName(file).contains("video")){
+                    tmp = new DetailItem(DetailItem.Type.VIDEO, file);
+                }else{
+                    tmp = new DetailItem(DetailItem.Type.OTHER, file);
+                }
+                tmp.extra.add(innerBody.getString("name"));
+                tmp.extra.add(concatUrl(body.getJSONObject("user").getString("userId"), body.getString("id")));
+                items.add(tmp);
+                items.add(new DetailItem(DetailItem.Type.TEXT, "\n"));
             }
         }
         return items;
@@ -443,5 +470,10 @@ public class FanboxParser {
     @Nullable
     public static JSONObject getJSON(String url) {
         return getJSON(url, "https://www.pixiv.net/fanbox/");
+    }
+
+    @Nullable
+    public static String concatUrl(String userid, String postid){
+        return "https://www.pixiv.net/fanbox/creator/" + userid + "/post/" + postid;
     }
 }

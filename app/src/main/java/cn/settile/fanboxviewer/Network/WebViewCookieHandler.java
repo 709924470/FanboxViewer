@@ -40,4 +40,8 @@ public class WebViewCookieHandler implements CookieJar {
 
         return Collections.emptyList();
     }
+
+    public String loadForRequest(String url){
+        return mCookieManager.getCookie(url);
+    }
 }

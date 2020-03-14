@@ -4,26 +4,35 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.potyvideo.library.AndExoPlayerView;
+import com.potyvideo.library.globalEnums.EnumResizeMode;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
 import cn.settile.fanboxviewer.ImageViewActivity;
+import cn.settile.fanboxviewer.Network.WebViewCookieHandler;
 import cn.settile.fanboxviewer.R;
+import okhttp3.Cookie;
+import okhttp3.HttpUrl;
 
 public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final int TYPE_IMAGE = 0;
     private final int TYPE_TEXT = 1;
+    private final int TYPE_VIDEO = 2;
+    private final int TYPE_LINK = 3;
 
     private String detail = "undefined";
 
@@ -51,7 +60,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         this.detailItems = detailItems;
         for(DetailItem di: detailItems){
             if(di.getType() == DetailItem.Type.IMAGE){
-                images.add((String) di.extra);
+                images.add((String) di.extra.get(0));
                 thumbs.add(di.getContent());
             }
         }
@@ -64,7 +73,16 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
     }
 
     private int getItemType(int pos){
-        return detailItems.get(pos).getType() == DetailItem.Type.IMAGE ? TYPE_IMAGE : TYPE_TEXT;
+        if (detailItems.get(pos).getType() == DetailItem.Type.IMAGE){
+            return TYPE_IMAGE;
+        }
+        else if (detailItems.get(pos).getType() == DetailItem.Type.TEXT){
+            return TYPE_TEXT;
+        }
+        else if (detailItems.get(pos).getType() == DetailItem.Type.VIDEO){
+            return TYPE_VIDEO;
+        }
+        return TYPE_TEXT;
     }
 
     @NonNull
@@ -75,6 +93,10 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         if (TYPE_IMAGE == viewType){
             return new ImageVH(v);
         }else if (TYPE_TEXT == viewType){
+            return new TextVH(v);
+        }else if (TYPE_VIDEO == viewType){
+            return new VideoVH(v);
+        }else if (TYPE_LINK == viewType){
             return new TextVH(v);
         }
         return new TextVH(v);
@@ -104,6 +126,16 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         }else if (TYPE_TEXT == getItemType(position)){
             TextVH tvh = (TextVH) holder;
             tvh.tv.setText(detailItem.getContent());
+        }else if (TYPE_VIDEO == getItemType(position)){
+            VideoVH vvh = (VideoVH) holder;
+            vvh.player.setResizeMode(EnumResizeMode.FIT);
+            HashMap<String, String> cookies = new HashMap<>();
+            cookies.put("Cookie", new WebViewCookieHandler().loadForRequest(detailItem.content));
+            vvh.player.setShowController(true);
+            vvh.player.setSource(detailItem.content, cookies);
+            vvh.player.pausePlayer();
+            vvh.player.setShowFullScreen(true);
+            vvh.player.setPlayWhenReady(false);
         }
     }
 
@@ -112,7 +144,24 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         return detailItems.size();
     }
 
-    public class ImageVH extends RecyclerView.ViewHolder{
+    class VideoVH extends RecyclerView.ViewHolder{
+        AndExoPlayerView player;
+        TextView text;
+        Button download;
+
+        public VideoVH(@NonNull View itemView) {
+            super(itemView);
+            player = itemView.findViewById(R.id.com_user_detail_video);
+            player.setVisibility(View.VISIBLE);
+            download = itemView.findViewById(R.id.com_user_detail_dl);
+            download.setVisibility(View.VISIBLE);
+            text = itemView.findViewById(R.id.com_user_detail_text);
+            text.setVisibility(View.GONE);
+            itemView.findViewById(R.id.com_user_detail_img).setVisibility(View.GONE);
+        }
+    }
+
+    class ImageVH extends RecyclerView.ViewHolder{
         ImageView iv;
 
         public ImageVH(@NonNull View itemView) {
@@ -120,11 +169,13 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             iv = itemView.findViewById(R.id.com_user_detail_img);
             iv.setVisibility(View.VISIBLE);
             itemView.findViewById(R.id.com_user_detail_text).setVisibility(View.GONE);
+            itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
+            itemView.findViewById(R.id.com_user_detail_dl).setVisibility(View.GONE);
 
         }
     }
 
-    public class TextVH extends RecyclerView.ViewHolder{
+    class TextVH extends RecyclerView.ViewHolder{
         TextView tv;
 
         public TextVH(@NonNull View itemView) {
@@ -132,6 +183,8 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             tv = itemView.findViewById(R.id.com_user_detail_text);
             tv.setVisibility(View.VISIBLE);
             itemView.findViewById(R.id.com_user_detail_img).setVisibility(View.GONE);
+            itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
+            itemView.findViewById(R.id.com_user_detail_dl).setVisibility(View.GONE);
         }
     }
 }
