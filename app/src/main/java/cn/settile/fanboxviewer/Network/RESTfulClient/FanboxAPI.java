@@ -1,7 +1,10 @@
-package cn.settile.fanboxviewer.RESTfulClient;
+package cn.settile.fanboxviewer.Network.RESTfulClient;
 
 import retrofit2.Call;
-import retrofit2.http.*;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface FanboxAPI {
     // User functions

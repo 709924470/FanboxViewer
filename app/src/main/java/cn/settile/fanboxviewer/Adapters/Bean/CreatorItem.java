@@ -1,64 +1,64 @@
-package Bean;
-
-import lombok.ToString;
+package cn.settile.fanboxviewer.Adapters.Bean;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.ToString;
+
 @ToString
-public class CreatorBean {
+public class CreatorItem {
     public String user, coverUrl, iconUrl, desc, name;
     public List<Object> links = new ArrayList<>();
     public List<ImageBean> images = new ArrayList<>();
     public int userId;
     public Boolean following, supporting;
 
-    public CreatorBean setUser(String user) {
+    public CreatorItem setUser(String user) {
         this.user = user;
 		return this;
 	}
 
-    public CreatorBean setCoverUrl(String coverUrl) {
+    public CreatorItem setCoverUrl(String coverUrl) {
         this.coverUrl = coverUrl;
 		return this;
 	}
 
-    public CreatorBean setIconUrl(String iconUrl) {
+    public CreatorItem setIconUrl(String iconUrl) {
         this.iconUrl = iconUrl;
 		return this;
 	}
 
-    public CreatorBean setDesc(String desc) {
+    public CreatorItem setDesc(String desc) {
         this.desc = desc;
 		return this;
 	}
 
-    public CreatorBean setLinks(List<Object> links) {
+    public CreatorItem setLinks(List<Object> links) {
         this.links = links;
 		return this;
 	}
 
-    public CreatorBean setImages(List<ImageBean> images) {
+    public CreatorItem setImages(List<ImageBean> images) {
         this.images = images;
 		return this;
 	}
 
-    public CreatorBean setUserId(int userId) {
+    public CreatorItem setUserId(int userId) {
         this.userId = userId;
 		return this;
 	}
 
-    public CreatorBean setFollowing(Boolean following) {
+    public CreatorItem setFollowing(Boolean following) {
         this.following = following;
         return this;
     }
 
-    public CreatorBean setSupporting(Boolean supporting) {
+    public CreatorItem setSupporting(Boolean supporting) {
         this.supporting = supporting;
         return this;
     }
 
-    public CreatorBean setName(String name) {
+    public CreatorItem setName(String name) {
         this.name = name;
         return this;
     }

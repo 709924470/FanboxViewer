@@ -22,35 +22,44 @@
         android:layout_height="6dp"
         android:background="@drawable/inner_shadow_reverse" />
 
-    <LinearLayout
-        android:id="@+id/frag_post_plans"
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="start|center_vertical"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/frag_post_icon_nothing"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:gravity="center"
-            android:text="@string/nothing_here" />
+        <LinearLayout
+            android:id="@+id/frag_post_plans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fadeScrollbars="true"
+            android:gravity="start|center_vertical"
+            android:isScrollContainer="true"
+            android:orientation="horizontal">
 
-        <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/frag_post_plan_icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="4dp"
-            android:scaleType="centerInside"
-            android:visibility="gone"
-            app:riv_border_color="#CCCCCC"
-            app:riv_border_width="2dp"
-            app:riv_corner_radius="128dp"
-            app:riv_mutate_background="true"
-            app:riv_oval="false"
-            app:riv_tile_mode="clamp"
-            tools:srcCompat="@tools:sample/avatars" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/frag_post_icon_nothing"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:paddingStart="18sp"
+                android:paddingEnd="18sp"
+                android:text="@string/nothing_here" />
+
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:id="@+id/frag_post_plan_icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="4dp"
+                android:scaleType="centerInside"
+                android:visibility="gone"
+                app:riv_border_color="#CCCCCC"
+                app:riv_border_width="2dp"
+                app:riv_corner_radius="128dp"
+                app:riv_mutate_background="true"
+                app:riv_oval="false"
+                app:riv_tile_mode="clamp"
+                tools:srcCompat="@tools:sample/avatars" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <View
         android:id="@+id/divider2"

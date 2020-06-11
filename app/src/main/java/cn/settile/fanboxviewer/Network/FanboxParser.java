@@ -9,9 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.spi.FileTypeDetector;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,6 +28,7 @@ import okhttp3.Response;
 import static cn.settile.fanboxviewer.App.getContext;
 import static cn.settile.fanboxviewer.Network.Common.initClient;
 
+@Deprecated
 @Slf4j
 public class FanboxParser {
 

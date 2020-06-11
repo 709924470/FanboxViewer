@@ -16,13 +16,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import cn.settile.fanboxviewer.Util.Constants;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import static cn.settile.fanboxviewer.App.getContext;
+import static java.util.Objects.requireNonNull;
 
 public class Common {
     public static OkHttpClient client = null;
@@ -40,12 +40,11 @@ public class Common {
                 return false;
             }
             Request req = new Request.Builder()
-                    .url("https://fanbox.pixiv.net/api/bell.countUnread")
+                    .url("https://api.fanbox.cc/bell.countUnread")
                     .build();
             try(Response resp = client.newCall(req).execute()) {
                 JSONObject json = new JSONObject(resp.body().string());
-                boolean result = Objects.equals(json.getString("error"), "general_error");
-                return result;
+                return Objects.equals(json.optString("error"), "general_error");
             }catch (Exception ex){
                 Log.e(TAG, "EXCEPTION: ", ex);
                 return false;
@@ -63,23 +62,12 @@ public class Common {
                 .cache(cache)
                 .readTimeout(5, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
-                .addInterceptor(chain -> {
-                    final Request orig = chain.request();
-                    final Request withCookie = orig.newBuilder()
-                            .addHeader("Cookie", Constants.Cookie).build();
-                    return chain.proceed(withCookie);
-                })
-                .build();Common.client = new OkHttpClient.Builder()
-                .cookieJar(new WebViewCookieHandler())
-                .cache(cache)
-                .readTimeout(5, TimeUnit.SECONDS)
-                .retryOnConnectionFailure(true)
-                .addInterceptor(chain -> {
-                    final Request orig = chain.request();
-                    final Request withCookie = orig.newBuilder()
-                            .addHeader("Cookie", Constants.Cookie).build();
-                    return chain.proceed(withCookie);
-                })
+//                .addInterceptor(chain -> {
+//                    final Request orig = chain.request();
+//                    final Request withCookie = orig.newBuilder()
+//                            .addHeader("Cookie", Constants.Cookie).build();
+//                    return chain.proceed(withCookie);
+//                })
                 .build();
     }
 
@@ -91,11 +79,7 @@ public class Common {
         if (client == null){
             Log.d(TAG, "client is not defined!");
             initClient();
-            if(download(url, output, success, fail)){
-                return true;
-            }
-            fail.run();
-            return false;
+            return download(url, output, success, fail);
         }
 
         Request request = new Request.Builder()
@@ -103,7 +87,7 @@ public class Common {
                 .build();
 
         try(Response response = client.newCall(request).execute()){
-            InputStream is = response.body().byteStream();
+            InputStream is = requireNonNull(response.body()).byteStream();
 
             BufferedInputStream bif = new BufferedInputStream(is);
             OutputStream op = new FileOutputStream(output);

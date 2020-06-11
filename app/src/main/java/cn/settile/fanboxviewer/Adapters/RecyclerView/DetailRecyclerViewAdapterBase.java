@@ -24,8 +24,6 @@ import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
 import cn.settile.fanboxviewer.ImageViewActivity;
 import cn.settile.fanboxviewer.Network.WebViewCookieHandler;
 import cn.settile.fanboxviewer.R;
-import okhttp3.Cookie;
-import okhttp3.HttpUrl;
 
 public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -59,7 +57,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         }
         this.detailItems = detailItems;
         for(DetailItem di: detailItems){
-            if(di.getType() == DetailItem.Type.IMAGE){
+            if(di.getType() == DetailItem.Type.IMAGE && !di.content.equals("false")){
                 images.add((String) di.extra.get(0));
                 thumbs.add(di.getContent());
             }

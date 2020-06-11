@@ -9,9 +9,20 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 
+import org.json.JSONArray;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Util {
+    public static List<Object> toList(JSONArray array) throws Exception{
+        List<Object> result = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++)
+            result.add(array.get(i));
+        return result;
+    }
+
     public static Bitmap toBitmap(Drawable drawable){
         try {
             Bitmap bitmap;

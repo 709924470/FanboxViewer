@@ -1,6 +1,5 @@
 package cn.settile.fanboxviewer;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import cn.settile.fanboxviewer.Util.Constants;
 
 public class LoginActivity extends AppCompatActivity {
-    Context ctx;
     final String TAG = "Login";
 
     @Override
@@ -24,8 +22,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         setTitle(R.string.login_to_proceed);
-
-        ctx = this;
 
         CookieSyncManager.createInstance(this);
 
@@ -37,9 +33,9 @@ public class LoginActivity extends AppCompatActivity {
             CookieManager.getInstance().setAcceptCookie(true);
 
         wv.getSettings().setJavaScriptEnabled(true);
-        wv.setWebViewClient(new wvClient());
+        wv.setWebViewClient(new loginClient());
 
-        String url = "https://accounts.pixiv.net/login?return_to=https%3A%2F%2Fwww.pixiv.net%2F&source=touch&view_type=page";
+        String url = "https://www.fanbox.cc/login?return_to=https%3A%2F%2Fwww.fanbox.cc%2Fcreators%2Ffind";
         wv.loadUrl(url);
     }
 
@@ -49,11 +45,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private class wvClient extends WebViewClient {
+    private class loginClient extends WebViewClient {
         @Override
         public void onPageStarted(WebView wv, String url, Bitmap favIco){
             Log.d(TAG, url);
-            if(url.equals("https://www.pixiv.net/")){
+            if(url.equals("https://www.fanbox.cc/creators/find")){
                 Log.d(TAG, "Done Loading");
                 Constants.Cookie = CookieManager.getInstance().getCookie(url);
                 Log.d(TAG, Constants.Cookie);
