@@ -1,5 +1,6 @@
 package cn.settile.fanboxviewer.Network.RESTfulClient;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -9,60 +10,60 @@ import retrofit2.http.Query;
 public interface FanboxAPI {
     // User functions
     @GET("user.countUnreadMessages")
-    Call<String> gerUnreadMessages();
+    Call<ResponseBody> gerUnreadMessages();
 
     // Creator functions
     @GET("creator.listRecommended")
-    Call<String> getRecommendedCreators();
+    Call<ResponseBody> getRecommendedCreators();
 
     @GET("creator.listFollowing")
-    Call<String> getFollowingCreators();
+    Call<ResponseBody> getFollowingCreators();
 
     @GET("creator.get")
-    Call<String> getCreatorInfo(@Query("creatorId") String creatorId);
+    Call<ResponseBody> getCreatorInfo(@Query("creatorId") String creatorId);
 
     @GET("tag.getFeatured")
-    Call<String> getCreatorTags(@Query("creatorId") String creatorId);
+    Call<ResponseBody> getCreatorTags(@Query("creatorId") String creatorId);
 
     // Post functions
     @GET("post.listHome?limit={limit}")
-    Call<String> getHomePostList(@Query("limit") int limit);
+    Call<ResponseBody> getHomePostList(@Query("limit") int limit);
 
     @GET("post.listSupporting?limit={limit}")
-    Call<String> getSupportingPostList(@Query("limit") int limit);
+    Call<ResponseBody> getSupportingPostList(@Query("limit") int limit);
 
     @GET("post.info")
-    Call<String> getPostInfo(@Query("postId") int postId);
+    Call<ResponseBody> getPostInfo(@Query("postId") int postId);
 
     @GET("post.listCreator?limit=10")
-    Call<String> getCreatorPosts(@Query("creatorId") String creatorId);
+    Call<ResponseBody> getCreatorPosts(@Query("creatorId") String creatorId);
 
     /**
      *  userId: from @getCreatorInfo -> body.user.userId
      */
     @GET("post.listTagged")
-    Call<String> getCreatorPosts(@Query("tag") String tag, @Query("userId") int userId);
+    Call<ResponseBody> getCreatorPosts(@Query("tag") String tag, @Query("userId") int userId);
 
     // Plan functions
     @GET("plan.listSupporting")
-    Call<String> getSupportingPlans();
+    Call<ResponseBody> getSupportingPlans();
 
     @GET("plan.listCreator")
-    Call<String> getCreatorPlans(@Query("creatorId") String creatorId);
+    Call<ResponseBody> getCreatorPlans(@Query("creatorId") String creatorId);
 
     // Notification/Bell functions
     @GET("bell.countUnread")
-    Call<String> getUnreadNotifications();
+    Call<ResponseBody> getUnreadNotifications();
 
     @GET("bell.list?skipConvertUnreadNotification=0&commentOnly=0")
-    Call<String> getNotificationList(@Query("page") int page);
+    Call<ResponseBody> getNotificationList(@Query("page") int page);
 
     @GET("bell.list?skipConvertUnreadNotification=0&commentOnly=1")
-    Call<String> getCommentList(@Query("page") int page);
+    Call<ResponseBody> getCommentList(@Query("page") int page);
 
     @GET("notification.getSettings")
-    Call<String> getNotificationSettings();
+    Call<ResponseBody> getNotificationSettings();
 
     @POST("notification.updateSettings")
-    Call<String> postUpdatedNotificationSettings(@Body String json);
+    Call<ResponseBody> postUpdatedNotificationSettings(@Body String json);
 }

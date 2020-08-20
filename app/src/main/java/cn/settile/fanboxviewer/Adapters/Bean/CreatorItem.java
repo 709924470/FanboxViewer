@@ -9,7 +9,7 @@ import lombok.ToString;
 public class CreatorItem {
     public String user, coverUrl, iconUrl, desc, name;
     public List<Object> links = new ArrayList<>();
-    public List<ImageBean> images = new ArrayList<>();
+    public List<ImageItem> images = new ArrayList<>();
     public int userId;
     public Boolean following, supporting;
 
@@ -38,7 +38,7 @@ public class CreatorItem {
 		return this;
 	}
 
-    public CreatorItem setImages(List<ImageBean> images) {
+    public CreatorItem setImages(List<ImageItem> images) {
         this.images = images;
 		return this;
 	}

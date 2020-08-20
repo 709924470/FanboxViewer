@@ -1,19 +1,29 @@
 package cn.settile.fanboxviewer.Network.RESTfulClient;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.Bean.CreatorItem;
-import cn.settile.fanboxviewer.Adapters.Bean.ImageBean;
+import cn.settile.fanboxviewer.Adapters.Bean.ImageItem;
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
 import cn.settile.fanboxviewer.BuildConfig;
+import cn.settile.fanboxviewer.R;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import static cn.settile.fanboxviewer.App.getContext;
 import static cn.settile.fanboxviewer.Util.Util.toList;
 
 public class FanboxParser {
@@ -29,20 +39,14 @@ public class FanboxParser {
         this.creator = new CreatorItem()
                 .setUser(user);
 
-        Call<String> creatorInfoCaller = client.getCreatorInfo(user);
-        Response<String> creatorInfoResp = creatorInfoCaller.execute();
-
-        if (BuildConfig.DEBUG && !(Objects.equals(creatorInfoResp.body(), null) || !creatorInfoResp.isSuccessful() || creatorInfoResp.code() != 200)) {
-            throw new AssertionError("Assertion failed");
-        }
-
-        JSONObject info = toJSON(creatorInfoResp.body());
+        Call<ResponseBody> creatorInfoCaller = client.getCreatorInfo(user);
+        JSONObject info = getJson(creatorInfoCaller);
         info = info.getJSONObject("body");
 
-        List<ImageBean> images = new ArrayList<>();
+        List<ImageItem> images = new ArrayList<>();
         for (int i = 0; i < info.getJSONArray("profileItems").length(); i++) {
             Object e = info.getJSONArray("profileItems").get(i);
-            ImageBean image = new ImageBean();
+            ImageItem image = new ImageItem();
             image.url = ((JSONObject) e).getString("imageUrl");
             image.thumbUrl = ((JSONObject) e).getString("thumbnailUrl");
             images.add(image);
@@ -71,44 +75,68 @@ public class FanboxParser {
     }
 
     public static List<MessageItem> getMessages() throws Exception{
-        Call<String> caller = client.getNotificationList(messagePage++);
-        Response<String> resp = caller.execute();
-
-        if (BuildConfig.DEBUG && !(Objects.equals(resp.body(), null) || !resp.isSuccessful() || resp.code() != 200)) {
-            throw new AssertionError("Assertion failed");
-        }
-
-        JSONObject json = toJSON(resp.body());
+        Call<ResponseBody> caller = client.getNotificationList(messagePage++);
+        JSONObject json = getJson(caller);
         List<MessageItem> items = new ArrayList<>();
 
         JSONArray array = json.getJSONObject("body").getJSONArray("items");
-        for (int i = 0; i < array.length(); i++){
-            JSONObject item = (JSONObject) array.get(i);
-            item = item.getJSONObject("post");
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject item = array.getJSONObject(i);
+            JSONObject user = item.getJSONObject("post").getJSONObject("user");
 
+            String msg = item.getJSONObject("post").optString("excerpt");
+            msg = msg == null ? " " : msg;
+
+            String postId = item.getJSONObject("post").getString("id");
+            String iconUrl = user.getString("iconUrl");
+            CachedQueue.addPostCache(Integer.parseInt(postId), new JSONObject(item.toString()));
+
+            MessageItem mi = new MessageItem(item.getJSONObject("post").getString("title"),
+                    msg,
+                    postId,
+                    iconUrl);
+            items.add(mi);
         }
 
         return items;
     }
 
-    public static int getUnreadCount() throws Exception{
-        Call<String> caller = client.getUnreadNotifications();
-        Response<String> resp = caller.execute();
+    public static List<CardItem> getAllPosts(boolean refresh, Context c) {
+        return getPosts(refresh, true, c);
+    }
+
+    public static List<CardItem> getSupportingPosts(boolean refresh, Context c) {
+        return getPosts(refresh, false, c);
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static List<CardItem> getPosts(boolean refresh, boolean all, Context c) {
+        return null;
+    }
+
+    public static int getUnreadMessages() throws Exception{
+        Call<ResponseBody> caller = client.getUnreadNotifications();
+
+        JSONObject json = getJson(caller).getJSONObject("body");
+        return json.getInt("count");
+    }
+
+    public static void setClient(FanboxAPI client){
+        if (Objects.equals(FanboxParser.client, null) && !Objects.equals(client, null)){
+            FanboxParser.client = client;
+        }
+    }
+
+    @NotNull
+    private static JSONObject getJson(Call<ResponseBody> caller) throws Exception {
+        Response<ResponseBody> resp = caller.execute();
 
         if (BuildConfig.DEBUG && !(Objects.equals(resp.body(), null) || !resp.isSuccessful() || resp.code() != 200)) {
             throw new AssertionError("Assertion failed");
         }
 
-        JSONObject json = toJSON(resp.body());
-        return json.getInt("count");
+        return toJSON(resp.body().string());
     }
-
-    public static void setClient(FanboxAPI client){
-        if (Objects.equals(FanboxParser.client, null)){
-            FanboxParser.client = client;
-        }
-    }
-
     private static JSONObject toJSON(String json) throws Exception{
         return new JSONObject(json);
     }

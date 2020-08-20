@@ -1,5 +1,5 @@
 package cn.settile.fanboxviewer.Adapters.Bean;
 
-public class ImageBean {
+public class ImageItem {
     public String url, thumbUrl;
 }
