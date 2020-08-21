@@ -10,8 +10,8 @@ Any question related to this project you can either use issue or join my [telegr
 
 [![捐赠](https://img.shields.io/badge/捐赠-支付宝二维码-BLUE.svg)](https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=https://qr.alipay.com/fkx09642afxf1dgxi5kwp19) `rec_000@126.com`\
 [![捐赠](https://img.shields.io/badge/捐赠-微信二维码-DARKGREEN.svg)](https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=wxp://f2f0QA34gBTVa83jgkEgGrGiOuWQOtHMTxku)\
-[![捐赠](https://img.shields.io/badge/Donate-PayPal-DARKBLUE.svg)](https://paypal.me/7099Kii) `rec_000@126.com`
-[![捐赠](https://img.shields.io/badge/Donate-Ko-fi-ORANGE.svg)](https://Ko-fi.com/709924470)
+[![捐赠](https://img.shields.io/badge/Donate-PayPal-DARKBLUE.svg)](https://paypal.me/7099Kii) `rec_000@126.com`\
+[![捐赠](https://img.shields.io/badge/Donate-Ko--fi-ORANGE.svg)](https://Ko-fi.com/709924470)
 
 ---
 
