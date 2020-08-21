@@ -1,5 +1,6 @@
 package cn.settile.fanboxviewer;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import cn.settile.fanboxviewer.Util.Constants;
 public class LoginActivity extends AppCompatActivity {
     final String TAG = "Login";
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

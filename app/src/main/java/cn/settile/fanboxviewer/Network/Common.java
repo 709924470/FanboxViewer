@@ -4,22 +4,31 @@ import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxAPI;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.Util.Constants;
 import okhttp3.Cache;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
 
 import static cn.settile.fanboxviewer.App.getContext;
 import static java.util.Objects.requireNonNull;
@@ -57,18 +66,31 @@ public class Common {
             return;
         }
         Cache cache = new Cache(getContext().getCacheDir(), 1024 * 1024 * 8);
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
         Common.client = new OkHttpClient.Builder()
                 .cookieJar(new WebViewCookieHandler())
                 .cache(cache)
                 .readTimeout(5, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
-//                .addInterceptor(chain -> {
-//                    final Request orig = chain.request();
-//                    final Request withCookie = orig.newBuilder()
-//                            .addHeader("Cookie", Constants.Cookie).build();
-//                    return chain.proceed(withCookie);
-//                })
                 .build();
+        OkHttpClient pclient = new OkHttpClient.Builder()
+                .cookieJar(new WebViewCookieHandler())
+                .addInterceptor(chain -> {
+                    Request.Builder auth = chain.request().newBuilder();
+                    auth.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36");
+                    auth.addHeader("Origin", "https://www.fanbox.cc");
+                    Response resp = chain.proceed(auth.build());
+                    return resp;
+                })
+                .build();
+        Retrofit fanbox = new Retrofit.Builder()
+                .client(pclient)
+                .baseUrl("https://api.fanbox.cc/")
+                .build();
+
+        FanboxAPI api = fanbox.create(FanboxAPI.class);
+        FanboxParser.client = api;
     }
 
     public static void downloadThread(String url, File file, Runnable success, Runnable fail){

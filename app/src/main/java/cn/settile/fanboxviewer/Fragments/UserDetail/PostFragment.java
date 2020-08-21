@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 
 import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.CardRecyclerViewAdapterBase;
-import cn.settile.fanboxviewer.Network.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.R;
 import lombok.Setter;
 
@@ -75,9 +75,7 @@ public class PostFragment extends Fragment {
             }
             srl.setRefreshing(true);
             Executors.newSingleThreadExecutor().submit(() -> {
-                HashMap<Integer, Object> result = FanboxParser.getUserPosts(userID, nextUrl, getContext());
-                nextUrl = (String) result.get(0);
-                List<CardItem> lci = (List<CardItem>) result.get(1);
+                List<CardItem> lci = new FanboxParser(userID).getUserPosts();
                 getActivity().runOnUiThread(() -> srl.setRefreshing(false));
                 if (lci != null) {
                     updateList(lci, false);
@@ -87,9 +85,7 @@ public class PostFragment extends Fragment {
         });
 
         srl.setOnRefreshListener(() -> Executors.newSingleThreadExecutor().submit(() -> {
-            HashMap<Integer, Object> result = FanboxParser.getUserPosts(userID, null, getContext());
-            nextUrl = (String) result.get(0);
-            List<CardItem> lci = (List<CardItem>) result.get(1);
+            List<CardItem> lci = new FanboxParser(userID).getUserPosts();
             getActivity().runOnUiThread(() -> srl.setRefreshing(false));
             if (lci != null) {
                 updateList(lci, true);

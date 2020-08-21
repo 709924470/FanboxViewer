@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.PostDetail.PostDetailRecyclerViewAdapter;
 import cn.settile.fanboxviewer.Network.Common;
-import cn.settile.fanboxviewer.Network.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import lombok.extern.slf4j.Slf4j;
 
 import static cn.settile.fanboxviewer.Util.Util.createImageFile;
@@ -45,6 +45,7 @@ public class PostDetailActivity extends AppCompatActivity {
     private PostDetailRecyclerViewAdapter adapter;
 
     private final String TAG = getClass().getName();
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class PostDetailActivity extends AppCompatActivity {
         this.url = intent.getStringExtra("URL");
         this.userName = intent.getStringExtra("NAME");
         this.iconUrl = intent.getStringExtra("ICON");
+        this.userId = intent.getStringExtra("CID");
 
         ((TextView) findViewById(R.id.post_detail_user_name)).setText(userName);
         Picasso.get()
@@ -141,7 +143,7 @@ public class PostDetailActivity extends AppCompatActivity {
     private void setup(){
         new Thread(() -> {
             try{
-                List<DetailItem> ldi = FanboxParser.getPostDetail(this.url, this);
+                List<DetailItem> ldi = new FanboxParser(userId).getPostDetail(this.url);
                 Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> {
                     runOnUiThread(() -> {
                         adapter.updateItems(ldi);

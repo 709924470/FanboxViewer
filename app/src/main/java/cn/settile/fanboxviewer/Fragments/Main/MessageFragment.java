@@ -13,12 +13,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.MessageRecyclerViewAdapter;
-import cn.settile.fanboxviewer.Network.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.R;
 
 /**
@@ -81,7 +84,7 @@ public class MessageFragment extends Fragment {
                         List<MessageItem> lmi = FanboxParser.getMessages(false);
                         srl.setRefreshing(false);
                         if (lmi != null) {
-                            update(lmi, false);
+                            update(false);
                         }
                         return null;
                     });
@@ -99,7 +102,7 @@ public class MessageFragment extends Fragment {
             List<MessageItem> lmi = FanboxParser.getMessages(true);
             srl.setRefreshing(false);
             if (lmi != null) {
-                update(lmi, true);
+                update(true);
             }
             return null;
         }));
@@ -107,25 +110,34 @@ public class MessageFragment extends Fragment {
         return view;
     }
 
-    public void update(List<MessageItem> lmi, boolean refreshAll) {
+    public void update(boolean refreshAll) {
         if (v == null || c == null) {
             return;
         }
-        if (recyclerView == null) {
-            recyclerView = v.findViewById(R.id.frag_msg_list);
-            recyclerView.setLayoutManager(new LinearLayoutManager(c));
-            msgAdapter = new MessageRecyclerViewAdapter(this, lmi);
-            recyclerView.setAdapter(msgAdapter);
+        Future<List<MessageItem>> flmi = Executors.newSingleThreadExecutor().submit(() -> FanboxParser.getMessages(refreshAll));
+        new Handler().post(() -> {
+            while(!flmi.isDone()){}
+            List<MessageItem> lmi = null;
+            try {
+                lmi = flmi.get();
+            } catch (Exception e) {
+                lmi = new ArrayList<>();
+            }
+
+            if (recyclerView == null) {
+                recyclerView = v.findViewById(R.id.frag_msg_list);
+                recyclerView.setLayoutManager(new LinearLayoutManager(c));
+                msgAdapter = new MessageRecyclerViewAdapter(this, lmi);
+                recyclerView.setAdapter(msgAdapter);
+            }
+            List<MessageItem> finalLmi = lmi;
             getActivity().runOnUiThread(() -> {
-                msgAdapter.updateItems(lmi, refreshAll);
+                msgAdapter.updateItems(finalLmi, refreshAll);
             });
-        } else {
-            getActivity().runOnUiThread(() -> {
-                msgAdapter.updateItems(lmi, refreshAll);
-            });
-        }
-        new Handler().postDelayed(() -> {
-            srl.setRefreshing(false);
-        }, 200);
+
+            new Handler().postDelayed(() -> {
+                srl.setRefreshing(false);
+            }, 200);
+        });
     }
 }

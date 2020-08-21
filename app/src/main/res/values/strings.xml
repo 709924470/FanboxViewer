@@ -19,7 +19,7 @@
     <string name="title_post_list" translatable="false">Posts</string>
     <string name="title_post_detail" translatable="false">Post Detail</string>
 
-    <string name="index" translatable="false">https://www.pixiv.net/</string>
+    <string name="index" translatable="false">https://www.fanbox.cc/</string>
     <string name="menu_logout">Logout</string>
     <string name="nav_header_subtitle">Login your Pixiv account to proceed</string>
     <string name="login_to_proceed">Login to proceed</string>

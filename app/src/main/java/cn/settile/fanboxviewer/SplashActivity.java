@@ -18,8 +18,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import cn.settile.fanboxviewer.Network.Common;
-import cn.settile.fanboxviewer.Network.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxAPI;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.Util.Constants;
+import retrofit2.Retrofit;
 
 import static cn.settile.fanboxviewer.Network.Common.initClient;
 import static cn.settile.fanboxviewer.Network.Common.isLoggedIn;
@@ -99,7 +101,6 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
 
         initClient();
 
-
         if(Common.singleton == null) {
             Common.singleton = new Picasso.Builder(this)
                     .downloader(new OkHttp3Downloader(Common.client))
@@ -119,11 +120,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
             }
             i.putExtra("isLoggedIn", true);
 
-            Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> {
-                FanboxParser.getMessages(true);
-                FanboxParser.updateIndex();
-                return null;
-            });
+            Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> FanboxParser.getMessages(true));
             while (!tmp.isDone()) {
             }
             tmp.get();

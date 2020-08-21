@@ -14,8 +14,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayout.BaseOnTabSelectedListener;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
@@ -23,16 +25,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.util.Objects;
+
 import cn.settile.fanboxviewer.Adapters.Fragment.MainFragmentAdapter;
 import cn.settile.fanboxviewer.Fragments.Main.AllPostFragment;
 import cn.settile.fanboxviewer.Fragments.Main.MessageFragment;
 import cn.settile.fanboxviewer.Fragments.Main.SubscPostFragment;
 import cn.settile.fanboxviewer.Network.Common;
-import cn.settile.fanboxviewer.Network.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static cn.settile.fanboxviewer.Network.FanboxParser.getUnreadMessage;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity
 
     AllPostFragment allPostFragment;
     private MainFragmentAdapter tabPageAdapter;
+    private TabLayout tl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +57,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         ViewPager mVp = findViewById(R.id.main_tab_pager); // inflating the main page
-
         mVp.setSaveEnabled(true);
         mVp.setOffscreenPageLimit(2);
 
@@ -62,7 +65,6 @@ public class MainActivity extends AppCompatActivity
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -72,13 +74,10 @@ public class MainActivity extends AppCompatActivity
         //TODO: IMAGE Editing for club card.
         navigationView.getMenu().getItem(1).setEnabled(false);
 
-        TabLayout tl = findViewById(R.id.main_page_tab);
-
+        tl = findViewById(R.id.main_page_tab);
         tabPageAdapter = new MainFragmentAdapter(getSupportFragmentManager(), this);
-
         allPostFragment = AllPostFragment.newInstance();
         tabPageAdapter.addFragment(allPostFragment, getResources().getString(R.string.tab_posts));
-
 
         SubscPostFragment subscPostFragment = SubscPostFragment.newInstance();
         tabPageAdapter.addFragment(subscPostFragment, getResources().getString(R.string.tab_subscribed));
@@ -90,40 +89,35 @@ public class MainActivity extends AppCompatActivity
         tl.setupWithViewPager(mVp);
 
         setResult(-1);
-
         if (getIntent().getBooleanExtra("isLoggedIn", false)
                 && !getIntent().getBooleanExtra("NO_NETWORK", false)) {
             fetchUserInfo();
             new Thread(() -> {
                 getNotifications(messageFragment);
-                allPostFragment.updateList(FanboxParser.getAllPosts(false, this), FanboxParser.getPlans(false), true);
+                allPostFragment.updateList(FanboxParser.getAllPosts(false, this), FanboxParser.getPlans(), true);
                 subscPostFragment.updateList(FanboxParser.getSupportingPosts(false, this), true);
             }).start();
         }
 
-        tl.addOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
+        tl.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mVp.setCurrentItem(tab.getPosition(), true);
                 if (tab.getPosition() == 2 && !flag){
-                    messageFragment.update(FanboxParser.lastMessageList, true);
+                    messageFragment.update(true);
                     flag = !flag;
+                    tab.removeBadge();
                 }
             }
-
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
+            public void onTabUnselected(TabLayout.Tab tab) {}
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
+            public void onTabReselected(TabLayout.Tab tab) {}
         });
     }
 
     private void getNotifications(MessageFragment mf) {
-        mf.update(FanboxParser.lastMessageList, true);
+        mf.update(true);
     }
 
     private void fetchUserInfo() {
@@ -142,7 +136,7 @@ public class MainActivity extends AppCompatActivity
                 String userName = user.getString("name");
                 String userId = user.getString("userId");
 
-                int unread = getUnreadMessage();
+                int unread = FanboxParser.getUnreadMessagesCount();
 
                 runOnUiThread(() -> {
                     TextView textView = findViewById(R.id.userName);
@@ -157,7 +151,8 @@ public class MainActivity extends AppCompatActivity
                             .into((ImageView) findViewById(R.id.userIcon));
 
                     if(unread != 0){
-
+                        Objects.requireNonNull(tl.getTabAt(2))
+                                .getOrCreateBadge().setNumber(unread);
                     }
                 });
             } catch (Exception ex) {

@@ -30,7 +30,7 @@ import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
 import cn.settile.fanboxviewer.Adapters.Fragment.UserDetailFragmentAdapter;
 import cn.settile.fanboxviewer.Fragments.UserDetail.PostFragment;
 import cn.settile.fanboxviewer.Fragments.UserDetail.UserDetailFragment;
-import cn.settile.fanboxviewer.Network.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import lombok.extern.slf4j.Slf4j;
 
 import static cn.settile.fanboxviewer.Util.Util.toBitmap;
@@ -41,9 +41,11 @@ public class UserDetailActivity extends AppCompatActivity {
     private String url;
     private String iconUrl;
     private String userName;
+
     private UserDetailFragment userDetail;
     private PostFragment posts;
     List<DetailItem> details = null;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,7 @@ public class UserDetailActivity extends AppCompatActivity {
         this.url = intent.getStringExtra("URL");
         this.userName = intent.getStringExtra("NAME");
         this.iconUrl = intent.getStringExtra("ICON");
+        this.userId = intent.getStringExtra("CID");
 
         Picasso.get()
                 .load(iconUrl)
@@ -95,7 +98,8 @@ public class UserDetailActivity extends AppCompatActivity {
     private void setup(){
         new Thread(() -> {
             try {
-                JSONObject detail = FanboxParser.getUserDetail(this.url);
+                FanboxParser fanboxParser = new FanboxParser(userId);
+                JSONObject detail = fanboxParser.getUserDetail();
                 JSONObject body = detail.getJSONObject("body");
                 JSONObject user = body.getJSONObject("user");
 
@@ -120,10 +124,9 @@ public class UserDetailActivity extends AppCompatActivity {
                 String uid = user.getString("userId");
                 posts.setUserID(uid);
                 Executors.newSingleThreadExecutor().submit(() -> {
-                            HashMap<Integer, Object> result = FanboxParser.getUserPosts(uid, null, this);
-                            List<CardItem> lci = (List<CardItem>) result.get(1);
+                            List<CardItem> lci = fanboxParser.getUserPosts();
                             posts.updateList(lci, true);
-                            posts.nextUrl = (String) result.get(0);
+                            posts.nextUrl = null;
                             return null;
                         });
 

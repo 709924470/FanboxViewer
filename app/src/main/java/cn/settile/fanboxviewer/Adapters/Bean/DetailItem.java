@@ -11,7 +11,8 @@ public class DetailItem {
         IMAGE,
         TEXT,
         VIDEO,
-        OTHER
+        OTHER,
+        SPACE
     }
 
     @Getter

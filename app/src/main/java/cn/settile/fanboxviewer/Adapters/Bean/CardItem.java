@@ -9,11 +9,43 @@ public class CardItem {
     @Getter
     @Setter
     @ToString.Include
-    private String iconUrl, title, createTime, plan, headerUrl, url, desc, creator;
+    private String iconUrl;
+    @Getter
+    @Setter
+    @ToString.Include
+    private String title;
+    @Getter
+    @Setter
+    @ToString.Include
+    private String createTime;
+    @Getter
+    @Setter
+    @ToString.Include
+    private String plan;
+    @Getter
+    @Setter
+    @ToString.Include
+    private String userId;
+    @Getter
+    @Setter
+    @ToString.Include
+    private String headerUrl;
+    @Getter
+    @Setter
+    @ToString.Include
+    private String url;
+    @Getter
+    @Setter
+    @ToString.Include
+    private String desc;
+    @Getter
+    @Setter
+    @ToString.Include
+    private String creator;
 
     public CardItem(String iconUrl, String headerUrl, String url,
                     String title, String desc,
-                    String creator, String createTime, String plan) {
+                    String creator, String createTime, String plan, String userId) {
         this.iconUrl = iconUrl;
         this.headerUrl = headerUrl;
         this.url = url;
@@ -22,5 +54,6 @@ public class CardItem {
         this.creator = creator;
         this.createTime = createTime;
         this.plan = plan;
+        this.userId = userId;
     }
 }

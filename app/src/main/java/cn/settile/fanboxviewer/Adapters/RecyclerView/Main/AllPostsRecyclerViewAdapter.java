@@ -105,9 +105,10 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
             icon.setOnClickListener(v -> {
                 Intent i1 = new Intent(v.getContext(), UserDetailActivity.class);
-                i1.putExtra("NAME", userToName.get(mi.getUrl()));
+                i1.putExtra("NAME", userToName.get(mi.extra));
                 i1.putExtra("ICON", mi.getIconUrl());
                 i1.putExtra("URL", mi.getUrl());
+                i1.putExtra("CID", mi.extra);
                 v.getContext().startActivity(i1);
             });
         }
@@ -160,6 +161,7 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             i1.putExtra("TITLE", cardItems.get(i).getTitle());
             i1.putExtra("TIME", cardItems.get(i).getCreateTime());
             i1.putExtra("FEE", cardItems.get(i).getPlan());
+            i1.putExtra("CID", cardItems.get(i).getUserId());
             v.getContext().startActivity(i1);
         });
     }

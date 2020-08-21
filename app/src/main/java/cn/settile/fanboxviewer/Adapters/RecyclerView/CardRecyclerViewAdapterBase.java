@@ -117,6 +117,7 @@ public class CardRecyclerViewAdapterBase extends RecyclerView.Adapter<CardRecycl
             i1.putExtra("TITLE", lci.get(position).getTitle());
             i1.putExtra("TIME", lci.get(position).getCreateTime());
             i1.putExtra("FEE", lci.get(position).getPlan());
+            i1.putExtra("CID", lci.get(position).getUserId());
             v.getContext().startActivity(i1);
         });
     }

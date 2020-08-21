@@ -9,7 +9,8 @@
         android:id="@+id/com_user_detail_video"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="gone" />
 
     <TextView
         android:id="@+id/com_user_detail_text"
@@ -35,4 +36,10 @@
         android:text="@string/download"
         android:textAlignment="center"
         tools:visibility="gone" />
+
+    <Space
+        android:id="@+id/com_user_detail_space"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:visibility="gone" />
 </LinearLayout>

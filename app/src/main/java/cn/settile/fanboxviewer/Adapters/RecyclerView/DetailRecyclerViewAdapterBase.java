@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Space;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
     private final int TYPE_TEXT = 1;
     private final int TYPE_VIDEO = 2;
     private final int TYPE_LINK = 3;
+    private final int TYPE_SPACE = 4;
 
     private String detail = "undefined";
 
@@ -80,6 +82,9 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         else if (detailItems.get(pos).getType() == DetailItem.Type.VIDEO){
             return TYPE_VIDEO;
         }
+        else if (detailItems.get(pos).getType() == DetailItem.Type.SPACE){
+            return TYPE_SPACE;
+        }
         return TYPE_TEXT;
     }
 
@@ -96,6 +101,8 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             return new VideoVH(v);
         }else if (TYPE_LINK == viewType){
             return new TextVH(v);
+        }else if (TYPE_SPACE == viewType){
+            return new SpaceVH(v);
         }
         return new TextVH(v);
     }
@@ -183,6 +190,20 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             itemView.findViewById(R.id.com_user_detail_img).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_dl).setVisibility(View.GONE);
+        }
+    }
+
+    class SpaceVH extends RecyclerView.ViewHolder{
+        Space sp;
+
+        public SpaceVH(View item){
+            super(item);
+            sp = item.findViewById(R.id.com_user_detail_space);
+            sp.setVisibility(View.VISIBLE);
+            itemView.findViewById(R.id.com_user_detail_text).setVisibility(View.GONE);
+            itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
+            itemView.findViewById(R.id.com_user_detail_dl).setVisibility(View.GONE);
+            itemView.findViewById(R.id.com_user_detail_img).setVisibility(View.GONE);
         }
     }
 }

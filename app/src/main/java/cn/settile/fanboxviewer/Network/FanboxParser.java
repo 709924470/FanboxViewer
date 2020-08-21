@@ -276,7 +276,7 @@ public class FanboxParser {
                     postToCover.put(json.getString("id"), headerUrl);
                 }
 
-                lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan));
+                //lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan, userId));
             }
 
 //            android.util.Log.d("getPosts", "Returning ...");
@@ -292,7 +292,6 @@ public class FanboxParser {
     public static HashMap<Integer, Object> getUserPosts(@NotNull String userId, String useUrl, @NotNull Context c) {
         try {
 //            android.util.Log.d("getPosts", (refresh ? "t" : "f") + (all ? "t" : "f"));
-
             List<CardItem> lci = new ArrayList<>();
 
             JSONArray posts;
@@ -358,7 +357,7 @@ public class FanboxParser {
                     postToCover.put(json.getString("id"), headerUrl);
                 }
 
-                lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan));
+                lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan, userId));
             }
 
             HashMap<Integer, Object> result = new HashMap<>();

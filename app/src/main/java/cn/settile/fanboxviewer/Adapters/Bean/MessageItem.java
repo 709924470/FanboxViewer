@@ -5,6 +5,7 @@ public class MessageItem {
     private String title;
     private String msg;
     private String iconUrl;
+    public String extra;
 
     public MessageItem(String title, String msg, String url, String iconUrl) {
         this.title = title;
