@@ -5,8 +5,12 @@
     android:id="@+id/item_message"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:orientation="horizontal">
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:orientation="horizontal"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,16 +18,18 @@
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/item_msg_avatar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:foregroundGravity="center"
             android:scaleType="fitCenter"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:riv_border_color="#CCCCCC"
-            app:riv_border_width="2dp"
+            app:riv_border_width="0dp"
             app:riv_corner_radius="128dp"
             app:riv_mutate_background="true"
             app:riv_oval="false"
@@ -34,7 +40,7 @@
             android:id="@+id/constraintLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
@@ -53,9 +59,10 @@
 
             <TextView
                 android:id="@+id/item_msg_content"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="8dp"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:textColor="@android:color/tertiary_text_dark"
                 android:textSize="12sp"

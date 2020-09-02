@@ -9,8 +9,8 @@
     android:layout_marginEnd="8dp"
     android:layout_marginBottom="4dp"
     android:orientation="horizontal"
-    app:cardCornerRadius="4dp"
-    app:cardElevation="4dp"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="1dp"
     app:cardUseCompatPadding="true">
 
     <LinearLayout
@@ -21,24 +21,27 @@
         <ImageView
             android:id="@+id/item_header_image"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="200dp"
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:paddingTop="@dimen/img_card_avatar_margin"
+            android:paddingLeft="@dimen/img_card_avatar_margin"
+            android:paddingRight="@dimen/img_card_avatar_margin"
+            android:paddingBottom="@dimen/img_card_avatar_margin">
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/item_card_avatar"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="4dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:scaleType="centerInside"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:riv_border_color="#CCCCCC"
-                app:riv_border_width="2dp"
+                app:riv_border_width="0dp"
                 app:riv_corner_radius="128dp"
                 app:riv_mutate_background="true"
                 app:riv_oval="false"
@@ -49,10 +52,11 @@
                 android:id="@+id/item_card_user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="4dp"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:textSize="14sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/item_card_avatar"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -60,7 +64,9 @@
                 android:id="@+id/item_card_create_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="10sp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
                 app:layout_constraintStart_toStartOf="@+id/item_card_user_name"
                 app:layout_constraintTop_toBottomOf="@+id/item_card_user_name" />
 
@@ -68,11 +74,12 @@
                 android:id="@+id/item_card_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="2dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/item_card_avatar" />
@@ -81,9 +88,9 @@
                 android:id="@+id/item_card_desc"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="24dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="0dp"
                 android:maxLines="2"
                 android:minLines="1"
                 android:textSize="12sp"
@@ -101,8 +108,9 @@
                 android:padding="2dp"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
-                android:textColor="#636363"
-                android:textSize="12sp"
+                android:textColor="#bf232323"
+                android:textSize="10sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -125,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="0dp"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

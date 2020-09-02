@@ -150,10 +150,10 @@ public class UserDetailActivity extends AppCompatActivity {
                                     if(view == null){
                                         return;
                                     }
-                                    view.setBackgroundColor(
-                                            Palette.from(toBitmap(header.getDrawable()))
-                                                    .generate()
-                                                    .getDarkMutedColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimaryDark)));
+//                                    view.setBackgroundColor(
+//                                            Palette.from(toBitmap(header.getDrawable()))
+//                                                    .generate()
+//                                                    .getDarkMutedColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimaryDark)));
                                 }
 
                                 @Override

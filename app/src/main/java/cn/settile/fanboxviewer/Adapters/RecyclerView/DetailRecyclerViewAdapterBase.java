@@ -26,6 +26,8 @@ import cn.settile.fanboxviewer.ImageViewActivity;
 import cn.settile.fanboxviewer.Network.WebViewCookieHandler;
 import cn.settile.fanboxviewer.R;
 
+import static cn.settile.fanboxviewer.App.getContext;
+
 public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final int TYPE_IMAGE = 0;
@@ -187,7 +189,8 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             super(itemView);
             tv = itemView.findViewById(R.id.com_user_detail_text);
             tv.setVisibility(View.VISIBLE);
-            tv.setTextSize(18);
+            double dip=getContext().getResources().getDisplayMetrics().density;
+            tv.setPadding((int)(16 * dip) ,(int)(16 * dip),(int)(16 * dip),0);
             itemView.findViewById(R.id.com_user_detail_img).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_dl).setVisibility(View.GONE);
