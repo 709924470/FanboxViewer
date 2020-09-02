@@ -176,7 +176,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             itemView.findViewById(R.id.com_user_detail_text).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_dl).setVisibility(View.GONE);
-
+            itemView.findViewById(R.id.com_user_detail_space).setVisibility(View.VISIBLE);
         }
     }
 
@@ -187,6 +187,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             super(itemView);
             tv = itemView.findViewById(R.id.com_user_detail_text);
             tv.setVisibility(View.VISIBLE);
+            tv.setTextSize(18);
             itemView.findViewById(R.id.com_user_detail_img).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_dl).setVisibility(View.GONE);

@@ -357,8 +357,7 @@ public class FanboxParser {
     public static int getUnreadMessagesCount() throws Exception{
         Call<ResponseBody> caller = client.getUnreadMessageCount();
 
-        JSONObject json = APIJSONFactory(caller).getJSONObject("body");
-        return json.getInt("count");
+        return APIJSONFactory(caller).getInt("body");
     }
 
     public static void setClient(FanboxAPI client){

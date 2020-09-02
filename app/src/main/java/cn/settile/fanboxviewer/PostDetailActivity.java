@@ -128,11 +128,12 @@ public class PostDetailActivity extends AppCompatActivity {
                 try {
                     image = createImageFile(title + "_" + position +
                             images.get(position)
-                                    .substring(images.get(position).lastIndexOf('.') - 1));
+                                    .substring(images.get(position).lastIndexOf('.')));
                     Common.downloadThread(images.get(position), image,
-                            () -> Snackbar.make(getWindow().getDecorView(), "Downloaded " + image.getName(), Snackbar.LENGTH_LONG).show(),
-                            () -> Snackbar.make(getWindow().getDecorView(), "Fail to download " + image.getName(), Snackbar.LENGTH_LONG).show());
-                    galleryAddPic(image.getAbsolutePath(), this);
+                            () -> {Snackbar.make(getWindow().getDecorView(), "Downloaded " + image.getName(), Snackbar.LENGTH_LONG).show();
+                                galleryAddPic(image.getAbsolutePath(), this);},
+                            () -> Snackbar.make(getWindow().getDecorView().getRootView(), "Fail to download " + image.getName(), Snackbar.LENGTH_LONG).show());
+                    Log.d(TAG, "batchDownload: " + image.getAbsolutePath());
                 }catch (Exception ex){
                     Log.e(TAG, "onCreate: ", ex);
                 }

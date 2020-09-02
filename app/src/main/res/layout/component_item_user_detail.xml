@@ -16,6 +16,7 @@
         android:id="@+id/com_user_detail_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32sp"
         android:autoLink="web"
         android:linksClickable="true"
         android:text="@string/empty"
@@ -24,7 +25,8 @@
     <ImageView
         android:id="@+id/com_user_detail_img"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         tools:src="@tools:sample/backgrounds/scenic"
         tools:visibility="gone" />
 
