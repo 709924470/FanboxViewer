@@ -18,69 +18,85 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
-            android:layout_height="190dp"
+            android:layout_height="200dp"
+
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:toolbarId="@id/detail_toolBar">
 
-            <ImageView
-                android:id="@+id/detail_header"
-                android:layout_width="match_parent"
-                android:layout_height="130dp"
-                android:layout_gravity="top"
-                android:elevation="4dp"
-                android:fitsSystemWindows="true"
-                android:scaleType="centerCrop"
-                app:layout_collapseMode="parallax"
-                tools:src="@tools:sample/avatars[0]" />
-
-            <LinearLayout
-                android:id="@+id/detail_llo"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_gravity="bottom|start"
                 android:fitsSystemWindows="true"
-                android:gravity="bottom|start"
-                android:orientation="horizontal"
-                android:paddingBottom="4dp">
+                android:gravity="bottom|start">
 
-                <com.makeramen.roundedimageview.RoundedImageView
-                    android:id="@+id/detail_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:contentDescription="@string/nav_header_desc"
-                    android:paddingStart="@dimen/activity_horizontal_margin"
-                    android:paddingEnd="@dimen/activity_horizontal_margin"
-                    app:riv_border_color="#CCCCCC"
-                    app:riv_border_width="2dp"
-                    app:riv_corner_radius="32dp"
-                    app:riv_mutate_background="true"
-                    app:riv_oval="false"
-                    app:riv_tile_mode="clamp"
-                    app:srcCompat="@mipmap/ic_launcher_round" />
+
+                <ImageView
+                    android:id="@+id/detail_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:minHeight="200dp"
+                    android:layout_gravity="top"
+                    android:scaleType="centerCrop"
+                    app:layout_collapseMode="parallax"
+                    tools:src="@tools:sample/avatars[0]" />
 
                 <LinearLayout
+                    android:id="@+id/detail_llo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_gravity="bottom|start"
+                    android:fitsSystemWindows="true"
+                    android:gravity="bottom|start"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/img_fit_avatar_margin">
 
-                    <TextView
-                        android:id="@+id/detail_user_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="@dimen/nav_header_vertical_spacing"
-                        android:text="username"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-                    <TextView
-                        android:id="@+id/detail_user_id"
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:id="@+id/detail_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="userid" />
-                </LinearLayout>
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/nav_header_desc"
+                        android:paddingStart="@dimen/activity_horizontal_margin"
+                        android:paddingEnd="@dimen/activity_horizontal_margin"
+                        app:riv_border_color="#CCCCCC"
+                        app:riv_border_width="1dp"
+                        app:riv_corner_radius="32dp"
+                        app:riv_mutate_background="false"
+                        app:riv_oval="false"
+                        app:riv_tile_mode="clamp"
+                        app:srcCompat="@mipmap/ic_launcher_round" />
 
-            </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="6dp">
+
+                        <TextView
+                            android:id="@+id/detail_user_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="@dimen/nav_header_vertical_spacing"
+                            android:text="username"
+
+                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                        <TextView
+                            android:id="@+id/detail_user_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="userid" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </FrameLayout>
+
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/detail_toolBar"
@@ -137,7 +153,8 @@
                 style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:layout_marginTop="128dp"/>
 
             <androidx.viewpager.widget.ViewPager
                 android:id="@+id/detail_pager"
