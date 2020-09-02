@@ -7,20 +7,19 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="8dp"
-        android:paddingTop="2dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="2dp"
-        android:text="@string/supporting_creators" />
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:paddingStart="8dp"-->
+<!--        android:paddingTop="2dp"-->
+<!--        android:paddingEnd="8dp"-->
+<!--        android:paddingBottom="2dp"-->
+<!--        android:text="@string/supporting_creators" />-->
 
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:background="@drawable/inner_shadow_reverse" />
+        android:layout_height="16dp" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -48,7 +47,8 @@
                 android:id="@+id/frag_post_plan_icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="0dp"
                 android:scaleType="centerInside"
                 android:visibility="gone"
                 app:riv_border_color="#CCCCCC"
@@ -64,17 +64,16 @@
     <View
         android:id="@+id/divider2"
         android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:background="@drawable/inner_shadow" />
+        android:layout_height="12dp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/divider_line"
-        android:paddingStart="8dp"
-        android:paddingTop="2dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="2dp"
-        android:text="@string/posts" />
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@drawable/divider_line"-->
+<!--        android:paddingStart="8dp"-->
+<!--        android:paddingTop="2dp"-->
+<!--        android:paddingEnd="8dp"-->
+<!--        android:paddingBottom="2dp"-->
+<!--        android:text="@string/posts" />-->
 
 </LinearLayout>
