@@ -22,8 +22,8 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
-import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
+import cn.settile.fanboxviewer.Network.Bean.CardItem;
+import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.Fragments.Main.AllPostFragment;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.PostDetailActivity;

@@ -1,4 +1,4 @@
-package cn.settile.fanboxviewer.Adapters.Bean;
+package cn.settile.fanboxviewer.Network.Bean;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +26,7 @@ public class CardItem {
     @Setter
     @ToString.Include
     private String userId;
+    private String pixivId;
     @Getter
     @Setter
     @ToString.Include
@@ -45,6 +46,20 @@ public class CardItem {
 
     public CardItem(String iconUrl, String headerUrl, String url,
                     String title, String desc,
+                    String creator, String createTime, String plan, String userId, String pixivId) {
+        this.iconUrl = iconUrl;
+        this.headerUrl = headerUrl;
+        this.url = url;
+        this.title = title;
+        this.desc = desc;
+        this.creator = creator;
+        this.createTime = createTime;
+        this.plan = plan;
+        this.userId = userId;
+        this.pixivId = pixivId;
+    }
+    public CardItem(String iconUrl, String headerUrl, String url,
+                    String title, String desc,
                     String creator, String createTime, String plan, String userId) {
         this.iconUrl = iconUrl;
         this.headerUrl = headerUrl;
@@ -55,5 +70,6 @@ public class CardItem {
         this.createTime = createTime;
         this.plan = plan;
         this.userId = userId;
+        this.pixivId = "";
     }
 }

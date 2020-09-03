@@ -9,30 +9,33 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
+import cn.settile.fanboxviewer.Network.Bean.CardItem;
+import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.PostDetail.PostDetailRecyclerViewAdapter;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 
+import static cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser.APIJSONFactory;
+import static cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser.client;
 import static cn.settile.fanboxviewer.Util.Util.createImageFile;
 import static cn.settile.fanboxviewer.Util.Util.galleryAddPic;
-import static cn.settile.fanboxviewer.Util.Util.toBitmap;
 
 @Slf4j
 public class PostDetailActivity extends AppCompatActivity {
@@ -46,6 +49,9 @@ public class PostDetailActivity extends AppCompatActivity {
 
     private final String TAG = getClass().getName();
     private String userId;
+    private boolean isFromURL;
+    private String title;
+    private String fee;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,50 +69,37 @@ public class PostDetailActivity extends AppCompatActivity {
         this.userName = intent.getStringExtra("NAME");
         this.iconUrl = intent.getStringExtra("ICON");
         this.userId = intent.getStringExtra("CID");
+        this.coverUrl = intent.getStringExtra("COVER");
+        this.title = intent.getStringExtra("TITLE");
+        String fee = intent.getStringExtra("FEE");
+        this.fee = intent.getStringExtra("TIME") + " - " + fee;
 
+        this.isFromURL = intent.getBooleanExtra("isURL", false);
+
+        if (!isFromURL)
+            delayedSetup();
+
+        setup();
+
+        setResult(-1);
+    }
+
+    private void delayedSetup(){
         ((TextView) findViewById(R.id.post_detail_user_name)).setText(userName);
         Picasso.get()
                 .load(iconUrl)
                 .placeholder(R.drawable.load_24dp)
                 .into((ImageView) findViewById(R.id.post_detail_icon));
 
-        this.coverUrl = intent.getStringExtra("COVER");
-        String title = intent.getStringExtra("TITLE");
-
         ((TextView) findViewById(R.id.post_detail_title)).setText(title);
 
         ImageView header = findViewById(R.id.post_detail_header);
-        View view = findViewById(R.id.post_detail_app_bar);
         Picasso.get()
                 .load(coverUrl)
                 .placeholder(R.drawable.load_24dp)
-                .into(header, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        if(view == null){
-                            return;
-                        }
-//                        view.setBackgroundColor(
-//                                Palette.from(toBitmap(header.getDrawable()))
-//                                        .generate()
-//                                        .getDarkMutedColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimaryDark)));
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-
-                    }
-                });
-
-        String fee = intent.getStringExtra("FEE");
-        fee = intent.getStringExtra("TIME") + " - " + fee;
+                .into(header);
 
         ((TextView) findViewById(R.id.post_detail_user_id)).setText(fee);
-
-        Picasso.get()
-                .load(iconUrl)
-                .placeholder(R.drawable.load_24dp)
-                .into((ImageView) findViewById(R.id.post_detail_icon));
 
         this.rv = findViewById(R.id.post_detail_content);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -114,22 +107,17 @@ public class PostDetailActivity extends AppCompatActivity {
         rv.setLayoutManager(llm);
         rv.setAdapter(adapter);
 
-        setup();
-
-        setResult(-1);
-
         FloatingActionButton fab = findViewById(R.id.post_detail_download);
         fab.setOnClickListener(view1 ->{
             List<String> images = adapter.images;
             for(int i = 0; i < images.size(); i++){
                 Snackbar.make(view1, "Downloading", Snackbar.LENGTH_LONG).show();
                 File image;
-                int position = i;
                 try {
-                    image = createImageFile(title + "_" + position +
-                            images.get(position)
-                                    .substring(images.get(position).lastIndexOf('.')));
-                    Common.downloadThread(images.get(position), image,
+                    image = createImageFile(title + "_" + i +
+                            images.get(i)
+                                    .substring(images.get(i).lastIndexOf('.')));
+                    Common.downloadThread(images.get(i), image,
                             () -> {Snackbar.make(getWindow().getDecorView(), "Downloaded " + image.getName(), Snackbar.LENGTH_LONG).show();
                                 galleryAddPic(image.getAbsolutePath(), this);},
                             () -> Snackbar.make(getWindow().getDecorView().getRootView(), "Fail to download " + image.getName(), Snackbar.LENGTH_LONG).show());
@@ -144,7 +132,22 @@ public class PostDetailActivity extends AppCompatActivity {
     private void setup(){
         new Thread(() -> {
             try{
-                List<DetailItem> ldi = new FanboxParser(userId).getPostDetail(this.url);
+                FanboxParser fanboxParser = new FanboxParser(userId);
+                Call<ResponseBody> creatorInfoCaller = client.getPostInfo(Integer.parseInt(url));
+                JSONObject body = APIJSONFactory(creatorInfoCaller).getJSONObject("body");
+                List<DetailItem> ldi = fanboxParser.getPostContent(body);
+
+                if (isFromURL){
+                    CardItem detail = fanboxParser.getPostDetail(body);
+                    this.userName = detail.getCreator();
+                    this.iconUrl = detail.getIconUrl();
+                    this.userId = detail.getUserId();
+                    this.coverUrl = detail.getHeaderUrl();
+                    this.title = detail.getTitle();
+                    this.fee = detail.getPlan();
+                    runOnUiThread(this::delayedSetup);
+                }
+
                 Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> {
                     runOnUiThread(() -> {
                         adapter.updateItems(ldi);

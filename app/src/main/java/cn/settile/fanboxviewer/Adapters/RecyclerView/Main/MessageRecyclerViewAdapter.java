@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
+import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.Fragments.Main.MessageFragment;
 import cn.settile.fanboxviewer.R;
 

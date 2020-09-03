@@ -1,4 +1,4 @@
-package cn.settile.fanboxviewer.Adapters.Bean;
+package cn.settile.fanboxviewer.Network.Bean;
 
 import java.util.ArrayList;
 import java.util.List;

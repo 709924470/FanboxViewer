@@ -19,11 +19,11 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
-import cn.settile.fanboxviewer.Adapters.Bean.CreatorItem;
-import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
-import cn.settile.fanboxviewer.Adapters.Bean.ImageItem;
-import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
+import cn.settile.fanboxviewer.Network.Bean.CardItem;
+import cn.settile.fanboxviewer.Network.Bean.CreatorItem;
+import cn.settile.fanboxviewer.Network.Bean.DetailItem;
+import cn.settile.fanboxviewer.Network.Bean.ImageItem;
+import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.App;
 import cn.settile.fanboxviewer.BuildConfig;
 import cn.settile.fanboxviewer.R;
@@ -92,11 +92,19 @@ public class FanboxParser {
         }
     }
 
-    public List<DetailItem> getPostDetail(String id) throws Exception{
-        List<DetailItem> items = new ArrayList<>();
+    public CardItem getPostDetail(JSONObject body) throws Exception{
+        return getCardItem(body, c);
+    }
 
+    public List<DetailItem> getPostContent(String id) throws Exception{
         Call<ResponseBody> creatorInfoCaller = client.getPostInfo(Integer.parseInt(id));
         JSONObject body = APIJSONFactory(creatorInfoCaller).getJSONObject("body");
+        return getPostContent(body);
+    }
+
+    public List<DetailItem> getPostContent(JSONObject body) throws Exception{
+        List<DetailItem> items = new ArrayList<>();
+
         if(!body.getString("restrictedFor").equals("null")){
             items.add(new DetailItem(DetailItem.Type.TEXT,
                     String.format(c.getString(R.string.plan_formatting), body.getInt("feeRequired"))));
@@ -367,7 +375,7 @@ public class FanboxParser {
     }
 
     @NotNull
-    private static JSONObject APIJSONFactory(Call<ResponseBody> caller) throws Exception {
+    public static JSONObject APIJSONFactory(Call<ResponseBody> caller) throws Exception {
         if (Objects.equals(client, null))
             throw new Exception("NULL Client");
         Response<ResponseBody> resp = caller.execute();
@@ -392,6 +400,7 @@ public class FanboxParser {
 
         JSONObject user = json.getJSONObject("user");
         String userName = user.getString("name");
+        String pixivId = user.getString("userId");
         String userId = json.optString("creatorId");
 
         String iconUrl = user.getString("iconUrl");
@@ -411,6 +420,6 @@ public class FanboxParser {
                 }
             }
         }
-        return new CardItem(iconUrl, headerUrl, json.getString("id"), title, desc, userName, date, plan, userId);
+        return new CardItem(iconUrl, headerUrl, json.getString("id"), title, desc, userName, date, plan, userId, pixivId);
     }
 }

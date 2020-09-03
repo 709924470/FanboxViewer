@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
+import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.ImageViewActivity;
 import cn.settile.fanboxviewer.Network.WebViewCookieHandler;
 import cn.settile.fanboxviewer.R;

@@ -1,4 +1,4 @@
-package cn.settile.fanboxviewer.Adapters.Bean;
+package cn.settile.fanboxviewer.Network.Bean;
 
 public class MessageItem {
     private String url;

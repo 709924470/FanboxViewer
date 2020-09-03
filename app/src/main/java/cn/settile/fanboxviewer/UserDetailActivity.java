@@ -8,32 +8,27 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.palette.graphics.Palette;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
-import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
+import cn.settile.fanboxviewer.Network.Bean.CardItem;
+import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.Adapters.Fragment.UserDetailFragmentAdapter;
 import cn.settile.fanboxviewer.Fragments.UserDetail.PostFragment;
 import cn.settile.fanboxviewer.Fragments.UserDetail.UserDetailFragment;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import lombok.extern.slf4j.Slf4j;
-
-import static cn.settile.fanboxviewer.Util.Util.toBitmap;
 
 @Slf4j
 public class UserDetailActivity extends AppCompatActivity {
@@ -46,6 +41,7 @@ public class UserDetailActivity extends AppCompatActivity {
     private PostFragment posts;
     List<DetailItem> details = null;
     private String userId;
+    private boolean isFromURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +59,17 @@ public class UserDetailActivity extends AppCompatActivity {
         this.iconUrl = intent.getStringExtra("ICON");
         this.userId = intent.getStringExtra("CID");
 
-        Picasso.get()
-                .load(iconUrl)
-                .placeholder(R.drawable.load_24dp)
-                .into((ImageView) findViewById(R.id.detail_icon));
+        this.isFromURL = intent.getBooleanExtra("isURL", false);
+
+        if (!Objects.equals(iconUrl, null))
+            Picasso.get()
+                    .load(iconUrl)
+                    .placeholder(R.drawable.load_24dp)
+                    .into((ImageView) findViewById(R.id.detail_icon));
 
         TextView name = findViewById(R.id.detail_user_name);
-        name.setText(userName);
+        if (!Objects.equals(userName, null))
+            name.setText(userName);
 
         TabLayout tabLayout = findViewById(R.id.detail_tab_layout);
         ViewPager viewPager = findViewById(R.id.detail_pager);
@@ -102,6 +102,14 @@ public class UserDetailActivity extends AppCompatActivity {
                 JSONObject detail = fanboxParser.getUserDetail();
                 JSONObject body = detail.getJSONObject("body");
                 JSONObject user = body.getJSONObject("user");
+
+                if(isFromURL){
+                    // Official account's icon
+                    iconUrl = user.optString("iconUrl", "https://pixiv.pximg.net/c/160x160_90_a2_g5/fanbox/public/images/user/20390859/icon/ZYMvxFOQp6LyH9nv0luZdH5s.jpeg");
+                    userName = user.optString("name", "www");
+                    if (!userName.equals("www"))
+                        ((TextView) findViewById(R.id.detail_user_name)).setText(userName);
+                }
 
                 String description = body.optString("description");
                 JSONArray links = body.optJSONArray("profileLinks");
@@ -140,27 +148,10 @@ public class UserDetailActivity extends AppCompatActivity {
                             .into((ImageView) findViewById(R.id.detail_icon));
 
                     ImageView header = findViewById(R.id.detail_header);
-                    View view = findViewById(R.id.user_detail_app_bar);
                     Picasso.get()
                             .load(coverImage)
                             .placeholder(R.drawable.load_24dp)
-                            .into(header, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    if(view == null){
-                                        return;
-                                    }
-//                                    view.setBackgroundColor(
-//                                            Palette.from(toBitmap(header.getDrawable()))
-//                                                    .generate()
-//                                                    .getDarkMutedColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimaryDark)));
-                                }
-
-                                @Override
-                                public void onError(Exception e) {
-
-                                }
-                            });
+                            .into(header);
 
                     ((TextView) findViewById(R.id.detail_user_id)).setText(uid);
                     ((TextView) findViewById(R.id.detail_user_name)).setText(name);

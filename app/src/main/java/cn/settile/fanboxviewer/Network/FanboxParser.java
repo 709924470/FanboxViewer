@@ -16,9 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
-import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
-import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
+import cn.settile.fanboxviewer.Network.Bean.CardItem;
+import cn.settile.fanboxviewer.Network.Bean.DetailItem;
+import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.R;
 import cn.settile.fanboxviewer.Util.Constants;
 import lombok.extern.slf4j.Slf4j;
@@ -323,6 +323,7 @@ public class FanboxParser {
 
                 JSONObject user = json.getJSONObject("user");
                 String userName = user.getString("name");
+                String pixivId = user.getString("userId");
 
                 String iconUrl = user.getString("iconUrl");
                 if (userToIcon.get(userId) == null) {
@@ -357,7 +358,7 @@ public class FanboxParser {
                     postToCover.put(json.getString("id"), headerUrl);
                 }
 
-                lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan, userId));
+                lci.add(new CardItem(iconUrl, headerUrl, url, title, desc, userName, date, plan, userId, pixivId));
             }
 
             HashMap<Integer, Object> result = new HashMap<>();
