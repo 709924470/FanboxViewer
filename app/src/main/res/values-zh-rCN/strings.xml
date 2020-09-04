@@ -29,4 +29,6 @@
     <string name="user_posts">投稿</string>
     <string name="plan_formatting">赞助月费高于%d日元即可浏览</string>
     <string name="download">下载</string>
+    <string name="download_complete">下载完成</string>
+    <string name="download_failed">下载失败</string>
 </resources>

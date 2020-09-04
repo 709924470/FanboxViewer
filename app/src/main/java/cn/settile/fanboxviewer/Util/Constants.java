@@ -4,8 +4,13 @@ public class Constants {
     public static String StroagePath = null;
     public static String Cookie = "";
     public static boolean DEBUG = true;
+
     public static int MAX_HOME_LOAD_PAGE = 10;
     public static int MAX_PLAN_LOAD_PAGE = 10;
+
+    public static int MAX_DOWNLOAD_THREADS = 9;
+
+    public static String DOWNLOAD_PATH = null;
 
     public final class requestCodes {
         public static final int LOGIN = 0;

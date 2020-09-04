@@ -132,7 +132,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         }
 
         Uri url = getIntent().getData();
-        Log.d(TAG, "Main_ocCreate_run: " + url);
+        Log.d(TAG, "Main_onCreate_run: " + url);
         while (!Objects.equals(url, null)){                     // no extra function calls
             String username = url.getHost().split("\\.")[0];
             String path = url.getPath();                            // main=/  posts=/posts/<id>
@@ -146,7 +146,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
                     }else{
                         username = path.split("/posts/")[0];
                     }
-                    Log.d(TAG, "Main_ocCreate_run: " + username + "  ---  " + path);
+                    Log.d(TAG, "Main_onCreate_run: " + username + "  ---  " + path);
                 }else{
                     break;
                 }

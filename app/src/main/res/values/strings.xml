@@ -133,4 +133,6 @@
     <string name="title_activity_post_detail" translatable="false">PostDetailActivity</string>
     <string name="plan_formatting">Support at least %d yen/month to unlock</string>
     <string name="download">Download</string>
+    <string name="download_complete">Download complete.</string>
+    <string name="download_failed">Download failed.</string>
 </resources>
