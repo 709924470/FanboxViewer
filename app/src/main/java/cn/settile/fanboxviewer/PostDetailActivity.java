@@ -26,12 +26,14 @@ import java.util.concurrent.Future;
 import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.PostDetail.PostDetailRecyclerViewAdapter;
+import cn.settile.fanboxviewer.Network.Bean.DownloadItem;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 
+import static cn.settile.fanboxviewer.Network.DownloadManager.queue;
 import static cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser.APIJSONFactory;
 import static cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser.client;
 import static cn.settile.fanboxviewer.Util.Util.createImageFile;
@@ -112,16 +114,11 @@ public class PostDetailActivity extends AppCompatActivity {
             List<String> images = adapter.images;
             for(int i = 0; i < images.size(); i++){
                 Snackbar.make(view1, "Downloading", Snackbar.LENGTH_LONG).show();
-                File image;
                 try {
-                    image = createImageFile(title + "_" + i +
-                            images.get(i)
-                                    .substring(images.get(i).lastIndexOf('.')));
-                    Common.downloadThread(images.get(i), image,
-                            () -> {Snackbar.make(getWindow().getDecorView(), "Downloaded " + image.getName(), Snackbar.LENGTH_LONG).show();
-                                galleryAddPic(image.getAbsolutePath(), this);},
-                            () -> Snackbar.make(getWindow().getDecorView().getRootView(), "Fail to download " + image.getName(), Snackbar.LENGTH_LONG).show());
-                    Log.d(TAG, "batchDownload: " + image.getAbsolutePath());
+                    String extension = images.get(i)
+                            .substring(images.get(i).lastIndexOf('.'));
+                    String name = title + "_" + i + extension;
+                    queue(new DownloadItem(images.get(i), name));
                 }catch (Exception ex){
                     Log.e(TAG, "onCreate: ", ex);
                 }

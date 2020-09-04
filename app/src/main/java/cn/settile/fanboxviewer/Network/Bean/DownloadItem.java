@@ -16,4 +16,11 @@ public class DownloadItem {
         this.name = name;
         this.displayName = displayName;
     }
+
+    public DownloadItem(String url, String name) {
+        this.url = url;
+        this.path = DOWNLOAD_PATH;
+        this.name = name;
+        this.displayName = name;
+    }
 }

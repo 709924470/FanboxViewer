@@ -4,6 +4,7 @@ public class Constants {
     public static String StroagePath = null;
     public static String Cookie = "";
     public static boolean DEBUG = true;
+    public static boolean NOTIFICATION_SETUP = false;
 
     public static int MAX_HOME_LOAD_PAGE = 10;
     public static int MAX_PLAN_LOAD_PAGE = 10;

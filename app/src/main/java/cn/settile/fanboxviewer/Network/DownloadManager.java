@@ -2,7 +2,10 @@ package cn.settile.fanboxviewer.Network;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -16,16 +19,20 @@ import java.util.Queue;
 import cn.settile.fanboxviewer.App;
 import cn.settile.fanboxviewer.Network.Bean.DownloadItem;
 import cn.settile.fanboxviewer.R;
+import cn.settile.fanboxviewer.SplashActivity;
 import okhttp3.Request;
 import okhttp3.Response;
+import retrofit2.http.Url;
 
 import static cn.settile.fanboxviewer.App.getApplication;
+import static cn.settile.fanboxviewer.App.getContext;
 import static cn.settile.fanboxviewer.App.notificationFactory;
 import static cn.settile.fanboxviewer.Network.Common.client;
 import static cn.settile.fanboxviewer.Network.Common.initClient;
 import static cn.settile.fanboxviewer.Util.Constants.DOWNLOAD_PATH;
 import static cn.settile.fanboxviewer.Util.Constants.MAX_DOWNLOAD_THREADS;
 import static cn.settile.fanboxviewer.Util.Util.createImageFile;
+import static cn.settile.fanboxviewer.Util.Util.galleryAddPic;
 import static java.util.Objects.requireNonNull;
 
 public class DownloadManager implements Runnable {
@@ -78,7 +85,8 @@ public class DownloadManager implements Runnable {
         Notification.Builder notification = notificationFactory(App.getContext().getString(R.string.downloading), item.displayName, CHANNEL_ID);
         NotificationManager manager = (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
 
-        int currentID = ID++;
+        final int currentID = ID++;
+        final int nextID = ID++;
         notification.setProgress(100, 0, true);
         manager.notify(currentID, notification.build());
 
@@ -88,30 +96,31 @@ public class DownloadManager implements Runnable {
         OutputStream op;
         try(Response response = client.newCall(request).execute()){
             output = new File(item.path, item.name);
-            is = requireNonNull(response.body()).byteStream();
+            is = response.body().byteStream();
             bif = new BufferedInputStream(is);
             op = new FileOutputStream(output);
 
-            int length = Integer.parseInt(requireNonNull(response.header("Length", "-1")));
+            long length = response.body().contentLength();
             byte[] buf = new byte[1024];
             int count, total = 0;
             while((count = bif.read(buf)) != -1){
                 op.write(buf, 0, count);
                 total += count;
-                notification.setProgress(100, (int) Math.ceil(total / length) * 100, false);
+                int percentage = (int) Math.ceil(((float)total / (float)length) * 100);
+//                Log.d(TAG, new StringBuilder("download: ").append(total).append(" - ").append(length).append(" - ").append(percentage).toString());
+                notification.setProgress(100, percentage, false);
                 manager.notify(currentID, notification.build());
             }
             op.flush();
             op.close();
             is.close();
-            notification.setProgress(0, 0, false);
-            notification.setContentTitle(App.getContext().getString(R.string.download_complete));
-            manager.notify(currentID, notification.build());
+            galleryAddPic(output.getPath());
+            manager.cancel(currentID);
+            manager.notify(nextID, notificationFactory(App.getContext().getString(R.string.download_complete), item.displayName, CHANNEL_ID).build());
         }catch (Exception e){
             Log.e(TAG, "download: EXCEPTION", e);
-            notification.setProgress(0, 0, false);
-            notification.setContentTitle(App.getContext().getString(R.string.download_failed));
-            manager.notify(currentID, notification.build());
+            manager.cancel(currentID);
+            manager.notify(nextID, notificationFactory(App.getContext().getString(R.string.download_failed), item.displayName, CHANNEL_ID).build());
         }
     }
 
