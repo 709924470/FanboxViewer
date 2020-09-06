@@ -190,7 +190,9 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             tv = itemView.findViewById(R.id.com_user_detail_text);
             tv.setVisibility(View.VISIBLE);
             double dip=getContext().getResources().getDisplayMetrics().density;
-            tv.setPadding((int)(16 * dip) ,(int)(16 * dip),(int)(16 * dip),0);
+
+            tv.setPadding((int)(16 * dip) ,(int)(12 * dip),(int)(16 * dip),(int)(12 * dip));
+
             itemView.findViewById(R.id.com_user_detail_img).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_dl).setVisibility(View.GONE);
