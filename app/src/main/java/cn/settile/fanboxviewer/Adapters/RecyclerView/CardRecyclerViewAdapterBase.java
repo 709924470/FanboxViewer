@@ -20,7 +20,7 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
+import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.PostDetailActivity;
 import cn.settile.fanboxviewer.R;

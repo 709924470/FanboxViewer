@@ -13,11 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
+import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.CardRecyclerViewAdapterBase;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.R;

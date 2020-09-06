@@ -14,7 +14,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-import cn.settile.fanboxviewer.Adapters.Bean.CardItem;
+import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.SubscribedPostsRecyclerViewAdapter;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.R;

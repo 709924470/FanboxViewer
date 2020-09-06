@@ -15,11 +15,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import cn.settile.fanboxviewer.Adapters.Bean.MessageItem;
+import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.MessageRecyclerViewAdapter;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.R;

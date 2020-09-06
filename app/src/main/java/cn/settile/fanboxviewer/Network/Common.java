@@ -19,6 +19,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import cn.settile.fanboxviewer.App;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxAPI;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.Util.Constants;

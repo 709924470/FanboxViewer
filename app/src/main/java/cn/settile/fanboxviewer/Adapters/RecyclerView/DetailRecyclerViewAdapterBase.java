@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import cn.settile.fanboxviewer.Adapters.Bean.DetailItem;
+import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.ImageViewActivity;
 import cn.settile.fanboxviewer.Network.WebViewCookieHandler;
 import cn.settile.fanboxviewer.R;
@@ -178,7 +178,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             itemView.findViewById(R.id.com_user_detail_text).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_dl).setVisibility(View.GONE);
-
+            itemView.findViewById(R.id.com_user_detail_space).setVisibility(View.VISIBLE);
         }
     }
 
@@ -191,7 +191,6 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             tv.setVisibility(View.VISIBLE);
             double dip=getContext().getResources().getDisplayMetrics().density;
             tv.setPadding((int)(16 * dip) ,(int)(16 * dip),(int)(16 * dip),0);
-
             itemView.findViewById(R.id.com_user_detail_img).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_dl).setVisibility(View.GONE);

@@ -18,9 +18,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.settile.fanboxviewer.Network.Bean.DownloadItem;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.CustomPicassoLoader;
 
+import static cn.settile.fanboxviewer.Network.DownloadManager.queue;
 import static cn.settile.fanboxviewer.Util.Util.createImageFile;
 import static cn.settile.fanboxviewer.Util.Util.galleryAddPic;
 import static cn.settile.fanboxviewer.Util.Util.toBitmap;
@@ -57,15 +59,11 @@ public class ImageViewActivity extends AppCompatActivity {
                 .hideThumbnailsOnClick(false)
                 .addOnImageLongClickListener(position -> {
                     Snackbar.make(getWindow().getDecorView(), "Downloading", Snackbar.LENGTH_LONG).show();
-                    File image;
                     try {
-                        image = createImageFile(detail + "_" + position +
-                                images.get(position)
-                                        .substring(images.get(position).lastIndexOf('.') - 1));
-                        Common.downloadThread(images.get(position), image,
-                                () -> Snackbar.make(getWindow().getDecorView(), "Downloaded", Snackbar.LENGTH_LONG).show(),
-                                () -> Snackbar.make(getWindow().getDecorView(), "Fail to download", Snackbar.LENGTH_LONG).show());
-                        galleryAddPic(image.getAbsolutePath(), this);
+                        String extension = images.get(position)
+                                .substring(images.get(position).lastIndexOf('.'));
+                        String name = detail + "_" + position + extension;
+                        queue(new DownloadItem(images.get(position), name));
                     }catch (Exception ex){
                         Log.e(TAG, "onCreate: ", ex);
                     }
@@ -105,16 +103,12 @@ public class ImageViewActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.image_view_download);
         fab.setOnClickListener(v -> {
             Snackbar.make(getWindow().getDecorView(), "Downloading", Snackbar.LENGTH_LONG).show();
-            File image;
             int position = view.getCurrentItem();
             try {
-                image = createImageFile(detail + "_" + position +
-                        images.get(position)
-                                .substring(images.get(position).lastIndexOf('.') - 1));
-                Common.downloadThread(images.get(position), image,
-                        () -> Snackbar.make(getWindow().getDecorView(), "Downloaded", Snackbar.LENGTH_LONG).show(),
-                        () -> Snackbar.make(getWindow().getDecorView(), "Fail to download", Snackbar.LENGTH_LONG).show());
-                galleryAddPic(image.getAbsolutePath(), this);
+                String extension = images.get(position)
+                        .substring(images.get(position).lastIndexOf('.'));
+                String name = detail + "_" + position + extension;
+                queue(new DownloadItem(images.get(position), name));
             }catch (Exception ex){
                 Log.e(TAG, "onCreate: ", ex);
             }

@@ -1,6 +1,7 @@
 package cn.settile.fanboxviewer;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -157,6 +158,7 @@ public class MainActivity extends AppCompatActivity
                 });
             } catch (Exception ex) {
                 runOnUiThread(() -> Toast.makeText(getBaseContext(), "Can't get user info.\n" + ex.getMessage(), Toast.LENGTH_LONG).show());
+                Log.e("MainActivity", "fetchUserInfo: ", ex);
             }
         }).start();
     }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -36,6 +38,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTitle(R.string.loading);
+
         thread = new Thread(this);
         thread.start();
     }
@@ -127,6 +130,42 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         } catch (Exception ex) {
             i.putExtra("isLoggedIn", false);
         }
+
+        Uri url = getIntent().getData();
+        Log.d(TAG, "Main_onCreate_run: " + url);
+        while (!Objects.equals(url, null)){                     // no extra function calls
+            String username = url.getHost().split("\\.")[0];
+            String path = url.getPath();                            // main=/  posts=/posts/<id>
+            if (username.equals("www")){
+                if (url.getPath().contains("@")){
+                    path = url.getPath().split("@")[1];
+                    Log.d(TAG, "run: " + path);
+                    if (!path.contains("/")){
+                        username = new StringBuilder(path).toString(); // Copy
+                        path = "/";
+                    }else{
+                        username = path.split("/posts/")[0];
+                    }
+                    Log.d(TAG, "Main_onCreate_run: " + username + "  ---  " + path);
+                }else{
+                    break;
+                }
+            }
+            Log.d(TAG, "onCreate: " + path);
+            if (path.equals("/")){
+                i = new Intent(this, UserDetailActivity.class);
+                i.putExtra("isURL", true);
+                i.putExtra("CID", username);
+            }else if (path.contains("/posts/")){
+                String postId = path.split("/posts/")[1];
+                i = new Intent(this, PostDetailActivity.class);
+                i.putExtra("isURL", true);
+                i.putExtra("CID", username);
+                i.putExtra("URL", postId);
+            }
+            break;
+        }
+
         startActivity(i);
         finish();
     }

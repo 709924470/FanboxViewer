@@ -15,6 +15,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.settile.fanboxviewer.App;
+
 public class Util {
     public static List<Object> toList(JSONArray array) throws Exception{
         List<Object> result = new ArrayList<>();
@@ -56,11 +58,11 @@ public class Util {
         return new File(storageDir, name);
     }
 
-    public static void galleryAddPic(String imagePath, Context c) {
+    public static void galleryAddPic(String imagePath) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(imagePath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
-        c.sendBroadcast(mediaScanIntent);
+        App.getContext().sendBroadcast(mediaScanIntent);
     }
 }
