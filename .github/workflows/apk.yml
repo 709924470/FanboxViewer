@@ -1,6 +1,12 @@
 name: Android Pull Request & Master CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Are you sure?'
+        required: true
+        default: "Yes"
   pull_request:
     branches:
       - 'master'
