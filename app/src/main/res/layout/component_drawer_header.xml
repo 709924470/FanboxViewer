@@ -44,6 +44,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:onClick="callLogin"
                 android:id="@+id/userName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -52,6 +53,8 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
             <TextView
+
+                android:onClick="callLogin"
                 android:id="@+id/userId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

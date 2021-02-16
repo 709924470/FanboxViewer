@@ -41,7 +41,7 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     private List<CardItem> cardItems;
 
     @Setter
-    OnBottomReachedListener onBottomReachedListener;
+    public OnBottomReachedListener onBottomReachedListener;
     private List<MessageItem> lmi;
 
 

@@ -1,6 +1,8 @@
 package cn.settile.fanboxviewer.Network;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
@@ -47,7 +49,7 @@ public class CustomPicassoLoader extends PicassoImageLoader {
                 .load(url)
                 .resize(thumbnailWidth == null ? 100 : thumbnailWidth,
                         thumbnailHeight == null ? 100 : thumbnailHeight)
-                .placeholder(R.drawable.placeholder_image)
+                .placeholder(new ColorDrawable(Color.argb(64,0,0,0)))
                 .centerInside()
                 .into(thumbnailView, new MyImageCallback(callback));
     }

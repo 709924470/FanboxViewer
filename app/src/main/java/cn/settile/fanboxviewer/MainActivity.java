@@ -1,9 +1,11 @@
 package cn.settile.fanboxviewer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,12 +17,11 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayout.BaseOnTabSelectedListener;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.Contract;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -40,9 +41,8 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    MainActivity c;
     static boolean flag = false;
-
+    MainActivity c;
     AllPostFragment allPostFragment;
     private MainFragmentAdapter tabPageAdapter;
     private TabLayout tl;
@@ -51,9 +51,11 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         c = this;
-        setContentView(R.layout.activity_main_page);
-        setTitle(R.string.app_name);
 
+        setContentView(R.layout.activity_main_page);
+
+
+        setTitle(R.string.app_name);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -90,30 +92,38 @@ public class MainActivity extends AppCompatActivity
         tl.setupWithViewPager(mVp);
 
         setResult(-1);
-        if (getIntent().getBooleanExtra("isLoggedIn", false)
-                && !getIntent().getBooleanExtra("NO_NETWORK", false)) {
-            fetchUserInfo();
-            new Thread(() -> {
-                getNotifications(messageFragment);
-                allPostFragment.updateList(FanboxParser.getAllPosts(false, this), FanboxParser.getPlans(), true);
-                subscPostFragment.updateList(FanboxParser.getSupportingPosts(false, this), true);
-            }).start();
+        if (!getIntent().getBooleanExtra("NO_NETWORK", false)) {
+            if (getIntent().getBooleanExtra("isLoggedIn", false)) {
+                fetchUserInfo();
+                new Thread(() -> {
+                    getNotifications(messageFragment);
+                    allPostFragment.updateList(FanboxParser.getAllPosts(false, this), FanboxParser.getPlans(), true);
+                    subscPostFragment.updateList(FanboxParser.getSupportingPosts(false, this), true);
+                }).start();
+            }
+        } else {
+
         }
+
 
         tl.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mVp.setCurrentItem(tab.getPosition(), true);
-                if (tab.getPosition() == 2 && !flag){
+                if (tab.getPosition() == 2 && !flag) {
                     messageFragment.update(true);
                     flag = !flag;
                     tab.removeBadge();
                 }
             }
+
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
         });
     }
 
@@ -151,7 +161,7 @@ public class MainActivity extends AppCompatActivity
                             .resize(200, 200)
                             .into((ImageView) findViewById(R.id.userIcon));
 
-                    if(unread != 0){
+                    if (unread != 0) {
                         Objects.requireNonNull(tl.getTabAt(2))
                                 .getOrCreateBadge().setNumber(unread);
                     }
@@ -220,5 +230,11 @@ public class MainActivity extends AppCompatActivity
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Contract("_->null")
+    public void callLogin(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivityForResult(intent, -1);
     }
 }
