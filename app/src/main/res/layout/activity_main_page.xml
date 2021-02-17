@@ -20,6 +20,8 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/component_drawer_header"
-        app:menu="@menu/activity_drawer_item" />
+        app:menu="@menu/activity_drawer_item" >
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

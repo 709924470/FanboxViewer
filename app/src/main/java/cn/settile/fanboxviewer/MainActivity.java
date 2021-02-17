@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.navigation.NavigationView;
@@ -35,14 +36,20 @@ import cn.settile.fanboxviewer.Fragments.Main.MessageFragment;
 import cn.settile.fanboxviewer.Fragments.Main.SubscPostFragment;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.ViewModels.MainViewModel;
 import okhttp3.Request;
 import okhttp3.Response;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    final static String TAG="MainActivity";
     static boolean flag = false;
-    MainActivity c;
+    MainViewModel viewModel = null;
+
+
+    MainActivity ctx;
     AllPostFragment allPostFragment;
     private MainFragmentAdapter tabPageAdapter;
     private TabLayout tl;
@@ -50,10 +57,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        c = this;
+        ctx = this;
 
         setContentView(R.layout.activity_main_page);
 
+
+        prepareUIAndActions();
 
         setTitle(R.string.app_name);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -93,16 +102,21 @@ public class MainActivity extends AppCompatActivity
 
         setResult(-1);
         if (!getIntent().getBooleanExtra("NO_NETWORK", false)) {
-            if (getIntent().getBooleanExtra("isLoggedIn", false)) {
+            if (getIntent().getBooleanExtra("IS_LOGGED_IN", false)) {
+                viewModel.update_is_logged_in(true);
                 fetchUserInfo();
                 new Thread(() -> {
                     getNotifications(messageFragment);
                     allPostFragment.updateList(FanboxParser.getAllPosts(false, this), FanboxParser.getPlans(), true);
                     subscPostFragment.updateList(FanboxParser.getSupportingPosts(false, this), true);
                 }).start();
-            }
-        } else {
 
+            } else {
+                viewModel.update_is_logged_in(false);
+            }
+            viewModel.update_is_online(true);
+        } else {
+            viewModel.update_is_online(false);
         }
 
 
@@ -127,6 +141,35 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+
+    void prepareUIAndActions() {
+
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
+        viewModel.is_logged_in().observe(this, (it) -> {
+            runOnUiThread(() -> {
+                Log.i(TAG,it.toString());
+                NavigationView navV = (NavigationView) ctx.findViewById(R.id.nav_view);
+                TextView usernameV = (TextView) navV.getHeaderView(0).findViewById(R.id.main_drawer_username);
+                TextView useridV = (TextView) navV.getHeaderView(0).findViewById(R.id.main_drawer_userid);
+                if (it) {
+
+                } else {
+                    usernameV.setOnClickListener((v) -> {
+                        callLogin();
+                    });
+                    useridV.setOnClickListener((v) -> {
+                        callLogin();
+                    });
+                }
+            });
+
+        });
+    }
+
+    ;
+
+
     private void getNotifications(MessageFragment mf) {
         mf.update(true);
     }
@@ -139,6 +182,7 @@ public class MainActivity extends AppCompatActivity
             try (Response resp = Common.client.newCall(req).execute()) {
                 Document document = Jsoup.parse(resp.body().string());
                 Element metadata = document.getElementById("metadata");
+                //TODO (fix this parser) : bug
                 String jsonStr = metadata.attr("content");
 
                 Common.userInfo = new JSONObject(jsonStr);
@@ -150,9 +194,9 @@ public class MainActivity extends AppCompatActivity
                 int unread = FanboxParser.getUnreadMessagesCount();
 
                 runOnUiThread(() -> {
-                    TextView textView = findViewById(R.id.userName);
+                    TextView textView = findViewById(R.id.main_drawer_username);
                     textView.setText(userName);
-                    textView = findViewById(R.id.userId);
+                    textView = findViewById(R.id.main_drawer_userid);
                     textView.setText(userId);
 
                     Picasso.get()
@@ -233,7 +277,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Contract("_->null")
-    public void callLogin(View view) {
+    public void callLogin() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivityForResult(intent, -1);
     }

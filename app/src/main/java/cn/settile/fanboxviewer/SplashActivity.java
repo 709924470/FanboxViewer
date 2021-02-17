@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.CookieManager;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,17 +17,9 @@ import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import cn.settile.fanboxviewer.Network.Common;
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxAPI;
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.Util.Constants;
-import retrofit2.Retrofit;
-
-import static cn.settile.fanboxviewer.Network.Common.initClient;
-import static cn.settile.fanboxviewer.Network.Common.isLoggedIn;
 
 public class SplashActivity extends AppCompatActivity implements Runnable {
     public static SharedPreferences sp;
@@ -47,6 +40,11 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     protected void onActivityResult(int request, int result, Intent data) {
         switch (request) {
             case Constants.requestCodes.LOGIN:
+                if (result == Constants.loginResultCodes.USER) {
+                    sp.edit().putBoolean("LoggedIn", true).commit();
+                } else {
+                    sp.edit().putBoolean("LoggedIn", false).commit();
+                }
                 recreate();
                 break;
             case Constants.requestCodes.EXIT:
@@ -59,7 +57,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
     }
 
@@ -74,21 +72,25 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
                     .apply();
         }
 
+
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         boolean isConnected = (networkInfo != null && networkInfo.isConnected());
 
         if (!isConnected) {
+            runOnUiThread(() -> {
+                Toast.makeText(this, "No network", Toast.LENGTH_SHORT).show();
+            });
             Intent i = new Intent(this, MainActivity.class);
-            i.putExtra("isLoggedIn", false);
+            i.putExtra("IS_LOGGED_IN", false);
             i.putExtra("NO_NETWORK", true);
             startActivity(i);
             return;
         }
 
-        if (firstRun) {
-            Log.d(TAG, "First Run");
+        if (!(sp.contains("LoggedIn") && sp.getBoolean("LoggedIn", false))) {
+            Log.d(TAG, "Hasn't logged.");
             Intent i = new Intent(this, LoginActivity.class);
             startActivityForResult(i, Constants.requestCodes.LOGIN);
             return;
@@ -96,67 +98,78 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
 
         CookieManager cm = CookieManager.getInstance();
         Constants.Cookie = cm.getCookie(getString(R.string.index));
-        if(Constants.Cookie == null){
+        if (Constants.Cookie == null) {
+
+            sp.edit().putBoolean("LoggedIn", false).commit();
             Intent i = new Intent(this, LoginActivity.class);
             startActivityForResult(i, Constants.requestCodes.LOGIN);
             return;
         }
 
-        initClient();
+        Common.initClient();
 
-        if(Common.singleton == null) {
+        if (Common.singleton == null) {
             Common.singleton = new Picasso.Builder(this)
                     .downloader(new OkHttp3Downloader(Common.client))
                     .build();
             Picasso.setSingletonInstance(Common.singleton);
         }
 
-        Intent i = new Intent(this, MainActivity.class);
-        Future<Boolean> loginFuture = isLoggedIn();
-        while (!loginFuture.isDone()) {
-        }
-        try {
-            if(!loginFuture.get()){
-                Intent i1 = new Intent(this, LoginActivity.class);
-                startActivityForResult(i1, Constants.requestCodes.LOGIN);
-                return;
-            }
-            i.putExtra("isLoggedIn", true);
 
-            Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> FanboxParser.getMessages(true));
-            while (!tmp.isDone()) {
-            }
-            tmp.get();
-        } catch (Exception ex) {
-            i.putExtra("isLoggedIn", false);
+        Intent i = new Intent(this, MainActivity.class);
+
+
+//        Future<Boolean> loginFuture = Common.isLoggedIn();
+//        while (!loginFuture.isDone()) {
+//        }
+//        try {
+//            if (!loginFuture.get()) {
+//                Intent i1 = new Intent(this, LoginActivity.class);
+//                startActivityForResult(i1, Constants.requestCodes.LOGIN);
+//                return;
+//            }
+//            i.putExtra("IS_LOGGED_IN", true);
+//            sp.edit().putBoolean("LoggedIn", true).apply();
+//            Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> FanboxParser.getMessages(true));
+//            while (!tmp.isDone()) {
+//            }
+//            tmp.get();
+//        } catch (Exception ex) {
+//            i.putExtra("IS_LOGGED_IN", false);
+//        }
+
+
+        if (sp.getBoolean("LoggedIn", false)) {
+            i.putExtra("IS_LOGGED_IN", true);
         }
+
 
         Uri url = getIntent().getData();
         Log.d(TAG, "Main_onCreate_run: " + url);
-        while (!Objects.equals(url, null)){                     // no extra function calls
+        while (!Objects.equals(url, null)) {                     // no extra function calls
             String username = url.getHost().split("\\.")[0];
             String path = url.getPath();                            // main=/  posts=/posts/<id>
-            if (username.equals("www")){
-                if (url.getPath().contains("@")){
+            if (username.equals("www")) {
+                if (url.getPath().contains("@")) {
                     path = url.getPath().split("@")[1];
                     Log.d(TAG, "run: " + path);
-                    if (!path.contains("/")){
+                    if (!path.contains("/")) {
                         username = new StringBuilder(path).toString(); // Copy
                         path = "/";
-                    }else{
+                    } else {
                         username = path.split("/posts/")[0];
                     }
                     Log.d(TAG, "Main_onCreate_run: " + username + "  ---  " + path);
-                }else{
+                } else {
                     break;
                 }
             }
             Log.d(TAG, "onCreate: " + path);
-            if (path.equals("/")){
+            if (path.equals("/")) {
                 i = new Intent(this, UserDetailActivity.class);
                 i.putExtra("isURL", true);
                 i.putExtra("CID", username);
-            }else if (path.contains("/posts/")){
+            } else if (path.contains("/posts/")) {
                 String postId = path.split("/posts/")[1];
                 i = new Intent(this, PostDetailActivity.class);
                 i.putExtra("isURL", true);
@@ -168,5 +181,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
 
         startActivity(i);
         finish();
+
+
     }
 }
