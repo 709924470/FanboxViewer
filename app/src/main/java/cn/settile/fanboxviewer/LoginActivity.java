@@ -13,9 +13,12 @@ import android.webkit.WebViewClient;
 import androidx.appcompat.app.AppCompatActivity;
 
 import cn.settile.fanboxviewer.Util.Constants;
+import cn.settile.fanboxviewer.ViewModels.LoginViewModel;
 
 public class LoginActivity extends AppCompatActivity {
     final String TAG = "Login";
+
+    LoginViewModel viewModel = null;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -29,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
 
         WebView wv = findViewById(R.id.login_web_view);
 
-        if(Build.VERSION.SDK_INT > 21)
+        if (Build.VERSION.SDK_INT > 21)
             CookieManager.getInstance().setAcceptThirdPartyCookies(wv, true);
         else
             CookieManager.getInstance().setAcceptCookie(true);
@@ -42,16 +45,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         setResult(Constants.loginResultCodes.GUEST);
         super.onBackPressed();
     }
 
     private class loginClient extends WebViewClient {
         @Override
-        public void onPageStarted(WebView wv, String url, Bitmap favIco){
+        public void onPageStarted(WebView wv, String url, Bitmap favIco) {
             Log.d(TAG, url);
-            if(url.equals("https://www.fanbox.cc/creators/find")){
+            if (url.equals("https://www.fanbox.cc/creators/find")) {
                 Log.d(TAG, "Done Loading");
                 Constants.Cookie = CookieManager.getInstance().getCookie(url);
                 Log.d(TAG, Constants.Cookie);

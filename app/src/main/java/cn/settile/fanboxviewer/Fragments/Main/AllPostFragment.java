@@ -37,8 +37,7 @@ public class AllPostFragment extends Fragment {
     }
 
     public static AllPostFragment newInstance() {
-        AllPostFragment fragment = new AllPostFragment();
-        return fragment;
+        return new AllPostFragment();
     }
 
     @Override
