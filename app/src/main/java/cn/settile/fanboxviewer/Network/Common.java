@@ -4,27 +4,21 @@ import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
-import cn.settile.fanboxviewer.App;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxAPI;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
-import cn.settile.fanboxviewer.Util.Constants;
 import okhttp3.Cache;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -37,33 +31,32 @@ import static java.util.Objects.requireNonNull;
 public class Common {
     public static OkHttpClient client = null;
     public static Picasso singleton = null;
+    public static JSONObject userInfo = null;
     private static String TAG = "NetworkCommon";
     private static File cacheDir = null;
-
-    public static JSONObject userInfo = null;
 
     public static Future<Boolean> isLoggedIn() {
         return Executors.newSingleThreadExecutor()
                 .submit(() -> {
-            if (client == null){
-                Log.d(TAG, "client is not defined!");
-                return false;
-            }
-            Request req = new Request.Builder()
-                    .url("https://api.fanbox.cc/bell.countUnread")
-                    .build();
-            try(Response resp = client.newCall(req).execute()) {
-                JSONObject json = new JSONObject(resp.body().string());
-                return Objects.equals(json.optString("error"), "general_error");
-            }catch (Exception ex){
-                Log.e(TAG, "EXCEPTION: ", ex);
-                return false;
-            }
-        });
+                    if (client == null) {
+                        Log.d(TAG, "client is not defined!");
+                        return false;
+                    }
+                    Request req = new Request.Builder()
+                            .url("https://api.fanbox.cc/bell.countUnread")
+                            .build();
+                    try (Response resp = client.newCall(req).execute()) {
+                        JSONObject json = new JSONObject(resp.body().string());
+                        return Objects.equals(json.optString("error"), "general_error");
+                    } catch (Exception ex) {
+                        Log.e(TAG, "EXCEPTION: ", ex);
+                        return false;
+                    }
+                });
     }
 
-    public static void initClient(){
-        if (!Objects.equals(client, null)){
+    public static void initClient() {
+        if (!Objects.equals(client, null)) {
             return;
         }
         Cache cache = new Cache(getContext().getCacheDir(), 1024 * 1024 * 8);
@@ -94,43 +87,44 @@ public class Common {
         FanboxParser.client = api;
     }
 
-    public static void downloadThread(String url, File file, Runnable success, Runnable fail){
+    public static void downloadThread(String url, File file, Runnable success, Runnable fail) {
         new Thread(() -> download(url, file, success, fail)).start();
     }
 
-    public static boolean download(String url, File output, Runnable success, Runnable fail){
-        if (client == null){
+    public static boolean download(String url, File output, Runnable success, Runnable fail) {
+        if (client == null) {
             Log.d(TAG, "client is not defined!");
             initClient();
             return download(url, output, success, fail);
         }
+        URLRequestor ur = new URLRequestor(url, (it) -> {
+            try {
+                Log.d(TAG, "Downloading:"+url);
+                InputStream is = it.body().byteStream();
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+                BufferedInputStream bif = new BufferedInputStream(is);
+                OutputStream op = new FileOutputStream(output);
 
-        try(Response response = client.newCall(request).execute()){
-            InputStream is = requireNonNull(response.body()).byteStream();
+                byte[] buf = new byte[1024];
+                int count;
 
-            BufferedInputStream bif = new BufferedInputStream(is);
-            OutputStream op = new FileOutputStream(output);
+                while ((count = bif.read(buf)) != -1) {
+                    op.write(buf, 0, count);
+                }
 
-            byte[] buf = new byte[1024];
-            int count;
-
-            while((count = bif.read(buf)) != -1){
-                op.write(buf, 0, count);
+                op.flush();
+                op.close();
+                is.close();
+            } catch (Exception e) {
+                Log.e(TAG, "download: EXCEPTION", e);
+                fail.run();
+                return false;
             }
+            success.run();
+            return true;
+        });
 
-            op.flush();
-            op.close();
-            is.close();
-        }catch (Exception e){
-            Log.e(TAG, "download: EXCEPTION", e);
-            fail.run();
-            return false;
-        }
-        success.run();
-        return true;
+
+        return ur.getReturnValue();
     }
 }

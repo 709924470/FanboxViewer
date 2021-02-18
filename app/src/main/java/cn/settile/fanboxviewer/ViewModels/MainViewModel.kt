@@ -17,10 +17,14 @@ class MainViewModel : ViewModel() {
     val user_id: MutableLiveData<String> by lazy {
         MutableLiveData("")
     }
+    val user_icon_url: MutableLiveData<String> by lazy {
+        MutableLiveData("")
+    }
 
-    fun update_user_info(username: String, userid: String) {
+    fun update_user_info(username: String, userid: String, usericonurl: String) {
         user_name.postValue(username)
         user_id.postValue(userid)
+        user_icon_url.postValue(usericonurl)
     }
 
     fun update_is_logged_in(p0: Boolean) {

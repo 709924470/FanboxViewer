@@ -35,9 +35,8 @@ import cn.settile.fanboxviewer.Fragments.Main.MessageFragment;
 import cn.settile.fanboxviewer.Fragments.Main.SubscPostFragment;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.Network.URLRequestor;
 import cn.settile.fanboxviewer.ViewModels.MainViewModel;
-import okhttp3.Request;
-import okhttp3.Response;
 
 
 public class MainActivity extends AppCompatActivity
@@ -162,12 +161,20 @@ public class MainActivity extends AppCompatActivity
         viewModel.getUser_id().observe(this, (it) -> {
             NavigationView navV = (NavigationView) ctx.findViewById(R.id.nav_view);
             TextView useridV = (TextView) navV.getHeaderView(0).findViewById(R.id.main_drawer_userid);
-            useridV.setText(Objects.equals(it, "") ? "Login" : it);
+            useridV.setText(Objects.equals(it, "") ? getText(R.string.nav_header_subtitle) : it);
         });
         viewModel.getUser_name().observe(this, (it) -> {
             NavigationView navV = (NavigationView) ctx.findViewById(R.id.nav_view);
             TextView usernameV = (TextView) navV.getHeaderView(0).findViewById(R.id.main_drawer_username);
-            usernameV.setText(Objects.equals(it, "") ? "Login to proceed" : it);
+            usernameV.setText(Objects.equals(it, "") ? getText(R.string.nav_header_title) : it);
+        });
+
+        viewModel.getUser_icon_url().observe(this, (it) -> {
+            if (!Objects.equals(it, "")) Picasso.get()
+                    .load(it)
+                    .placeholder(R.drawable.ic_settings_system_daydream_black_24dp)
+                    .resize(180, 180)
+                    .into((ImageView) findViewById(R.id.userIcon));
         });
     }
 
@@ -180,46 +187,35 @@ public class MainActivity extends AppCompatActivity
 
     private void fetchUserInfo() {
         new Thread(() -> {
-            Request req = new Request.Builder()
-                    .url("https://www.pixiv.net/fanbox/")
-                    .build();
-            try (Response resp = Common.client.newCall(req).execute()) {
-                Document document = Jsoup.parse(resp.body().string());
-                Element metadata = document.getElementById("metadata");
-                //TODO (fix this parser) : bug
-                String jsonStr = metadata.attr("content");
+            new URLRequestor("https://fanbox.cc/", (it) -> {
+                try {
+                    Document document = Jsoup.parse(it.body().string());
+                    Element metadata = document.getElementById("metadata");
+                    //TODO (fix this parser) : bug
+                    String jsonStr = metadata.attr("content");
 
-                Common.userInfo = new JSONObject(jsonStr);
-                JSONObject user = Common.userInfo.getJSONObject("context").getJSONObject("user");
-                String iconUrl = user.getString("iconUrl");
-                String userName = user.getString("name");
-                String userId = user.getString("userId");
+                    Common.userInfo = new JSONObject(jsonStr);
+                    JSONObject user = Common.userInfo.getJSONObject("context").getJSONObject("user");
+                    String iconUrl = user.getString("iconUrl");
+                    String userName = user.getString("name");
+                    String userId = user.getString("userId");
 
-                viewModel.update_user_info(userName, userId);
+                    int unread = FanboxParser.getUnreadMessagesCount();
 
-                int unread = FanboxParser.getUnreadMessagesCount();
+                    runOnUiThread(() -> {
+                        viewModel.update_user_info(userName, userId, iconUrl);
+                        if (unread != 0) {
+                            Objects.requireNonNull(tl.getTabAt(2))
+                                    .getOrCreateBadge().setNumber(unread);
+                        }
+                    });
+                } catch (Exception ex) {
+                    runOnUiThread(() -> Toast.makeText(getBaseContext(), "Can't get user info.\n" + ex.getMessage(), Toast.LENGTH_LONG).show());
+                    Log.e("MainActivity", "fetchUserInfo: ", ex);
+                }
+                return null;
+            });
 
-                runOnUiThread(() -> {
-                    TextView textView = findViewById(R.id.main_drawer_username);
-                    textView.setText(userName);
-                    textView = findViewById(R.id.main_drawer_userid);
-                    textView.setText(userId);
-
-                    Picasso.get()
-                            .load(iconUrl)
-                            .placeholder(R.drawable.load_24dp)
-                            .resize(200, 200)
-                            .into((ImageView) findViewById(R.id.userIcon));
-
-                    if (unread != 0) {
-                        Objects.requireNonNull(tl.getTabAt(2))
-                                .getOrCreateBadge().setNumber(unread);
-                    }
-                });
-            } catch (Exception ex) {
-                runOnUiThread(() -> Toast.makeText(getBaseContext(), "Can't get user info.\n" + ex.getMessage(), Toast.LENGTH_LONG).show());
-                Log.e("MainActivity", "fetchUserInfo: ", ex);
-            }
         }).start();
     }
 
@@ -285,6 +281,6 @@ public class MainActivity extends AppCompatActivity
     @Contract("_->null")
     public void callLogin() {
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivityForResult(intent, -1);
+        if (!viewModel.is_logged_in().getValue()) startActivityForResult(intent, -1);
     }
 }
