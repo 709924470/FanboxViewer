@@ -17,8 +17,11 @@ import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import cn.settile.fanboxviewer.Network.Common;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.Util.Constants;
 
 public class SplashActivity extends AppCompatActivity implements Runnable {
@@ -29,7 +32,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_splash);
         setTitle(R.string.loading);
 
         thread = new Thread(this);
@@ -119,24 +122,25 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         Intent i = new Intent(this, MainActivity.class);
 
 
-//        Future<Boolean> loginFuture = Common.isLoggedIn();
-//        while (!loginFuture.isDone()) {
-//        }
-//        try {
-//            if (!loginFuture.get()) {
-//                Intent i1 = new Intent(this, LoginActivity.class);
-//                startActivityForResult(i1, Constants.requestCodes.LOGIN);
-//                return;
-//            }
-//            i.putExtra("IS_LOGGED_IN", true);
-//            sp.edit().putBoolean("LoggedIn", true).apply();
-//            Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> FanboxParser.getMessages(true));
-//            while (!tmp.isDone()) {
-//            }
-//            tmp.get();
-//        } catch (Exception ex) {
-//            i.putExtra("IS_LOGGED_IN", false);
-//        }
+        Future<Boolean> loginFuture = Common.isLoggedIn();
+        while (!loginFuture.isDone()) {
+        }
+        try {
+            if (!loginFuture.get()) {
+                Intent i1 = new Intent(this, LoginActivity.class);
+                startActivityForResult(i1, Constants.requestCodes.LOGIN);
+                return;
+            }
+            i.putExtra("IS_LOGGED_IN", true);
+            sp.edit().putBoolean("LoggedIn", true).apply();
+            Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> FanboxParser.getMessages(true));
+            while (!tmp.isDone()) {
+            }
+            tmp.get();
+        } catch (Exception ex) {
+            sp.edit().putBoolean("LoggedIn", false).apply();
+            i.putExtra("IS_LOGGED_IN", false);
+        }
 
 
         if (sp.getBoolean("LoggedIn", false)) {

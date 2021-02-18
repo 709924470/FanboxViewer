@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +43,7 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    final static String TAG="MainActivity";
+    final static String TAG = "MainActivity";
     static boolean flag = false;
     MainViewModel viewModel = null;
 
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         ctx = this;
 
-        setContentView(R.layout.activity_main_page);
+        setContentView(R.layout.activity_main);
 
 
         prepareUIAndActions();
@@ -147,23 +146,28 @@ public class MainActivity extends AppCompatActivity
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         viewModel.is_logged_in().observe(this, (it) -> {
-            runOnUiThread(() -> {
-                Log.i(TAG,it.toString());
-                NavigationView navV = (NavigationView) ctx.findViewById(R.id.nav_view);
-                TextView usernameV = (TextView) navV.getHeaderView(0).findViewById(R.id.main_drawer_username);
-                TextView useridV = (TextView) navV.getHeaderView(0).findViewById(R.id.main_drawer_userid);
-                if (it) {
-
-                } else {
-                    usernameV.setOnClickListener((v) -> {
-                        callLogin();
-                    });
-                    useridV.setOnClickListener((v) -> {
-                        callLogin();
-                    });
-                }
-            });
-
+            Log.i(TAG, it.toString());
+            NavigationView navV = (NavigationView) ctx.findViewById(R.id.nav_view);
+            TextView usernameV = (TextView) navV.getHeaderView(0).findViewById(R.id.main_drawer_username);
+            TextView useridV = (TextView) navV.getHeaderView(0).findViewById(R.id.main_drawer_userid);
+            if (!it) {
+                usernameV.setOnClickListener((v) -> {
+                    callLogin();
+                });
+                useridV.setOnClickListener((v) -> {
+                    callLogin();
+                });
+            }
+        });
+        viewModel.getUser_id().observe(this, (it) -> {
+            NavigationView navV = (NavigationView) ctx.findViewById(R.id.nav_view);
+            TextView useridV = (TextView) navV.getHeaderView(0).findViewById(R.id.main_drawer_userid);
+            useridV.setText(Objects.equals(it, "") ? "Login" : it);
+        });
+        viewModel.getUser_name().observe(this, (it) -> {
+            NavigationView navV = (NavigationView) ctx.findViewById(R.id.nav_view);
+            TextView usernameV = (TextView) navV.getHeaderView(0).findViewById(R.id.main_drawer_username);
+            usernameV.setText(Objects.equals(it, "") ? "Login to proceed" : it);
         });
     }
 
@@ -190,6 +194,8 @@ public class MainActivity extends AppCompatActivity
                 String iconUrl = user.getString("iconUrl");
                 String userName = user.getString("name");
                 String userId = user.getString("userId");
+
+                viewModel.update_user_info(userName, userId);
 
                 int unread = FanboxParser.getUnreadMessagesCount();
 
