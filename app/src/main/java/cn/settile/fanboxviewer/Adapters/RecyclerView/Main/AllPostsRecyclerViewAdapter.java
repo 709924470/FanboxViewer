@@ -144,7 +144,7 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             holder.header.setVisibility(View.GONE);
         }else {
             new Picasso.Builder(allPostFragment.c)
-                    .downloader(new OkHttp3Downloader(Common.client))
+                    .downloader(new OkHttp3Downloader(Common.getClientInstance()))
                     .build()
                     .load(header)
                     .placeholder(R.drawable.load_24dp)

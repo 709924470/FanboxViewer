@@ -100,7 +100,7 @@ public class CardRecyclerViewAdapterBase extends RecyclerView.Adapter<CardRecycl
             holder.header.setVisibility(View.GONE);
         }else {
             new Picasso.Builder(holder.itemView.getContext())
-                    .downloader(new OkHttp3Downloader(Common.client))
+                    .downloader(new OkHttp3Downloader(Common.getClientInstance()))
                     .build()
                     .load(header)
                     .placeholder(R.drawable.load_24dp)

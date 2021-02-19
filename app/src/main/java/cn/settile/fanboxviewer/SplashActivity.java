@@ -113,7 +113,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
 
         if (Common.singleton == null) {
             Common.singleton = new Picasso.Builder(this)
-                    .downloader(new OkHttp3Downloader(Common.client))
+                    .downloader(new OkHttp3Downloader(Common.getClientInstance()))
                     .build();
             Picasso.setSingletonInstance(Common.singleton);
         }

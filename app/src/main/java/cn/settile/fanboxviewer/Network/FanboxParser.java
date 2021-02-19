@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import cn.settile.fanboxviewer.Network.Bean.CardItem;
@@ -22,35 +23,26 @@ import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.R;
 import cn.settile.fanboxviewer.Util.Constants;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Request;
-import okhttp3.Response;
 
 import static cn.settile.fanboxviewer.App.getContext;
-import static cn.settile.fanboxviewer.Network.Common.initClient;
 
 @Deprecated
 @Slf4j
 public class FanboxParser {
 
+    public static HashMap<String, String> userToName = new HashMap<>();
+    public static HashMap<String, String> postToCover = new HashMap<>();
+    public static List<MessageItem> lastMessageList = new ArrayList<>();
+    public static JSONArray allPosts;
+    public static JSONArray supporting;
+    public static JSONArray recommended;
+    public static JSONArray plans;
     private static String messageUrl = "https://fanbox.pixiv.net/api/bell.list?page=1&skipConvertUnreadNotification=0&commentOnly=0";
     private static String messageFirstPage = messageUrl;
     private static HashMap<String, String> userToIcon = new HashMap<>();
-    public static HashMap<String, String> userToName = new HashMap<>();
-    public static HashMap<String, String> postToCover = new HashMap<>();
-
-    public static List<MessageItem> lastMessageList = new ArrayList<>();
-
-
     private static JSONObject index;
-
-    public static JSONArray allPosts;
     private static String allPostsNext;
-
-    public static JSONArray supporting;
     private static String supportingNext;
-
-    public static JSONArray recommended;
-    public static JSONArray plans;
 
     @Nullable
     public static List<MessageItem> getMessages(Boolean refresh) {
@@ -99,12 +91,12 @@ public class FanboxParser {
             lastMessageList = lmi;
             return lmi;
         } catch (Exception ex) {
-            log.error("EXCEPTION: " , ex);
+            log.error("EXCEPTION: ", ex);
             return null;
         }
     }
 
-    public static int getUnreadMessage(){
+    public static int getUnreadMessage() {
         return Objects.requireNonNull(getJSON("https://fanbox.pixiv.net/api/bell.countUnread")).optInt("count");
     }
 
@@ -127,7 +119,7 @@ public class FanboxParser {
 
             plans = getJSON("https://fanbox.pixiv.net/api/plan.listSupporting").optJSONArray("body");
         } catch (Exception ex) {
-            log.error("EXCEPTION: " , ex);
+            log.error("EXCEPTION: ", ex);
             return false;
         }
         return true;
@@ -141,11 +133,11 @@ public class FanboxParser {
         return getPosts(refresh, false, c);
     }
 
-    public static JSONObject getUserDetail(String userId){
-        try{
+    public static JSONObject getUserDetail(String userId) {
+        try {
             return getJSON("https://fanbox.pixiv.net/api/creator.get?userId=" + userId);
 
-        }catch(Exception ex){
+        } catch (Exception ex) {
             log.error("ERROR: ", ex);
         }
         return null;
@@ -153,15 +145,15 @@ public class FanboxParser {
 
     public static List<MessageItem> getPlans(boolean refresh) {
         try {
-            if(refresh){
-                if (!updateIndex()){
+            if (refresh) {
+                if (!updateIndex()) {
                     throw new Exception("See Last Exception");
                 }
             }
             List<MessageItem> result = new ArrayList<>();
 //            android.util.Log.d("getPlans", "init");
 
-            for(int i = 0; i < plans.length(); i++){
+            for (int i = 0; i < plans.length(); i++) {
                 JSONObject plan = plans.getJSONObject(i);
                 String title = plan.getString("title");
                 String msg = plan.getString("description");
@@ -188,12 +180,12 @@ public class FanboxParser {
 
             return result;
         } catch (Exception ex) {
-            log.error("EXCEPTION: " , ex);
+            log.error("EXCEPTION: ", ex);
             return null;
         }
     }
 
-    public static String getUrl(String userId){
+    public static String getUrl(String userId) {
         return "https://fanbox.pixiv.net/api/post.listCreator?userId=" + userId + "&limit=10";
     }
 
@@ -212,7 +204,7 @@ public class FanboxParser {
             JSONObject tmp;
 
             if (all) {
-                if (Objects.equals(allPosts, null)){
+                if (Objects.equals(allPosts, null)) {
                     getPosts(true, true, getContext());
                 }
                 post = new JSONArray(allPosts.toString());
@@ -222,7 +214,7 @@ public class FanboxParser {
                 allPostsNext = tmp.getString("nextUrl");
 
             } else {
-                if (Objects.equals(supporting, null)){
+                if (Objects.equals(supporting, null)) {
                     getPosts(true, true, getContext());
                 }
                 post = new JSONArray(supporting.toString());
@@ -260,11 +252,11 @@ public class FanboxParser {
                 date = sdf.format(df.parse(date));
 
                 String headerUrl = json.getString("coverImageUrl");
-                if(headerUrl.equals("null") || headerUrl == null){
+                if (headerUrl.equals("null") || headerUrl == null) {
                     JSONObject body = json.optJSONObject("body");
-                    if(body != null){
+                    if (body != null) {
                         JSONArray image = body.optJSONArray("images");
-                        if(image != null){
+                        if (image != null) {
                             headerUrl = image.getJSONObject(0).getString("thumbnailUrl");
                         }
                     }
@@ -272,7 +264,7 @@ public class FanboxParser {
 
                 String url = "https://fanbox.pixiv.net/api/post.info?postId=" + json.getString("id");
 
-                if (!postToCover.containsKey(json.getString("id"))){
+                if (!postToCover.containsKey(json.getString("id"))) {
                     postToCover.put(json.getString("id"), headerUrl);
                 }
 
@@ -283,7 +275,7 @@ public class FanboxParser {
 
             return lci;
         } catch (Exception ex) {
-            log.error("EXCEPTION: " , ex);
+            log.error("EXCEPTION: ", ex);
             return null;
         }
     }
@@ -299,13 +291,13 @@ public class FanboxParser {
 
             String nextUrl;
 
-            if(Objects.equals(useUrl, null)){
+            if (Objects.equals(useUrl, null)) {
                 tmp = getJSON(getUrl(userId));
                 tmp = tmp.getJSONObject("body");
 //                tmp = tmp.getJSONObject("post");
                 posts = tmp.getJSONArray("items");
                 nextUrl = tmp.getString("nextUrl");
-            }else {
+            } else {
                 String refer = "https://www.pixiv.net/fanbox/creator/" + userId + "/post";
                 tmp = getJSON(useUrl, refer);
                 tmp = tmp.getJSONObject("body");
@@ -342,11 +334,11 @@ public class FanboxParser {
                 date = sdf.format(df.parse(date));
 
                 String headerUrl = json.getString("coverImageUrl");
-                if(headerUrl == null || headerUrl.equals("null")){
+                if (headerUrl == null || headerUrl.equals("null")) {
                     JSONObject body = json.optJSONObject("body");
-                    if(body != null){
+                    if (body != null) {
                         JSONArray image = body.optJSONArray("images");
-                        if(image != null){
+                        if (image != null) {
                             headerUrl = image.getJSONObject(0).getString("thumbnailUrl");
                         }
                     }
@@ -354,7 +346,7 @@ public class FanboxParser {
 
                 String url = "https://fanbox.pixiv.net/api/post.info?postId=" + json.getString("id");
 
-                if (!postToCover.containsKey(json.getString("id"))){
+                if (!postToCover.containsKey(json.getString("id"))) {
                     postToCover.put(json.getString("id"), headerUrl);
                 }
 
@@ -367,49 +359,46 @@ public class FanboxParser {
 
             return result;
         } catch (Exception ex) {
-            log.error("EXCEPTION: " , ex);
+            log.error("EXCEPTION: ", ex);
             return null;
         }
     }
 
-    public static List<DetailItem> getPostDetail(String url, Context c) throws Exception{
+    public static List<DetailItem> getPostDetail(String url, Context c) throws Exception {
         List<DetailItem> items = new ArrayList<>();
 
         JSONObject req = getJSON(url);
 
         JSONObject body = req.getJSONObject("body");
-        if(!body.getString("restrictedFor").equals("null")){
+        if (!body.getString("restrictedFor").equals("null")) {
             items.add(new DetailItem(DetailItem.Type.TEXT, String.format(c.getString(R.string.plan_formatting), body.getInt("feeRequired"))));
             items.add(new DetailItem(DetailItem.Type.IMAGE, "false"));
             return items;
         }
-        if(body.getString("type").equals("image")){
+        if (body.getString("type").equals("image")) {
             JSONArray images = body.getJSONObject("body").getJSONArray("images");
 
-            for(int i = 0; i < images.length(); i++){
+            for (int i = 0; i < images.length(); i++) {
                 DetailItem tmp = new DetailItem(DetailItem.Type.IMAGE, images.getJSONObject(i).getString("thumbnailUrl"));
                 tmp.extra.add(images.getJSONObject(i).getString("originalUrl"));
                 items.add(tmp);
             }
             items.add(new DetailItem(DetailItem.Type.TEXT, body.getJSONObject("body").getString("text")));
-        }
-        else if(body.getString("type").equals("article")){
+        } else if (body.getString("type").equals("article")) {
             JSONArray blocks = body.getJSONObject("body").getJSONArray("blocks");
 
-            for(int i = 0; i < blocks.length(); i++){
+            for (int i = 0; i < blocks.length(); i++) {
                 JSONObject block = blocks.getJSONObject(i);
-                if(block.getString("type").equals("p")){
+                if (block.getString("type").equals("p")) {
                     items.add(new DetailItem(DetailItem.Type.TEXT, block.getString("text")));
-                }
-                else if(block.getString("type").equals("image")){
+                } else if (block.getString("type").equals("image")) {
                     String imageId = block.getString("imageId");
                     JSONObject img = body.getJSONObject("body").getJSONObject("imageMap").getJSONObject(imageId);
 
                     DetailItem tmp = new DetailItem(DetailItem.Type.IMAGE, img.getString("thumbnailUrl"));
                     tmp.extra.add(img.getString("originalUrl"));
                     items.add(tmp);
-                }
-                else if(block.getString("type").equals("file")){
+                } else if (block.getString("type").equals("file")) {
                     String fileId = block.getString("fileId");
 
                     JSONObject file = body.getJSONObject("body").getJSONObject("fileMap").getJSONObject(fileId);
@@ -418,22 +407,21 @@ public class FanboxParser {
                     items.add(tmp);
                 }
             }
-        }
-        else if(body.getString("type").equals("file")){
+        } else if (body.getString("type").equals("file")) {
             items.add(new DetailItem(DetailItem.Type.TEXT, body.getJSONObject("body").getString("text")));
 
             JSONArray blocks = body.getJSONObject("body").getJSONArray("files");
 
-            for(int i = 0; i < blocks.length(); i++){
+            for (int i = 0; i < blocks.length(); i++) {
                 JSONObject innerBody = blocks.getJSONObject(i);
                 String ext = innerBody.getString("extension");
                 String file = innerBody.getString("url");
 //                int size = innerBody.getInt("size");
 
                 DetailItem tmp;
-                if (URLConnection.guessContentTypeFromName(file).contains("video")){
+                if (URLConnection.guessContentTypeFromName(file).contains("video")) {
                     tmp = new DetailItem(DetailItem.Type.VIDEO, file);
-                }else{
+                } else {
                     tmp = new DetailItem(DetailItem.Type.OTHER, file);
                 }
                 tmp.extra.add(innerBody.getString("name"));
@@ -446,23 +434,21 @@ public class FanboxParser {
     }
 
     @Nullable
-    private static JSONObject getJSON(String url, String refer){
-        Request req = new Request.Builder()
-                .url(url)
-                .addHeader("Refer", refer)
-                .addHeader("Origin", "https://www.pixiv.net")
-                .build();
-        if (Objects.equals(Common.client, null)){
-            initClient();
-        }
-        try (Response resp = Common.client.newCall(req).execute()) {
-            Constants.Cookie = resp.header("Set-Cookie", Constants.Cookie);
-            String response = resp.body().string();
-            return new JSONObject(response);
-        } catch (Exception ex) {
-            log.error("EXCEPTION: " , ex);
-            return null;
-        }
+    private static JSONObject getJSON(String url, String refer) {
+        HashMap<String,String> headers = new HashMap<>();
+        headers.put("Refer", refer);
+        headers.put("Origin", "https://www.pixiv.net");
+        URLRequestor<JSONObject> ur=new URLRequestor<JSONObject>(url, (it) -> {
+            try {
+                Constants.Cookie = it.header("Set-Cookie", Constants.Cookie);
+                String response = it.body().string();
+                return new JSONObject(response);
+            } catch (Exception ex) {
+                log.error("EXCEPTION: ", ex);
+                return null;
+            }
+        }, headers);
+        return ur.getReturnValue();
     }
 
     @Nullable
@@ -471,7 +457,7 @@ public class FanboxParser {
     }
 
     @Nullable
-    public static String concatUrl(String userid, String postid){
+    public static String concatUrl(String userid, String postid) {
         return "https://www.pixiv.net/fanbox/creator/" + userid + "/post/" + postid;
     }
 }

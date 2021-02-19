@@ -19,7 +19,6 @@ import cn.settile.fanboxviewer.R;
 
 import static cn.settile.fanboxviewer.App.getApplication;
 import static cn.settile.fanboxviewer.App.notificationFactory;
-import static cn.settile.fanboxviewer.Network.Common.client;
 import static cn.settile.fanboxviewer.Network.Common.initClient;
 import static cn.settile.fanboxviewer.Util.Constants.MAX_DOWNLOAD_THREADS;
 import static cn.settile.fanboxviewer.Util.Util.galleryAddPic;
@@ -61,12 +60,6 @@ public class DownloadManager implements Runnable {
     }
 
     public void download(DownloadItem item) {
-        if (client == null) {
-            Log.d(TAG, "client is not defined!");
-            initClient();
-            download(item);
-            return;
-        }
 
         Notification.Builder notification = notificationFactory(App.getContext().getString(R.string.downloading), item.displayName, CHANNEL_ID);
         NotificationManager manager = (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -76,7 +69,7 @@ public class DownloadManager implements Runnable {
         notification.setProgress(100, 0, true);
         manager.notify(currentID, notification.build());
 
-        new URLRequestor(item.url, (it) -> {
+        new URLRequestor<Boolean>(item.url, (it) -> {
 
             File output;
             InputStream is;
@@ -113,7 +106,7 @@ public class DownloadManager implements Runnable {
                 manager.notify(nextID, notificationFactory(App.getContext().getString(R.string.download_failed), item.displayName, CHANNEL_ID).build());
             }
             return null;
-        });
+        },null);
     }
 
 //    public static void downloadThread(String url, File file, Runnable success, Runnable fail){

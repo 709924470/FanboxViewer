@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity
                     Log.e("MainActivity", "fetchUserInfo: ", ex);
                 }
                 return null;
-            });
+            },null);
 
         }).start();
     }
@@ -267,7 +267,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_search) {
             Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_settings) {
-            Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+            //TODO (SettingsActivity)
+            //callSettings();
         } else if (id == R.id.nav_logout) {
             Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_recommend) {
@@ -282,5 +283,9 @@ public class MainActivity extends AppCompatActivity
     public void callLogin() {
         Intent intent = new Intent(this, LoginActivity.class);
         if (!viewModel.is_logged_in().getValue()) startActivityForResult(intent, -1);
+    }
+    public void callSettings(){
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }

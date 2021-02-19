@@ -108,6 +108,7 @@ public class PostDetailActivity extends AppCompatActivity {
                     String extension = images.get(i)
                             .substring(images.get(i).lastIndexOf('.'));
                     String name = title + "_" + i + extension;
+                    Log.d(TAG, images.get(i));
                     queue(new DownloadItem(images.get(i), name));
                 } catch (Exception ex) {
                     Log.e(TAG, "onCreate: ", ex);
@@ -137,6 +138,7 @@ public class PostDetailActivity extends AppCompatActivity {
 
                 Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> {
                     runOnUiThread(() -> {
+                        viewModel.update_article_state(true);
                         adapter.updateItems(ldi);
                     });
                     return null;
@@ -182,6 +184,13 @@ public class PostDetailActivity extends AppCompatActivity {
                     .placeholder(R.drawable.load_24dp)
                     .into((ImageView) findViewById(R.id.post_detail_header));
 
+        });
+        viewModel.getArticle_is_loaded().observe(this, (it) -> {
+            if (it) {
+                findViewById(R.id.article_load_progressbar).setVisibility(View.GONE);
+            } else {
+                findViewById(R.id.article_load_progressbar).setVisibility(View.VISIBLE);
+            }
         });
     }
 
