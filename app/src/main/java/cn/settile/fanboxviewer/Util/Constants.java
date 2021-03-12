@@ -22,4 +22,9 @@ public class Constants {
         public static final int GUEST = 0;
         public static final int USER = 1;
     }
+    public enum CheckItemState {
+        UNKNOW ,
+        SUCCESS,
+        FAIL ,
+    }
 }

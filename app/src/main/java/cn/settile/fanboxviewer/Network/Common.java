@@ -28,7 +28,7 @@ import retrofit2.Retrofit;
 import static cn.settile.fanboxviewer.App.getContext;
 
 public class Common {
-    public static Picasso singleton = null;
+//    public static Picasso singleton = null;
     public static JSONObject userInfo = null;
 
 
@@ -38,7 +38,7 @@ public class Common {
     public static Future<Boolean> isLoggedIn() {
         return Executors.newSingleThreadExecutor()
                 .submit(() -> {
-                    URLRequestor<Boolean> ur = new URLRequestor("https://api.fanbox.cc/bell.countUnread", (it) -> {
+                    URLRequestor<Boolean> ur = new URLRequestor<Boolean>("https://api.fanbox.cc/bell.countUnread", (it) -> {
                         try {
                             JSONObject json = new JSONObject(it.body().string());
                             return Objects.equals(json.optString("error"), "general_error");
@@ -139,4 +139,5 @@ public class Common {
     private static class ClientHolder {
         public static OkHttpClient clientInstance = initClient();
     }
+
 }

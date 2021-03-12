@@ -44,8 +44,7 @@ public class MessageFragment extends Fragment {
     }
 
     public static MessageFragment newInstance() {
-        MessageFragment fragment = new MessageFragment();
-        return fragment;
+        return new MessageFragment();
     }
 
     @Override

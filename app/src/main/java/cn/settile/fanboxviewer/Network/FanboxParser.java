@@ -37,7 +37,7 @@ public class FanboxParser {
     public static JSONArray supporting;
     public static JSONArray recommended;
     public static JSONArray plans;
-    private static String messageUrl = "https://fanbox.pixiv.net/api/bell.list?page=1&skipConvertUnreadNotification=0&commentOnly=0";
+    private static String messageUrl = "https://api.fanbox.cc/bell.list?page=1&skipConvertUnreadNotification=0&commentOnly=0";
     private static String messageFirstPage = messageUrl;
     private static HashMap<String, String> userToIcon = new HashMap<>();
     private static JSONObject index;
@@ -80,6 +80,7 @@ public class FanboxParser {
                 } else {
                     iconUrl = userToIcon.get(userId);
                 }
+
 
                 MessageItem mi = new MessageItem(item.getJSONObject("post").getString("title"),
                         msg,

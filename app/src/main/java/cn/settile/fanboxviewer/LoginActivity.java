@@ -1,6 +1,7 @@
 package cn.settile.fanboxviewer;
 
 import android.annotation.SuppressLint;
+import android.content.pm.PermissionInfo;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.PermissionChecker;
 import androidx.lifecycle.ViewModelProvider;
 
 import cn.settile.fanboxviewer.Util.Constants;
@@ -34,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
 
         prepareUIAndActions();
 
-
+        
         CookieSyncManager.createInstance(this);
 
         WebView wv = findViewById(R.id.login_web_view);

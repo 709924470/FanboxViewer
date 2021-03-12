@@ -5,4 +5,6 @@
     <color name="colorAccent">#0096FA</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="colorSuccess">#C6F68D</color>
+    <color name="colorError">#EF9A9A</color>
 </resources>
