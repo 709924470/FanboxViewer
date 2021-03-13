@@ -15,4 +15,5 @@
     <dimen name="card_corner_radius">6dp</dimen>
     <dimen name="pixiv_header_img_height">200dp</dimen>
     <dimen name="article_margin_horizontal">2dp</dimen>
+    <dimen name="toolbar_elev">4dp</dimen>
 </resources>

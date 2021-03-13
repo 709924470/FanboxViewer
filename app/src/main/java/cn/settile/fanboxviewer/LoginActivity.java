@@ -57,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         setResult(Constants.loginResultCodes.GUEST);
+        finish();
         super.onBackPressed();
     }
 

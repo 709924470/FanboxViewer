@@ -32,6 +32,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     public static SharedPreferences sp;
     SplashViewModel viewModel;
     Thread thread;
+    Boolean loginOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +56,12 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     protected void onActivityResult(int request, int result, Intent data) {
         switch (request) {
             case Constants.requestCodes.LOGIN:
+                //loginOnce = false;
                 if (result == Constants.loginResultCodes.USER) {
                     sp.edit().putBoolean("LoggedIn", true).commit();
                 } else {
                     sp.edit().putBoolean("LoggedIn", false).commit();
+                    finish();
                 }
                 recreate();
                 break;
@@ -104,6 +107,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
 
     @Override
     public void run() {
+
         sp = getSharedPreferences("Configs", MODE_PRIVATE);
         boolean firstRun = false;
 
@@ -180,9 +184,9 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         }
 
 
-        if (sp.getBoolean("LoggedIn", false)) {
+//        if (sp.getBoolean("LoggedIn", false)) {
 //            i.putExtra("IS_LOGGED_IN", false);
-        }
+//        }
 
 //
 //        Uri url = getIntent().getData();
@@ -257,6 +261,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         viewModel.getCookie_state().observe(this, (it) -> {
             switch (it) {
                 case UNKNOW:
+                    ((ProgressBar) findViewById(R.id.account_state_progressBar)).setVisibility(View.VISIBLE);
                     ((ImageView) findViewById(R.id.log_state_check_imageView)).setImageDrawable(getDrawable(R.drawable.ic_info_black_24dp));
                     ((LinearLayout) findViewById(R.id.log_state_check_linearLayout)).setBackgroundColor(getColor(R.color.white));
                     break;
@@ -276,6 +281,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         viewModel.getNetwork_state().observe(this, (it) -> {
             switch (it) {
                 case UNKNOW:
+                    ((ProgressBar) findViewById(R.id.network_state_progressBar)).setVisibility(View.VISIBLE);
                     ((ImageView) findViewById(R.id.network_state_check_imageView)).setImageDrawable(getDrawable(R.drawable.ic_info_black_24dp));
                     ((LinearLayout) findViewById(R.id.network_state_check_linearLayout)).setBackgroundColor(getColor(R.color.white));
                     break;
@@ -306,11 +312,17 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
             Intent i = new Intent(this, MainActivity.class);
             i.putExtra("IS_LOGGED_IN", true);
             startActivity(i);
+            finish();
         }
     }
 
     public void startLoginActivity() {
-        Intent i1 = new Intent(this, LoginActivity.class);
-        startActivityForResult(i1, Constants.requestCodes.LOGIN);
+        if (!loginOnce) {
+            Intent i1 = new Intent(this, LoginActivity.class);
+            startActivityForResult(i1, Constants.requestCodes.LOGIN);
+            viewModel.update_cookie_state(Constants.CheckItemState.UNKNOW);
+            loginOnce = true;
+        }
+
     }
 }

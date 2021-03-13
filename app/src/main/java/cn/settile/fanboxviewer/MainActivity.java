@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.CookieManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,10 +80,10 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().getItem(0).setChecked(true);
+        //navigationView.getMenu().getItem(0).setChecked(true);
 
         //TODO: IMAGE Editing for club card.
-        navigationView.getMenu().getItem(1).setEnabled(false);
+        //navigationView.getMenu().getItem(1).setEnabled(true);
 
         tl = findViewById(R.id.main_page_tab);
         tabPageAdapter = new MainFragmentAdapter(getSupportFragmentManager(), this);
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity
                     Log.e("MainActivity", "fetchUserInfo: ", ex);
                 }
                 return null;
-            },null);
+            }, null);
 
         }).start();
     }
@@ -261,16 +262,26 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
 
         if (id == R.id.nav_home) {
-            Toast.makeText(this, "HOME", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "HOME", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_cards) {
-            Toast.makeText(this, "Fan Cards", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Fan Cards", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(this, SupportingActivity.class);
+            startActivity(i);
         } else if (id == R.id.nav_search) {
             Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_settings) {
             //TODO (SettingsActivity)
             //callSettings();
         } else if (id == R.id.nav_logout) {
-            Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
+            android.webkit.CookieManager cm = CookieManager.getInstance();
+            cm.removeAllCookies((it) -> {
+
+            });
+
+            Intent i = new Intent(this,SplashActivity.class);
+            startActivity(i);
+            finish();
         } else if (id == R.id.nav_recommend) {
             Toast.makeText(this, "Recommended", Toast.LENGTH_SHORT).show();
         }
@@ -284,7 +295,8 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this, LoginActivity.class);
         if (!viewModel.is_logged_in().getValue()) startActivityForResult(intent, -1);
     }
-    public void callSettings(){
+
+    public void callSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
