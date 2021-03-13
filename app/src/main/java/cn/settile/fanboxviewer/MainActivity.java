@@ -37,6 +37,7 @@ import cn.settile.fanboxviewer.Fragments.Main.SubscPostFragment;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.Network.URLRequestor;
+import cn.settile.fanboxviewer.ViewComponents.LogoutDialog;
 import cn.settile.fanboxviewer.ViewModels.MainViewModel;
 
 
@@ -274,14 +275,7 @@ public class MainActivity extends AppCompatActivity
             //callSettings();
         } else if (id == R.id.nav_logout) {
             //Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
-            android.webkit.CookieManager cm = CookieManager.getInstance();
-            cm.removeAllCookies((it) -> {
-
-            });
-
-            Intent i = new Intent(this,SplashActivity.class);
-            startActivity(i);
-            finish();
+            new LogoutDialog(this).show();
         } else if (id == R.id.nav_recommend) {
             Toast.makeText(this, "Recommended", Toast.LENGTH_SHORT).show();
         }
