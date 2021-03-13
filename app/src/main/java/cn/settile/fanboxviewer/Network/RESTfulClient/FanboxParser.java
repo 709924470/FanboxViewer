@@ -26,6 +26,7 @@ import cn.settile.fanboxviewer.Network.Bean.ImageItem;
 import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.App;
 import cn.settile.fanboxviewer.BuildConfig;
+import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.R;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ResponseBody;
@@ -52,6 +53,7 @@ public class FanboxParser {
         if (Objects.equals(FanboxParser.client, null)){
             throw new AssertionError("Set client first");
         }
+        //client= Common.getClientInstance();
         this.creator = getUserInfo(user);
     }
 

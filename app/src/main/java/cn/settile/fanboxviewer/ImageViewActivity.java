@@ -11,10 +11,11 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.squareup.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
 import com.veinhorn.scrollgalleryview.MediaInfo;
 import com.veinhorn.scrollgalleryview.ScrollGalleryView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,16 +24,13 @@ import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.CustomPicassoLoader;
 
 import static cn.settile.fanboxviewer.Network.DownloadManager.queue;
-import static cn.settile.fanboxviewer.Util.Util.createImageFile;
-import static cn.settile.fanboxviewer.Util.Util.galleryAddPic;
 import static cn.settile.fanboxviewer.Util.Util.toBitmap;
 
 public class ImageViewActivity extends AppCompatActivity {
 
+    private final String TAG = this.getClass().getName();
     private List<String> images;
     private String detail;
-
-    private final String TAG = this.getClass().getName();
     private int pos;
     private List<Integer> colors = new ArrayList<>();
     private List<String> thumbs = new ArrayList<>();
@@ -48,7 +46,7 @@ public class ImageViewActivity extends AppCompatActivity {
         this.detail = i.getStringExtra("Details");
         this.pos = i.getIntExtra("Position", 0);
 
-        for(int index = 0; index < thumbs.size(); index++){
+        for (int index = 0; index < thumbs.size(); index++) {
             colors.add(Color.BLACK);
         }
 
@@ -64,14 +62,17 @@ public class ImageViewActivity extends AppCompatActivity {
                                 .substring(images.get(position).lastIndexOf('.'));
                         String name = detail + "_" + position + extension;
                         queue(new DownloadItem(images.get(position), name));
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         Log.e(TAG, "onCreate: ", ex);
                     }
                 })
                 .setFragmentManager(getSupportFragmentManager());
-        for(int index = 0; index< images.size(); index++){
-            CustomPicassoLoader mi = new CustomPicassoLoader(thumbs.get(index));
+        for (int index = 0; index < images.size(); index++) {
+            CustomPicassoLoader mi = new CustomPicassoLoader(this,thumbs.get(index));
+
+
             final int index1 = index;
+
             mi.onLoaded((b) -> {
                 colors.set(index1,
                         Palette.from(toBitmap(b))
@@ -84,15 +85,16 @@ public class ImageViewActivity extends AppCompatActivity {
         }
         view.setCurrentItem(pos);
         new Thread(() -> {
-            while (colors.size() - 1 < pos){}
+            while (colors.size() - 1 < pos) {
+            }
             view.setBackgroundColor(colors.get(pos));
             view.invalidate();
         }).start();
-        view.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+        view.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 Log.d(TAG, "size=" + (colors.size() - 1) + " pos=" + position);
-                if (colors.size() - 1 < position){
+                if (colors.size() - 1 < position) {
                     return;
                 }
                 view.setBackgroundColor(colors.get(position));
@@ -109,7 +111,7 @@ public class ImageViewActivity extends AppCompatActivity {
                         .substring(images.get(position).lastIndexOf('.'));
                 String name = detail + "_" + position + extension;
                 queue(new DownloadItem(images.get(position), name));
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 Log.e(TAG, "onCreate: ", ex);
             }
         });

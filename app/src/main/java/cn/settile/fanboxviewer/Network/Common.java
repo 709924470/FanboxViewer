@@ -28,7 +28,7 @@ import retrofit2.Retrofit;
 import static cn.settile.fanboxviewer.App.getContext;
 
 public class Common {
-//    public static Picasso singleton = null;
+    public static Picasso singleton = null;
     public static JSONObject userInfo = null;
 
 

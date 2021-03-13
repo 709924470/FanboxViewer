@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.potyvideo.library.AndExoPlayerView;
 import com.potyvideo.library.globalEnums.EnumResizeMode;
+import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -21,9 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.ImageViewActivity;
+import cn.settile.fanboxviewer.Network.Bean.DetailItem;
+import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.WebViewCookieHandler;
+import cn.settile.fanboxviewer.PostDetailActivity;
 import cn.settile.fanboxviewer.R;
 
 import static cn.settile.fanboxviewer.App.getContext;
@@ -35,12 +38,10 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
     private final int TYPE_VIDEO = 2;
     private final int TYPE_LINK = 3;
     private final int TYPE_SPACE = 4;
-
-    private String detail = "undefined";
-
-    private List<DetailItem> detailItems;
     public List<String> images = new ArrayList<>();
     public List<String> thumbs = new ArrayList<>();
+    private String detail = "undefined";
+    private List<DetailItem> detailItems;
 
     public DetailRecyclerViewAdapterBase(String detail) {
         this.detail = detail;
@@ -51,8 +52,8 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         this.detailItems = new ArrayList<>();
     }
 
-    public void updateItems(List<DetailItem> detailItems){
-        if(Objects.equals(detailItems, null) || detailItems.isEmpty()){
+    public void updateItems(List<DetailItem> detailItems) {
+        if (Objects.equals(detailItems, null) || detailItems.isEmpty()) {
             this.detailItems.clear();
             images.clear();
             thumbs.clear();
@@ -60,8 +61,8 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
             return;
         }
         this.detailItems = detailItems;
-        for(DetailItem di: detailItems){
-            if(di.getType() == DetailItem.Type.IMAGE && !di.content.equals("false")){
+        for (DetailItem di : detailItems) {
+            if (di.getType() == DetailItem.Type.IMAGE && !di.content.equals("false")) {
                 images.add((String) di.extra.get(0));
                 thumbs.add(di.getContent());
             }
@@ -74,17 +75,14 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         return getItemType(position);
     }
 
-    private int getItemType(int pos){
-        if (detailItems.get(pos).getType() == DetailItem.Type.IMAGE){
+    private int getItemType(int pos) {
+        if (detailItems.get(pos).getType() == DetailItem.Type.IMAGE) {
             return TYPE_IMAGE;
-        }
-        else if (detailItems.get(pos).getType() == DetailItem.Type.TEXT){
+        } else if (detailItems.get(pos).getType() == DetailItem.Type.TEXT) {
             return TYPE_TEXT;
-        }
-        else if (detailItems.get(pos).getType() == DetailItem.Type.VIDEO){
+        } else if (detailItems.get(pos).getType() == DetailItem.Type.VIDEO) {
             return TYPE_VIDEO;
-        }
-        else if (detailItems.get(pos).getType() == DetailItem.Type.SPACE){
+        } else if (detailItems.get(pos).getType() == DetailItem.Type.SPACE) {
             return TYPE_SPACE;
         }
         return TYPE_TEXT;
@@ -95,15 +93,15 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.component_item_user_detail, parent, false);
-        if (TYPE_IMAGE == viewType){
+        if (TYPE_IMAGE == viewType) {
             return new ImageVH(v);
-        }else if (TYPE_TEXT == viewType){
+        } else if (TYPE_TEXT == viewType) {
             return new TextVH(v);
-        }else if (TYPE_VIDEO == viewType){
+        } else if (TYPE_VIDEO == viewType) {
             return new VideoVH(v);
-        }else if (TYPE_LINK == viewType){
+        } else if (TYPE_LINK == viewType) {
             return new TextVH(v);
-        }else if (TYPE_SPACE == viewType){
+        } else if (TYPE_SPACE == viewType) {
             return new SpaceVH(v);
         }
         return new TextVH(v);
@@ -112,13 +110,15 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DetailItem detailItem = detailItems.get(position);
-        if (TYPE_IMAGE == getItemType(position)){
+        if (TYPE_IMAGE == getItemType(position)) {
             ImageVH ivh = (ImageVH) holder;
-            if(detailItem.content.equals("false")){
+            if (detailItem.content.equals("false")) {
                 ivh.iv.setImageDrawable(holder.itemView.getResources().getDrawable(R.drawable.ic_lock_black_24dp));
                 return;
             }
-            Picasso.get()
+            new Picasso.Builder(PostDetailActivity.getCtx())
+                    .downloader(new OkHttp3Downloader(Common.getClientInstance()))
+                    .build()
                     .load(detailItem.content)
                     .placeholder(R.drawable.load_24dp)
                     .into(ivh.iv);
@@ -130,10 +130,10 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
                 i.putExtra("Details", detail);
                 holder.itemView.getContext().startActivity(i);
             });
-        }else if (TYPE_TEXT == getItemType(position)){
+        } else if (TYPE_TEXT == getItemType(position)) {
             TextVH tvh = (TextVH) holder;
             tvh.tv.setText(detailItem.getContent());
-        }else if (TYPE_VIDEO == getItemType(position)){
+        } else if (TYPE_VIDEO == getItemType(position)) {
             VideoVH vvh = (VideoVH) holder;
             vvh.player.setResizeMode(EnumResizeMode.FIT);
             HashMap<String, String> cookies = new HashMap<>();
@@ -151,7 +151,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         return detailItems.size();
     }
 
-    class VideoVH extends RecyclerView.ViewHolder{
+    class VideoVH extends RecyclerView.ViewHolder {
         AndExoPlayerView player;
         TextView text;
         Button download;
@@ -168,7 +168,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         }
     }
 
-    class ImageVH extends RecyclerView.ViewHolder{
+    class ImageVH extends RecyclerView.ViewHolder {
         ImageView iv;
 
         public ImageVH(@NonNull View itemView) {
@@ -182,16 +182,16 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         }
     }
 
-    class TextVH extends RecyclerView.ViewHolder{
+    class TextVH extends RecyclerView.ViewHolder {
         TextView tv;
 
         public TextVH(@NonNull View itemView) {
             super(itemView);
             tv = itemView.findViewById(R.id.com_user_detail_text);
             tv.setVisibility(View.VISIBLE);
-            double dip=getContext().getResources().getDisplayMetrics().density;
+            double dip = getContext().getResources().getDisplayMetrics().density;
 
-            tv.setPadding((int)(16 * dip) ,(int)(12 * dip),(int)(16 * dip),(int)(12 * dip));
+            tv.setPadding((int) (16 * dip), (int) (12 * dip), (int) (16 * dip), (int) (12 * dip));
 
             itemView.findViewById(R.id.com_user_detail_img).setVisibility(View.GONE);
             itemView.findViewById(R.id.com_user_detail_video).setVisibility(View.GONE);
@@ -199,10 +199,10 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         }
     }
 
-    class SpaceVH extends RecyclerView.ViewHolder{
+    class SpaceVH extends RecyclerView.ViewHolder {
         Space sp;
 
-        public SpaceVH(View item){
+        public SpaceVH(View item) {
             super(item);
             sp = item.findViewById(R.id.com_user_detail_space);
             sp.setVisibility(View.VISIBLE);

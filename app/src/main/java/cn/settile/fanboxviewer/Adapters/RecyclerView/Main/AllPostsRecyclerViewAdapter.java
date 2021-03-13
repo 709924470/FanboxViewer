@@ -143,7 +143,7 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         if (header.equals("null")){
             holder.header.setVisibility(View.GONE);
         }else {
-            new Picasso.Builder(allPostFragment.c)
+            new Picasso.Builder(allPostFragment.ctx)
                     .downloader(new OkHttp3Downloader(Common.getClientInstance()))
                     .build()
                     .load(header)

@@ -28,7 +28,7 @@ import cn.settile.fanboxviewer.R;
 public class AllPostFragment extends Fragment {
 
     private View v;
-    public Activity c;
+    public Activity ctx;
     private RecyclerView recyclerView;
     public AllPostsRecyclerViewAdapter adapter;
     private SwipeRefreshLayout srl;
@@ -43,7 +43,7 @@ public class AllPostFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        c = getActivity();
+        ctx = getActivity();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class AllPostFragment extends Fragment {
 
         recyclerView = v.findViewById(R.id.frag_post_list);
 
-        LinearLayoutManager llm = new LinearLayoutManager(c);
+        LinearLayoutManager llm = new LinearLayoutManager(ctx);
         recyclerView.setLayoutManager(llm);
 
         adapter = new AllPostsRecyclerViewAdapter(this, new ArrayList<>());
@@ -71,7 +71,7 @@ public class AllPostFragment extends Fragment {
             }
             srl.setRefreshing(true);
             Executors.newSingleThreadExecutor().submit(() -> {
-                List<CardItem> lci = FanboxParser.getAllPosts(false, c);
+                List<CardItem> lci = FanboxParser.getAllPosts(false, ctx);
                 List<MessageItem> lmi = FanboxParser.getPlans();
                 getActivity().runOnUiThread(() -> srl.setRefreshing(false));
                 if (lci != null) {
@@ -82,7 +82,7 @@ public class AllPostFragment extends Fragment {
         });
 
         srl.setOnRefreshListener(() -> Executors.newSingleThreadExecutor().submit(() -> {
-            List<CardItem> lci = FanboxParser.getAllPosts(true, c);
+            List<CardItem> lci = FanboxParser.getAllPosts(true, ctx);
             List<MessageItem> lmi = FanboxParser.getPlans();
             getActivity().runOnUiThread(() -> srl.setRefreshing(false));
             if (lci != null) {
@@ -95,12 +95,12 @@ public class AllPostFragment extends Fragment {
     }
 
     public void updateList(List<CardItem> lci, List<MessageItem> lmi, boolean refreshAll) {
-        if (v == null || c == null) {
+        if (v == null || ctx == null) {
             return;
         }
         if (recyclerView == null) {
             recyclerView = v.findViewById(R.id.frag_msg_list);
-            recyclerView.setLayoutManager(new LinearLayoutManager(c));
+            recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
             adapter = new AllPostsRecyclerViewAdapter(this, lci);
             recyclerView.setAdapter(adapter);
         } else {
