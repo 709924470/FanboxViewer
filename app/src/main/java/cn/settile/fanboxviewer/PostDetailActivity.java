@@ -32,7 +32,6 @@ import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.Network.Bean.DownloadItem;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.ViewModels.PostDetailViewModel;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -46,7 +45,6 @@ public class PostDetailActivity extends AppCompatActivity {
 
 
     @SuppressLint("StaticFieldLeak")
-    public static Context ctx;
     private final String TAG = getClass().getName();
     PostDetailViewModel viewModel = null;
     private String url;
@@ -61,14 +59,10 @@ public class PostDetailActivity extends AppCompatActivity {
     private String fee;
     private String time;
 
-    public static Context getCtx() {
-        return ctx;
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_detail);
-        ctx=this;
         Toolbar toolbar = findViewById(R.id.post_detail_toolBar);
         prepareUIAndActions();
         toolbar.setVisibility(View.GONE);
@@ -104,7 +98,7 @@ public class PostDetailActivity extends AppCompatActivity {
         viewModel.update_user_info(userName, userId, iconUrl);
         this.rv = findViewById(R.id.post_detail_content);
         LinearLayoutManager llm = new LinearLayoutManager(this);
-        this.adapter = new PostDetailRecyclerViewAdapter(title);
+        this.adapter = new PostDetailRecyclerViewAdapter(this, title);
         rv.setLayoutManager(llm);
         rv.setAdapter(adapter);
 

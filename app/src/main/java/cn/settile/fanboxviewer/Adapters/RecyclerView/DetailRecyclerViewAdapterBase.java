@@ -1,5 +1,6 @@
 package cn.settile.fanboxviewer.Adapters.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,13 +43,16 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
     public List<String> thumbs = new ArrayList<>();
     private String detail = "undefined";
     private List<DetailItem> detailItems;
+    Context ctx;
 
-    public DetailRecyclerViewAdapterBase(String detail) {
+    public DetailRecyclerViewAdapterBase(Context context, String detail) {
+        ctx=context;
         this.detail = detail;
         this.detailItems = new ArrayList<>();
     }
 
-    public DetailRecyclerViewAdapterBase() {
+    public DetailRecyclerViewAdapterBase(Context context) {
+        ctx=context;
         this.detailItems = new ArrayList<>();
     }
 
@@ -116,7 +120,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
                 ivh.iv.setImageDrawable(holder.itemView.getResources().getDrawable(R.drawable.ic_lock_black_24dp));
                 return;
             }
-            new Picasso.Builder(PostDetailActivity.getCtx())
+            new Picasso.Builder(ctx)
                     .downloader(new OkHttp3Downloader(Common.getClientInstance()))
                     .build()
                     .load(detailItem.content)

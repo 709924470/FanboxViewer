@@ -1,5 +1,6 @@
 package cn.settile.fanboxviewer.Adapters.RecyclerView.Main;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -186,7 +187,7 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     public void refreshPlanView(List<MessageItem> lmi) {
         this.lmi = lmi;
     }
-
+    @SuppressLint("NonConstantResourceId")
     public class itemViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.item_header_image) ImageView header;
@@ -210,6 +211,7 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     public class planViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.frag_post_plans)

@@ -266,8 +266,7 @@ public class MainActivity extends AppCompatActivity
             //Toast.makeText(this, "HOME", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_cards) {
             //Toast.makeText(this, "Fan Cards", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(this, SupportingActivity.class);
-            startActivity(i);
+
         } else if (id == R.id.nav_search) {
             Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_settings) {

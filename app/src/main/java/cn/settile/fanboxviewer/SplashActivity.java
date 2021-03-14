@@ -1,6 +1,7 @@
 package cn.settile.fanboxviewer;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,11 +21,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.Future;
 
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Util.Constants;
 import cn.settile.fanboxviewer.ViewModels.SplashViewModel;
+
+import static android.content.Intent.ACTION_AUTO_REVOKE_PERMISSIONS;
 
 public class SplashActivity extends AppCompatActivity implements Runnable {
     final static int PERMISSION_REQUEST_CODE = 2;
@@ -32,6 +37,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     public static SharedPreferences sp;
     SplashViewModel viewModel;
     Thread thread;
+    int RequestTime=0;
     Boolean loginOnce = false;
 
     @Override
@@ -56,11 +62,11 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     protected void onActivityResult(int request, int result, Intent data) {
         switch (request) {
             case Constants.requestCodes.LOGIN:
-                //loginOnce = false;
+                loginOnce = false;
                 if (result == Constants.loginResultCodes.USER) {
-                    sp.edit().putBoolean("LoggedIn", true).commit();
+                    sp.edit().putBoolean("LoggedIn", true).apply();
                 } else {
-                    sp.edit().putBoolean("LoggedIn", false).commit();
+                    sp.edit().putBoolean("LoggedIn", false).apply();
                     finish();
                 }
                 recreate();
@@ -80,8 +86,8 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions,
+                                           @NotNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
                 // If request is cancelled, the result arrays are empty.
@@ -147,7 +153,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         Constants.Cookie = cm.getCookie(getString(R.string.index));
         if (Constants.Cookie == null) {
             viewModel.update_cookie_state(Constants.CheckItemState.FAIL);
-            sp.edit().putBoolean("LoggedIn", false).commit();
+            sp.edit().putBoolean("LoggedIn", false).apply();
             startLoginActivity();
             return;
         }
@@ -232,13 +238,26 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     }
 
     public void requestStoragePermission(View v) {
+        RequestTime++;
 
-        requestPermissions(
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                PERMISSION_REQUEST_CODE);
+        if(RequestTime<=2) {
+            requestPermissions(
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_CODE);
+        }else{
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                Intent i=new Intent(ACTION_AUTO_REVOKE_PERMISSIONS);
+                startActivity(i);
+            }else{
+                requestPermissions(
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        PERMISSION_REQUEST_CODE);
+            }
 
+        }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     public void prepareUIAndActions() {
         viewModel = new ViewModelProvider(this).get(SplashViewModel.class);
         viewModel.getStorage_permission_state().observe(this, (it) -> {
@@ -303,7 +322,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
 
     public void checkStateAndStartMainActivity() {
         if (viewModel.getStorage_permission_state().getValue() != Constants.CheckItemState.SUCCESS) {
-
+            //requestStoragePermission(null);
         } else if (viewModel.getCookie_state().getValue() != Constants.CheckItemState.SUCCESS) {
 
         } else if (viewModel.getNetwork_state().getValue() != Constants.CheckItemState.SUCCESS) {

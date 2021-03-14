@@ -50,7 +50,7 @@ public class UserDetailFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(c);
         rv.setLayoutManager(llm);
 
-        uda = new UserDetailRecyclerViewAdapter();
+        uda = new UserDetailRecyclerViewAdapter(getContext());
         rv.setAdapter(uda);
 
         return view;
