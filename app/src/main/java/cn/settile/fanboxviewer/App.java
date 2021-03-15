@@ -10,7 +10,8 @@ import android.os.Environment;
 
 import androidx.annotation.RequiresApi;
 
-import static cn.settile.fanboxviewer.Network.DownloadManager.dlm;
+import java.io.File;
+
 import static cn.settile.fanboxviewer.Util.Constants.DOWNLOAD_PATH;
 import static cn.settile.fanboxviewer.Util.Constants.NOTIFICATION_SETUP;
 
@@ -27,13 +28,12 @@ public class App extends Application {
     @Override
     public void onCreate() {
         app = this;
-        DOWNLOAD_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath();
+        DOWNLOAD_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath()+ File.separatorChar+"Fanbox";
         super.onCreate();
     }
 
     @Override
     public void onTerminate() {
-        dlm.interrupt();
         super.onTerminate();
     }
 

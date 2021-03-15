@@ -1,5 +1,6 @@
 package cn.settile.fanboxviewer;
 
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,20 +12,20 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.squareup.picasso.OkHttp3Downloader;
-import com.squareup.picasso.Picasso;
 import com.veinhorn.scrollgalleryview.MediaInfo;
 import com.veinhorn.scrollgalleryview.ScrollGalleryView;
 
+import java.net.CookieManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.settile.fanboxviewer.Network.Bean.DownloadItem;
-import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.CustomPicassoLoader;
+import cn.settile.fanboxviewer.Network.DownloadRequester;
+import cn.settile.fanboxviewer.Util.Constants;
 
-import static cn.settile.fanboxviewer.Network.DownloadManager.queue;
 import static cn.settile.fanboxviewer.Util.Util.toBitmap;
+
+//import static cn.settile.fanboxviewer.Network.DownloadManager.queue;
 
 public class ImageViewActivity extends AppCompatActivity {
 
@@ -44,6 +45,7 @@ public class ImageViewActivity extends AppCompatActivity {
         this.images = i.getStringArrayListExtra("Images");
         this.thumbs = i.getStringArrayListExtra("Thumbnails");
         this.detail = i.getStringExtra("Details");
+        Log.d(TAG, this.detail);
         this.pos = i.getIntExtra("Position", 0);
 
         for (int index = 0; index < thumbs.size(); index++) {
@@ -61,14 +63,15 @@ public class ImageViewActivity extends AppCompatActivity {
                         String extension = images.get(position)
                                 .substring(images.get(position).lastIndexOf('.'));
                         String name = detail + "_" + position + extension;
-                        queue(new DownloadItem(images.get(position), name));
+                        new DownloadRequester((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
+                                .downloadWithCookie(images.get(position), name, Constants.Cookie);
                     } catch (Exception ex) {
                         Log.e(TAG, "onCreate: ", ex);
                     }
                 })
                 .setFragmentManager(getSupportFragmentManager());
         for (int index = 0; index < images.size(); index++) {
-            CustomPicassoLoader mi = new CustomPicassoLoader(this,thumbs.get(index));
+            CustomPicassoLoader mi = new CustomPicassoLoader(this, thumbs.get(index));
 
 
             final int index1 = index;
@@ -110,7 +113,8 @@ public class ImageViewActivity extends AppCompatActivity {
                 String extension = images.get(position)
                         .substring(images.get(position).lastIndexOf('.'));
                 String name = detail + "_" + position + extension;
-                queue(new DownloadItem(images.get(position), name));
+                new DownloadRequester((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
+                        .downloadWithCookie(images.get(position), name, Constants.Cookie);
             } catch (Exception ex) {
                 Log.e(TAG, "onCreate: ", ex);
             }

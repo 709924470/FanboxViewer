@@ -1,6 +1,7 @@
 package cn.settile.fanboxviewer;
 
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,13 +31,14 @@ import cn.settile.fanboxviewer.Adapters.RecyclerView.PostDetail.PostDetailRecycl
 import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.Network.Bean.DownloadItem;
+import cn.settile.fanboxviewer.Network.DownloadRequester;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.Util.Constants;
 import cn.settile.fanboxviewer.ViewModels.PostDetailViewModel;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 
-import static cn.settile.fanboxviewer.Network.DownloadManager.queue;
 import static cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser.APIJSONFactory;
 import static cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser.client;
 
@@ -112,7 +114,8 @@ public class PostDetailActivity extends AppCompatActivity {
                             .substring(images.get(i).lastIndexOf('.'));
                     String name = title + "_" + i + extension;
                     Log.d(TAG, images.get(i));
-                    queue(new DownloadItem(images.get(i), name));
+                    new DownloadRequester((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
+                            .downloadWithCookie(images.get(i), name, Constants.Cookie);
                 } catch (Exception ex) {
                     Log.e(TAG, "onCreate: ", ex);
                 }
