@@ -15,16 +15,16 @@ class SupportingFragment : Fragment() {
         fun newInstance() = SupportingFragment()
     }
 
-    private lateinit var FViewModel: SupportingFViewModel
+    private lateinit var viewModel: SupportingFViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.supporting_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_main_supporting, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        FViewModel = ViewModelProvider(this).get(SupportingFViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(SupportingFViewModel::class.java)
         // TODO: Use the ViewModel
     }
 

@@ -5,38 +5,31 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.CookieManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.viewpager.widget.ViewPager;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.Contract;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import java.util.Objects;
 
-import cn.settile.fanboxviewer.Adapters.Fragment.MainFragmentAdapter;
-import cn.settile.fanboxviewer.Fragments.Main.AllPostFragment;
-import cn.settile.fanboxviewer.Fragments.Main.MessageFragment;
-import cn.settile.fanboxviewer.Fragments.Main.SubscPostFragment;
-import cn.settile.fanboxviewer.Network.Common;
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
-import cn.settile.fanboxviewer.Network.URLRequestor;
 import cn.settile.fanboxviewer.ViewComponents.LogoutDialog;
 import cn.settile.fanboxviewer.ViewModels.MainViewModel;
 
@@ -44,15 +37,11 @@ import cn.settile.fanboxviewer.ViewModels.MainViewModel;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    final static String TAG = "MainActivity";
-    static boolean flag = false;
-    MainViewModel viewModel = null;
+    static final String TAG = MainActivity.class.getName();
+    public static boolean flag = false;
+    public MainViewModel viewModel = null;
+    MainActivity ctx = null;
 
-
-    MainActivity ctx;
-    AllPostFragment allPostFragment;
-    private MainFragmentAdapter tabPageAdapter;
-    private TabLayout tl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +57,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ViewPager mVp = findViewById(R.id.main_tab_pager); // inflating the main page
-        mVp.setSaveEnabled(true);
-        mVp.setOffscreenPageLimit(2);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -86,65 +72,43 @@ public class MainActivity extends AppCompatActivity
         //TODO: IMAGE Editing for club card.
         //navigationView.getMenu().getItem(1).setEnabled(true);
 
-        tl = findViewById(R.id.main_page_tab);
-        tabPageAdapter = new MainFragmentAdapter(getSupportFragmentManager(), this);
-        allPostFragment = AllPostFragment.newInstance();
-        tabPageAdapter.addFragment(allPostFragment, getResources().getString(R.string.tab_posts));
-
-        SubscPostFragment subscPostFragment = SubscPostFragment.newInstance();
-        tabPageAdapter.addFragment(subscPostFragment, getResources().getString(R.string.tab_subscribed));
-
-        MessageFragment messageFragment = MessageFragment.newInstance();
-        tabPageAdapter.addFragment(messageFragment, getResources().getString(R.string.tab_messages));
-
-        mVp.setAdapter(tabPageAdapter);
-        tl.setupWithViewPager(mVp);
-
         setResult(-1);
-        if (!getIntent().getBooleanExtra("NO_NETWORK", false)) {
-            if (getIntent().getBooleanExtra("IS_LOGGED_IN", false)) {
-                viewModel.update_is_logged_in(true);
-                fetchUserInfo();
-                new Thread(() -> {
-                    getNotifications(messageFragment);
-                    allPostFragment.updateList(FanboxParser.getAllPosts(false, this), FanboxParser.getPlans(), true);
-                    subscPostFragment.updateList(FanboxParser.getSupportingPosts(false, this), true);
-                }).start();
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_main);
+        NavController navController = navHostFragment.getNavController();
+        NavigationUI.setupWithNavController(navigationView, navController);
 
-            } else {
-                viewModel.update_is_logged_in(false);
-            }
-            viewModel.update_is_online(true);
-        } else {
-            viewModel.update_is_online(false);
-        }
+        AppBarConfiguration appBarConfiguration =
+                new AppBarConfiguration.Builder(navController.getGraph())
+                        .setDrawerLayout(drawer)
+                        .build();
 
-
-        tl.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                mVp.setCurrentItem(tab.getPosition(), true);
-                if (tab.getPosition() == 2 && !flag) {
-                    messageFragment.update(true);
-                    flag = !flag;
-                    tab.removeBadge();
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
+            public void onDestinationChanged(@NonNull NavController controller,
+                                             @NonNull NavDestination destination, @Nullable Bundle arguments) {
+                navHostFragment.getNavController().navigateUp();
+                Log.d(TAG, destination.getLabel().toString());
+//                switch (destination.getId()) {
+//                    case R.id.supportingFragment:
+//                        navHostFragment.getNavController().navigateUp();
+//                        break;
+//                    case R.id.mainTabFragment:
+//                        navHostFragment.getNavController().navigateUp();
+//                }
             }
         });
+
     }
 
 
     void prepareUIAndActions() {
 
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
+        {
+
+        }
+
 
         viewModel.is_logged_in().observe(this, (it) -> {
             Log.i(TAG, it.toString());
@@ -182,44 +146,6 @@ public class MainActivity extends AppCompatActivity
 
     ;
 
-
-    private void getNotifications(MessageFragment mf) {
-        mf.update(true);
-    }
-
-    private void fetchUserInfo() {
-        new Thread(() -> {
-            new URLRequestor("https://fanbox.cc/", (it) -> {
-                try {
-                    Document document = Jsoup.parse(it.body().string());
-                    Element metadata = document.getElementById("metadata");
-                    //TODO (fix this parser) : bug
-                    String jsonStr = metadata.attr("content");
-
-                    Common.userInfo = new JSONObject(jsonStr);
-                    JSONObject user = Common.userInfo.getJSONObject("context").getJSONObject("user");
-                    String iconUrl = user.getString("iconUrl");
-                    String userName = user.getString("name");
-                    String userId = user.getString("userId");
-
-                    int unread = FanboxParser.getUnreadMessagesCount();
-
-                    runOnUiThread(() -> {
-                        viewModel.update_user_info(userName, userId, iconUrl);
-                        if (unread != 0) {
-                            Objects.requireNonNull(tl.getTabAt(2))
-                                    .getOrCreateBadge().setNumber(unread);
-                        }
-                    });
-                } catch (Exception ex) {
-                    runOnUiThread(() -> Toast.makeText(getBaseContext(), "Can't get user info.\n" + ex.getMessage(), Toast.LENGTH_LONG).show());
-                    Log.e("MainActivity", "fetchUserInfo: ", ex);
-                }
-                return null;
-            }, null);
-
-        }).start();
-    }
 
     @Override
     public void onBackPressed() {
@@ -264,7 +190,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             //Toast.makeText(this, "HOME", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_cards) {
+        } else if (id == R.id.nav_supporting) {
             //Toast.makeText(this, "Fan Cards", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_search) {

@@ -1,5 +1,6 @@
 package cn.settile.fanboxviewer.Adapters.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -111,6 +112,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         return new TextVH(v);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DetailItem detailItem = detailItems.get(position);

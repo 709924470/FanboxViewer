@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -104,7 +106,7 @@ public class AllPostFragment extends Fragment {
             adapter = new AllPostsRecyclerViewAdapter(this, lci);
             recyclerView.setAdapter(adapter);
         } else {
-            getActivity().runOnUiThread(() -> {
+            requireActivity().runOnUiThread(() -> {
                 adapter.refreshPlanView(lmi);
                 adapter.updateItems(lci, refreshAll);
             });
@@ -112,7 +114,7 @@ public class AllPostFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
     }
 

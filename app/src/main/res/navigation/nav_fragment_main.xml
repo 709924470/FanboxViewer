@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_fragment_main"
+    app:startDestination="@id/mainTabFragment">
+    <fragment
+        android:id="@+id/supportingFragment"
+        android:name="cn.settile.fanboxviewer.Fragments.Main.SupportingFragment"
+        android:label="fragment_main_supporting"
+        tools:layout="@layout/fragment_main_supporting">
+        <action
+            android:id="@+id/action_supportingFragment_to_mainTabFragment"
+            app:destination="@id/mainTabFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainTabFragment"
+        android:name="cn.settile.fanboxviewer.Fragments.Main.MainTabFragment"
+        android:label="fragment_main_tabs">
+        <action
+            android:id="@+id/action_mainTabFragment_to_supportingFragment"
+            app:destination="@id/supportingFragment" />
+    </fragment>
+</navigation>

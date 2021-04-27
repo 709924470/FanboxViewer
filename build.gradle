@@ -8,24 +8,27 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
+
     }
     dependencies {
+        def nav_version = "2.3.4"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
+
         classpath 'com.android.tools.build:gradle:4.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+
     }
 }
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        maven { url 'https://jitpack.io' }
+    allprojects {
+        repositories {
+            google()
+            jcenter()
+            maven { url 'https://jitpack.io' }
+        }
     }
-}
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
+    task clean(type: Delete) {
+        delete rootProject.buildDir
+    }
