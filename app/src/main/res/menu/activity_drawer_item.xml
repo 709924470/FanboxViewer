@@ -7,10 +7,12 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_camera"
+            android:onClick="toMainTabFragment"
             android:title="@string/menu_home" />
         <item
             android:id="@+id/nav_supporting"
             android:icon="@drawable/ic_card_black_24dp"
+            android:onClick="toSupportingFragment"
             android:title="@string/menu_gallery" />
         <item
             android:id="@+id/nav_recommend"
@@ -31,6 +33,7 @@
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_menu_send"
+                android:onClick="callLogout"
                 android:title="@string/menu_logout" />
         </menu>
     </item>

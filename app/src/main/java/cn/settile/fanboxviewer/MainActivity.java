@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity
     public MainViewModel viewModel = null;
     MainActivity ctx = null;
 
+    NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,10 +72,10 @@ public class MainActivity extends AppCompatActivity
 
         //TODO: IMAGE Editing for club card.
         //navigationView.getMenu().getItem(1).setEnabled(true);
-
+        
         setResult(-1);
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_main);
-        NavController navController = navHostFragment.getNavController();
+        navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(navigationView, navController);
 
         AppBarConfiguration appBarConfiguration =
@@ -82,19 +83,14 @@ public class MainActivity extends AppCompatActivity
                         .setDrawerLayout(drawer)
                         .build();
 
+
         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
             public void onDestinationChanged(@NonNull NavController controller,
                                              @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                navHostFragment.getNavController().navigateUp();
+                //navHostFragment.getNavController().navigateUp();
                 Log.d(TAG, destination.getLabel().toString());
-//                switch (destination.getId()) {
-//                    case R.id.supportingFragment:
-//                        navHostFragment.getNavController().navigateUp();
-//                        break;
-//                    case R.id.mainTabFragment:
-//                        navHostFragment.getNavController().navigateUp();
-//                }
+
             }
         });
 
@@ -104,10 +100,6 @@ public class MainActivity extends AppCompatActivity
     void prepareUIAndActions() {
 
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-
-        {
-
-        }
 
 
         viewModel.is_logged_in().observe(this, (it) -> {
@@ -207,6 +199,22 @@ public class MainActivity extends AppCompatActivity
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+  //UICalls
+    public void toSupportingFragment(MenuItem v) {
+        if (navController.getCurrentDestination().getId() != R.id.supportingFragment)
+            navController.navigate(R.id.supportingFragment);
+    }
+
+    public void toMainTabFragment(MenuItem v) {
+        if (navController.getCurrentDestination().getId() != R.id.mainTabFragment)
+            navController.navigate(R.id.mainTabFragment);
+    }
+
+
+    public void callLogout(MenuItem v) {
+        new LogoutDialog(this).show();
     }
 
     @Contract("_->null")

@@ -8,9 +8,9 @@ import org.jsoup.nodes.Document
 
 
 class URLRequestor<T>(url: String, callback: OnResponseListener<T>, headers: Map<String, String>?) {
-    var req: Request;
-    var resp: Response? = null
-    var rv: T? = null
+    private var req: Request;
+    private var resp: Response? = null
+    private var rv: T? = null
 
     init {
         val reqb = Request.Builder();

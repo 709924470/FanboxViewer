@@ -1,4 +1,5 @@
 package cn.settile.fanboxviewer.Network.FanboxPageParsers
 
-class PageParserRouter {
+class PageParserRouter(val url: String) {
+
 }
