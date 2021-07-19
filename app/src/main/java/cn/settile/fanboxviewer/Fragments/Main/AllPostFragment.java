@@ -51,7 +51,7 @@ public class AllPostFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        android.view.View inflate = inflater.inflate(R.layout.fragment_main_post_list, container, false);
+        View inflate = inflater.inflate(R.layout.fragment_main_post_list, container, false);
 
         v = inflate;
 
