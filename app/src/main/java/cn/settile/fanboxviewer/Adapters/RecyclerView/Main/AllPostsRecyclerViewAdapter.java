@@ -27,13 +27,12 @@ import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.Fragments.Main.AllPostFragment;
 import cn.settile.fanboxviewer.Network.Common;
+import cn.settile.fanboxviewer.Network.FanboxParser;
 import cn.settile.fanboxviewer.PostDetailActivity;
 import cn.settile.fanboxviewer.R;
 import cn.settile.fanboxviewer.UserDetailActivity;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import static cn.settile.fanboxviewer.Network.FanboxParser.userToName;
 
 @Slf4j
 public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -106,7 +105,7 @@ public class AllPostsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
             icon.setOnClickListener(v -> {
                 Intent i1 = new Intent(v.getContext(), UserDetailActivity.class);
-                i1.putExtra("NAME", userToName.get(mi.extra));
+                i1.putExtra("NAME", FanboxParser.INSTANCE.getUserToName().get(mi.extra));
                 i1.putExtra("ICON", mi.getIconUrl());
                 i1.putExtra("URL", mi.getUrl());
                 i1.putExtra("CID", mi.extra);
