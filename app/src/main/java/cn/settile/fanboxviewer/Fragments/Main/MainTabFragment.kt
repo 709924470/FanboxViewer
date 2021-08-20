@@ -16,10 +16,6 @@ import cn.settile.fanboxviewer.R
 import cn.settile.fanboxviewer.Util.Constants
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.Response
 import org.json.JSONObject
 import org.jsoup.Jsoup
@@ -72,7 +68,7 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
             ) {
                 mMainActivity.viewModel.update_is_logged_in(true)
                 fetchUserInfo()
-                MainScope().launch { initTab() }
+                initTab()
             } else {
                 mMainActivity.viewModel.update_is_logged_in(false)
             }
@@ -100,20 +96,18 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
         mf.update(true)
     }
 
-    suspend fun initTab() {
-        withContext(Dispatchers.IO) {
-            getNotifications(messageFragment)
-            allPostFragment.updateList(
-                FanboxParser.getAllPosts(false, requireContext()),
-                FanboxParser.getPlans(),
-                true
-            )
-            subscPostFragment.updateList(
-                FanboxParser.getSupportingPosts(false, requireContext()),
-                true
-            )
+    fun initTab() {
+        getNotifications(messageFragment)
+        allPostFragment.updateList(
+            FanboxParser.getAllPosts(false, requireContext()),
+            FanboxParser.getPlans(),
+            true
+        )
+        subscPostFragment.updateList(
+            FanboxParser.getSupportingPosts(false, requireContext()),
+            true
+        )
 
-        }
     }
 
     private fun fetchUserInfo() {
