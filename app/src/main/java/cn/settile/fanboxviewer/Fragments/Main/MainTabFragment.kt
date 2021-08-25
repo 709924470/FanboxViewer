@@ -11,12 +11,10 @@ import cn.settile.fanboxviewer.MainActivity
 import cn.settile.fanboxviewer.Network.Common
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser
 import cn.settile.fanboxviewer.Network.URLRequestor
-import cn.settile.fanboxviewer.Network.URLRequestor.OnResponseListener
 import cn.settile.fanboxviewer.R
 import cn.settile.fanboxviewer.Util.Constants
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import okhttp3.Response
 import org.json.JSONObject
 import org.jsoup.Jsoup
 import java.util.*
@@ -32,7 +30,7 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val mVp: ViewPager =
-            requireActivity().findViewById<ViewPager>(R.id.main_tab_pager) // inflating the main page
+            requireActivity().findViewById(R.id.main_tab_pager) // inflating the main page
 
         mVp.isSaveEnabled = true
         mVp.offscreenPageLimit = 2
@@ -41,7 +39,6 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
         //navigationView.getMenu().getItem(0).setChecked(true);
 
         //TODO: IMAGE Editing for club card.
-        //navigationView.getMenu().getItem(1).setEnabled(true);
         tl = requireActivity().findViewById<View>(R.id.main_page_tab) as TabLayout
 
         allPostFragment = AllPostFragment.newInstance()
@@ -98,20 +95,10 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
 
     fun initTab() {
         getNotifications(messageFragment)
-        allPostFragment.updateList(
-            FanboxParser.getAllPosts(false, requireContext()),
-            FanboxParser.getPlans(),
-            true
-        )
-        subscPostFragment.updateList(
-            FanboxParser.getSupportingPosts(false, requireContext()),
-            true
-        )
-
     }
 
     private fun fetchUserInfo() {
-        URLRequestor(Constants.Domain, OnResponseListener<Boolean> { it: Response ->
+        URLRequestor(Constants.Domain, {
             try {
                 val document = Jsoup.parse(Objects.requireNonNull(it.body)!!.string())
                 val metadata = document.getElementById("metadata")
@@ -146,7 +133,7 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
                 Log.e("MainActivity", "fetchUserInfo: ", ex)
             }
             null
-        }, null)
+        }).async()
 
     }
 }

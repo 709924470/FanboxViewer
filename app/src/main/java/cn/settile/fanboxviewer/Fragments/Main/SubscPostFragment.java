@@ -14,21 +14,21 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.SubscribedPostsRecyclerViewAdapter;
+import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.R;
 
 
 public class SubscPostFragment extends Fragment {
 
-    private int lastVisibleItem;
-
-    private View v;
     public Context c;
+    private int lastVisibleItem;
+    private View v;
     private RecyclerView recyclerView;
     private SubscribedPostsRecyclerViewAdapter adapter;
     private SwipeRefreshLayout srl;
+
     public SubscPostFragment() {
     }
 
@@ -64,26 +64,25 @@ public class SubscPostFragment extends Fragment {
                 return;
             }
             srl.setRefreshing(true);
-            Executors.newSingleThreadExecutor().submit(() -> {
-                List<CardItem> lci = FanboxParser.getSupportingPosts(false, c);
-                getActivity().runOnUiThread(() -> srl.setRefreshing(false));
-                if (lci != null) {
-                    updateList(lci, false);
-                }
-                return null;
-            });
+            refreshPosts(false,false);
         });
 
-        srl.setOnRefreshListener(() -> Executors.newSingleThreadExecutor().submit(() -> {
-            List<CardItem> lci = FanboxParser.getSupportingPosts(true, c);
+        srl.setOnRefreshListener(() -> refreshPosts(true, true));
+        srl.setRefreshing(true);
+        refreshPosts(true,true);
+        return inflate;
+    }
+
+
+    public void refreshPosts(boolean refresh, boolean refreshAll) {
+        Executors.newSingleThreadExecutor().submit(() -> {
+            List<CardItem> lci = FanboxParser.getSupportingPosts(refresh, c);
             getActivity().runOnUiThread(() -> srl.setRefreshing(false));
             if (lci != null) {
-                updateList(lci, true);
+                updateList(lci, refreshAll);
             }
             return null;
-        }));
-
-        return inflate;
+        });
     }
 
     public void updateList(List<CardItem> lci, boolean refreshAll) {
