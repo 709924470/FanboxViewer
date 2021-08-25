@@ -28,7 +28,6 @@ import cn.settile.fanboxviewer.ImageViewActivity;
 import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Network.WebViewCookieHandler;
-import cn.settile.fanboxviewer.PostDetailActivity;
 import cn.settile.fanboxviewer.R;
 
 import static cn.settile.fanboxviewer.App.getContext;
@@ -42,18 +41,18 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
     private final int TYPE_SPACE = 4;
     public List<String> images = new ArrayList<>();
     public List<String> thumbs = new ArrayList<>();
+    Context ctx;
     private String detail = "undefined";
     private List<DetailItem> detailItems;
-    Context ctx;
 
     public DetailRecyclerViewAdapterBase(Context context, String detail) {
-        ctx=context;
+        ctx = context;
         this.detail = detail;
         this.detailItems = new ArrayList<>();
     }
 
     public DetailRecyclerViewAdapterBase(Context context) {
-        ctx=context;
+        ctx = context;
         this.detailItems = new ArrayList<>();
     }
 
@@ -119,6 +118,7 @@ public class DetailRecyclerViewAdapterBase extends RecyclerView.Adapter<Recycler
         if (TYPE_IMAGE == getItemType(position)) {
             ImageVH ivh = (ImageVH) holder;
             if (detailItem.content.equals("false")) {
+                ivh.iv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 ivh.iv.setImageDrawable(holder.itemView.getResources().getDrawable(R.drawable.ic_lock_black_24dp));
                 return;
             }

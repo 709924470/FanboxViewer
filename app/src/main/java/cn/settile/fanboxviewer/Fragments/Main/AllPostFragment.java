@@ -56,44 +56,39 @@ public class AllPostFragment extends Fragment {
         v = inflate;
 
         recyclerView = v.findViewById(R.id.frag_post_list);
-
         LinearLayoutManager llm = new LinearLayoutManager(ctx);
         recyclerView.setLayoutManager(llm);
-
         adapter = new AllPostsRecyclerViewAdapter(this, new ArrayList<>());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(v.getContext(), R.anim.layout_default));
         recyclerView.scheduleLayoutAnimation();
 
         srl = v.findViewById(R.id.frag_post_refresh);
-
         adapter.setOnBottomReachedListener(pos -> {
             if (srl.isRefreshing()) {
                 return;
             }
             srl.setRefreshing(true);
-            Executors.newSingleThreadExecutor().submit(() -> {
-                List<CardItem> lci = FanboxParser.getAllPosts(false, ctx);
-                List<MessageItem> lmi = FanboxParser.getPlans();
-                getActivity().runOnUiThread(() -> srl.setRefreshing(false));
-                if (lci != null) {
-                    updateList(lci, lmi, false);
-                }
-                return null;
-            });
+            refreshPosts(false,false);
         });
+        srl.setOnRefreshListener(() -> refreshPosts(true,true));
+        srl.setRefreshing(true);
+        refreshPosts(true,true);
 
-        srl.setOnRefreshListener(() -> Executors.newSingleThreadExecutor().submit(() -> {
-            List<CardItem> lci = FanboxParser.getAllPosts(true, ctx);
+        return inflate;
+    }
+
+    public void refreshPosts(boolean refresh,boolean refreshAll){
+
+        Executors.newSingleThreadExecutor().submit(() -> {
+            List<CardItem> lci = FanboxParser.getAllPosts(refresh, ctx);
             List<MessageItem> lmi = FanboxParser.getPlans();
             getActivity().runOnUiThread(() -> srl.setRefreshing(false));
             if (lci != null) {
-                updateList(lci, lmi, true);
+                updateList(lci, lmi, refreshAll);
             }
             return null;
-        }));
-
-        return inflate;
+        });
     }
 
     public void updateList(List<CardItem> lci, List<MessageItem> lmi, boolean refreshAll) {

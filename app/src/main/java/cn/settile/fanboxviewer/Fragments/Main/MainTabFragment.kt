@@ -11,12 +11,10 @@ import cn.settile.fanboxviewer.MainActivity
 import cn.settile.fanboxviewer.Network.Common
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser
 import cn.settile.fanboxviewer.Network.URLRequestor
-import cn.settile.fanboxviewer.Network.URLRequestor.OnResponseListener
 import cn.settile.fanboxviewer.R
 import cn.settile.fanboxviewer.Util.Constants
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import okhttp3.Response
 import org.json.JSONObject
 import org.jsoup.Jsoup
 import java.util.*
@@ -31,7 +29,8 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val mVp: ViewPager = requireActivity().findViewById<ViewPager>(R.id.main_tab_pager) // inflating the main page
+        val mVp: ViewPager =
+            requireActivity().findViewById(R.id.main_tab_pager) // inflating the main page
 
         mVp.isSaveEnabled = true
         mVp.offscreenPageLimit = 2
@@ -40,32 +39,39 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
         //navigationView.getMenu().getItem(0).setChecked(true);
 
         //TODO: IMAGE Editing for club card.
-        //navigationView.getMenu().getItem(1).setEnabled(true);
         tl = requireActivity().findViewById<View>(R.id.main_page_tab) as TabLayout
-        tabPageAdapter = MainFragmentAdapter(requireActivity().getSupportFragmentManager(), requireContext())
+
         allPostFragment = AllPostFragment.newInstance()
-        tabPageAdapter.addFragment(allPostFragment, resources.getString(R.string.tab_posts))
-
         subscPostFragment = SubscPostFragment.newInstance()
-        this.tabPageAdapter.addFragment(subscPostFragment, resources.getString(R.string.tab_subscribed))
-
         messageFragment = MessageFragment.newInstance()
-        tabPageAdapter.addFragment(messageFragment, resources.getString(R.string.tab_messages))
+
+        tabPageAdapter =
+            MainFragmentAdapter(requireActivity().getSupportFragmentManager(), requireContext())
+
+        tabPageAdapter.apply {
+            addFragment(allPostFragment, resources.getString(R.string.tab_posts))
+            addFragment(subscPostFragment, resources.getString(R.string.tab_subscribed))
+            addFragment(messageFragment, resources.getString(R.string.tab_messages))
+        }
+
 
         mVp.adapter = tabPageAdapter
         tl.setupWithViewPager(mVp)
 
-        if (!(requireActivity() as MainActivity).getIntent().getBooleanExtra("NO_NETWORK", false)) {
-            if ((requireActivity() as MainActivity).getIntent().getBooleanExtra("IS_LOGGED_IN", false)) {
-                (requireActivity() as MainActivity).viewModel.update_is_logged_in(true)
+        var mMainActivity = requireActivity() as MainActivity;
+        if (!mMainActivity.getIntent().getBooleanExtra("NO_NETWORK", false)) {
+            if (mMainActivity.getIntent()
+                    .getBooleanExtra("IS_LOGGED_IN", false)
+            ) {
+                mMainActivity.viewModel.update_is_logged_in(true)
                 fetchUserInfo()
                 initTab()
             } else {
-                (requireActivity() as MainActivity).viewModel.update_is_logged_in(false)
+                mMainActivity.viewModel.update_is_logged_in(false)
             }
-            (requireActivity() as MainActivity).viewModel.update_is_online(true)
+            mMainActivity.viewModel.update_is_online(true)
         } else {
-            (requireActivity() as MainActivity).viewModel.update_is_online(false)
+            mMainActivity.viewModel.update_is_online(false)
         }
 
         tl.addOnTabSelectedListener(object : OnTabSelectedListener {
@@ -87,47 +93,47 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
         mf.update(true)
     }
 
-    public fun initTab() {
-        Thread {
-            getNotifications(messageFragment)
-            allPostFragment.updateList(FanboxParser.getAllPosts(false, requireContext()), FanboxParser.getPlans(), true)
-            subscPostFragment.updateList(FanboxParser.getSupportingPosts(false, requireContext()), true)
-        }.start()
+    fun initTab() {
+        getNotifications(messageFragment)
     }
 
-
     private fun fetchUserInfo() {
-        Thread {
-            URLRequestor(Constants.Domain, OnResponseListener<Boolean> { it: Response ->
-                try {
-                    val document = Jsoup.parse(Objects.requireNonNull(it.body)!!.string())
-                    val metadata = document.getElementById("metadata")
-                    //TODO (fix this parser) : bug
-                    val jsonStr = metadata.attr("content")
-                    Common.userInfo = JSONObject(jsonStr)
-                    val user = Common.userInfo.getJSONObject("context").getJSONObject("user")
-                    val iconUrl = user.getString("iconUrl")
-                    val userName = user.getString("name")
-                    val userId = user.getString("userId")
-                    val unread = FanboxParser.getUnreadMessagesCount()
-                    requireActivity().runOnUiThread(Runnable {
-                        (requireActivity() as MainActivity).viewModel.update_user_info(userName, userId, iconUrl)
-                        if (unread != 0) {
-                            Objects.requireNonNull(tl.getTabAt(2))
-                                    ?.getOrCreateBadge()?.number = unread
-                        }
-                    })
-                } catch (ex: Exception) {
-                    requireActivity().runOnUiThread(Runnable {
-                        Toast.makeText((requireContext() as MainActivity).getBaseContext(), """
+        URLRequestor(Constants.Domain, {
+            try {
+                val document = Jsoup.parse(Objects.requireNonNull(it.body)!!.string())
+                val metadata = document.getElementById("metadata")
+                //TODO (fix this parser) : bug
+                val jsonStr = metadata.attr("content")
+                Common.userInfo = JSONObject(jsonStr)
+                val user = Common.userInfo.getJSONObject("context").getJSONObject("user")
+                val iconUrl = user.getString("iconUrl")
+                val userName = user.getString("name")
+                val userId = user.getString("userId")
+                val unread = FanboxParser.getUnreadMessagesCount()
+                requireActivity().runOnUiThread {
+                    (requireActivity() as MainActivity).viewModel.update_user_info(
+                        userName,
+                        userId,
+                        iconUrl
+                    )
+                    if (unread != 0) {
+                        Objects.requireNonNull(tl.getTabAt(2))
+                            ?.getOrCreateBadge()?.number = unread
+                    }
+                }
+            } catch (ex: Exception) {
+                requireActivity().runOnUiThread {
+                    Toast.makeText(
+                        (requireContext() as MainActivity).getBaseContext(), """
      Can't get user info.
      ${ex.message}
-     """.trimIndent(), Toast.LENGTH_LONG).show()
-                    })
-                    Log.e("MainActivity", "fetchUserInfo: ", ex)
+     """.trimIndent(), Toast.LENGTH_LONG
+                    ).show()
                 }
-                null
-            }, null)
-        }.start()
+                Log.e("MainActivity", "fetchUserInfo: ", ex)
+            }
+            null
+        }).async()
+
     }
 }
