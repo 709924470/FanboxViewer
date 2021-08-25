@@ -10,45 +10,65 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 
-class URLRequestor<T>(url: String, callback: OnResponseListener<T>, headers: Map<String, String>?) {
+class URLRequestor<T>(
+    val url: String,
+    val onResp: OnResponseListener<T>,
+    val headers: Map<String, String>? = null,
+    val onDone: OnDoneListener<T>? = null
+) {
     private lateinit var req: Request;
     private var resp: Response? = null
     private var rv: T? = null
-
-    init {
+    var done = false
+    var isCalled = false
+    fun async(): URLRequestor<T> {
+        if (isCalled) throw Exception("URLRequestor has been called.")
+        isCalled = true
         MainScope().launch {
-            initRequestorAsync(url, callback, headers)
+            withContext(Dispatchers.IO) {
+                syncI()
+            }
         }
+
+        return this
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun initRequestorAsync(
-        url: String,
-        callback: OnResponseListener<T>,
-        headers: Map<String, String>?
-    ) {
-        withContext(Dispatchers.IO) {
-            val reqb = Request.Builder();
+    fun sync(): URLRequestor<T> {
+        if (isCalled) throw Exception("URLRequestor has been called.")
+        isCalled = true
+        return syncI()
+    }
 
-            reqb.url(url);
-            if (headers != null) {
-                for (header in headers) {
-                    reqb.addHeader(header.key, header.value)
-                }
-            }
-            req = reqb.build()
-            try {
-                resp = Common.getClientInstance().newCall(req).execute()
-                if (resp != null) {
-                    rv = callback.onResponse(resp!!)
-                }
-            } catch (e: Exception) {
+    private fun syncI(): URLRequestor<T> {
+        val reqb = Request.Builder();
+        reqb.url(url);
+        if (headers != null) {
+            for (header in headers) {
+                reqb.addHeader(header.key, header.value)
             }
         }
+        req = reqb.build()
+        try {
+            resp = Common.getClientInstance().newCall(req).execute()
+            if (resp != null) {
+                rv = onResp.onResponse(resp!!)
+            }
+        } catch (e: Exception) {
+        }
+        onDone?.onDone(this)
+        return this
+    }
+
+    fun isDone(): Boolean {
+        return done
     }
 
     fun getReturnValue(): T? {
-        return rv
+        if (isDone()) {
+            return rv
+        } else {
+            throw Exception("Requestor Is Not Done.")
+        }
     }
 
     fun getBody(): Document? {
@@ -62,5 +82,9 @@ class URLRequestor<T>(url: String, callback: OnResponseListener<T>, headers: Map
 
     fun interface OnResponseListener<T> {
         fun onResponse(resp: Response): T?
+    }
+
+    fun interface OnDoneListener<T> {
+        fun onDone(req: URLRequestor<T>)
     }
 }

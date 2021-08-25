@@ -23,8 +23,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.Future;
-
 import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.Util.Constants;
 import cn.settile.fanboxviewer.ViewModels.SplashViewModel;
@@ -37,8 +35,9 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     public static SharedPreferences sp;
     SplashViewModel viewModel;
     Thread thread;
-    int RequestTime=0;
+    int RequestTime = 0;
     Boolean loginOnce = false;
+    Boolean isLaunchedMain = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +109,6 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         // permissions this app might request.
     }
 
-
     @Override
     public void run() {
 
@@ -168,26 +166,26 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         Intent i = new Intent(this, MainActivity.class);
 
 
-        Future<Boolean> loginFuture = Common.isLoggedIn();
-        while (!loginFuture.isDone()) {
-        }
-        try {
-            if (!loginFuture.get()) {
-                startLoginActivity();
-                return;
-            }
+        Common.isLoggedIn(req -> {
+            try {
+                if (!req.getReturnValue()) {
+                    startLoginActivity();
+                    return;
+                }
 //            i.putExtra("IS_LOGGED_IN", true);
-            sp.edit().putBoolean("LoggedIn", true).apply();
-            viewModel.update_cookie_state(Constants.CheckItemState.SUCCESS);
+                sp.edit().putBoolean("LoggedIn", true).apply();
+                viewModel.update_cookie_state(Constants.CheckItemState.SUCCESS);
 //            Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> FanboxParser.getMessages(true));
 //            while (!tmp.isDone()) {
 //            }
 //            tmp.get();
-        } catch (Exception ex) {
-            sp.edit().putBoolean("LoggedIn", false).apply();
+            } catch (Exception ex) {
+                sp.edit().putBoolean("LoggedIn", false).apply();
 //            i.putExtra("IS_LOGGED_IN", false);
-            viewModel.update_cookie_state(Constants.CheckItemState.FAIL);
-        }
+                viewModel.update_cookie_state(Constants.CheckItemState.FAIL);
+            }
+
+        });
 
 
 //        if (sp.getBoolean("LoggedIn", false)) {
@@ -240,15 +238,15 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     public void requestStoragePermission(View v) {
         RequestTime++;
 
-        if(RequestTime<=2) {
+        if (RequestTime <= 2) {
             requestPermissions(
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     PERMISSION_REQUEST_CODE);
-        }else{
+        } else {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                Intent i=new Intent(ACTION_AUTO_REVOKE_PERMISSIONS);
+                Intent i = new Intent(ACTION_AUTO_REVOKE_PERMISSIONS);
                 startActivity(i);
-            }else{
+            } else {
                 requestPermissions(
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         PERMISSION_REQUEST_CODE);
@@ -259,6 +257,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
 
     @SuppressLint("UseCompatLoadingForDrawables")
     public void prepareUIAndActions() {
+
         viewModel = new ViewModelProvider(this).get(SplashViewModel.class);
         viewModel.getStorage_permission_state().observe(this, (it) -> {
             switch (it) {
@@ -269,7 +268,10 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
                 case SUCCESS:
                     ((ImageView) findViewById(R.id.storage_permission_check_imageView)).setImageDrawable(getDrawable(R.drawable.ic_check_circle_outline_black_24dp));
                     ((LinearLayout) findViewById(R.id.storage_permission_check_linearLayout)).setBackgroundColor(getColor(R.color.colorSuccess));
-                    checkStateAndStartMainActivity();
+                    isLaunchedMain = isLaunchedMain || checkStateAndStartMainActivity();
+                    if (isLaunchedMain) {
+                        finish();
+                    }
                     break;
                 case FAIL:
                     ((ImageView) findViewById(R.id.storage_permission_check_imageView)).setImageDrawable(getDrawable(R.drawable.ic_highlight_off_black_24dp));
@@ -288,7 +290,10 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
                     ((ProgressBar) findViewById(R.id.account_state_progressBar)).setVisibility(View.INVISIBLE);
                     ((ImageView) findViewById(R.id.log_state_check_imageView)).setImageDrawable(getDrawable(R.drawable.ic_check_circle_outline_black_24dp));
                     ((LinearLayout) findViewById(R.id.log_state_check_linearLayout)).setBackgroundColor(getColor(R.color.colorSuccess));
-                    checkStateAndStartMainActivity();
+                    isLaunchedMain = isLaunchedMain || checkStateAndStartMainActivity();
+                    if (isLaunchedMain) {
+                        finish();
+                    }
                     break;
                 case FAIL:
                     ((ProgressBar) findViewById(R.id.account_state_progressBar)).setVisibility(View.INVISIBLE);
@@ -308,7 +313,10 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
                     ((ProgressBar) findViewById(R.id.network_state_progressBar)).setVisibility(View.INVISIBLE);
                     ((ImageView) findViewById(R.id.network_state_check_imageView)).setImageDrawable(getDrawable(R.drawable.ic_check_circle_outline_black_24dp));
                     ((LinearLayout) findViewById(R.id.network_state_check_linearLayout)).setBackgroundColor(getColor(R.color.colorSuccess));
-                    checkStateAndStartMainActivity();
+                    isLaunchedMain = isLaunchedMain || checkStateAndStartMainActivity();
+                    if (isLaunchedMain) {
+                        finish();
+                    }
                     break;
                 case FAIL:
                     viewModel.update_cookie_state(Constants.CheckItemState.FAIL);
@@ -320,7 +328,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         });
     }
 
-    public void checkStateAndStartMainActivity() {
+    public Boolean checkStateAndStartMainActivity() {
         if (viewModel.getStorage_permission_state().getValue() != Constants.CheckItemState.SUCCESS) {
             //requestStoragePermission(null);
         } else if (viewModel.getCookie_state().getValue() != Constants.CheckItemState.SUCCESS) {
@@ -331,8 +339,9 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
             Intent i = new Intent(this, MainActivity.class);
             i.putExtra("IS_LOGGED_IN", true);
             startActivity(i);
-            finish();
+            return true;
         }
+        return false;
     }
 
     public void startLoginActivity() {

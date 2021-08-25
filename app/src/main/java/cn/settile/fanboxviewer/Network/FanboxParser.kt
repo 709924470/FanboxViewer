@@ -11,7 +11,6 @@ import cn.settile.fanboxviewer.Network.URLRequestor.OnResponseListener
 import cn.settile.fanboxviewer.R
 import cn.settile.fanboxviewer.Util.Constants
 import lombok.extern.slf4j.Slf4j
-import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URLConnection
@@ -77,16 +76,16 @@ object FanboxParser {
                 lmi.add(mi)
             }
             lastMessageList = lmi
-            lmi
+            return lmi
         } catch (ex: Exception) {
             Log.e(TAG, "EXCEPTION: " + ex)
-            null
+            return null
         }
     }
 
     val unreadMessage: Int?
         get() = getJSON("https://fanbox.pixiv.net/api/bell.countUnread")
-           ?.optInt("count", 0)
+            ?.optInt("count", 0)
 
     fun updateIndex(): Boolean {
         try {
@@ -160,10 +159,10 @@ object FanboxParser {
             }
 
             //            android.util.Log.d("getPlans", "Returning ..." + result.size());
-            result
+            return result
         } catch (ex: Exception) {
             Log.e(TAG, "EXCEPTION: " + ex)
-            null
+            return null
         }
     }
 
@@ -243,10 +242,10 @@ object FanboxParser {
             }
 
             //            android.util.Log.d("getPosts", "Returning ...");
-            lci
+            return lci
         } catch (ex: Exception) {
             Log.e(TAG, "EXCEPTION: " + ex)
-            null
+            return null
         }
     }
 
@@ -420,21 +419,26 @@ object FanboxParser {
         return items
     }
 
+
+    //TODO Repair User Posts. Change To Async.
     private fun getJSON(url: String?, refer: String): JSONObject? {
         val headers = HashMap<String, String>()
         headers["Refer"] = refer
         headers["Origin"] = "https://www.pixiv.net"
-        val ur = URLRequestor<JSONObject>(url!!, OnResponseListener { it: Response ->
+        val ur = URLRequestor<JSONObject?>(url!!, OnResponseListener {
+            Log.d("[Sync SUCCEEDED]", "getJSON");
+            var obj: JSONObject?
             try {
                 Constants.Cookie =
                     it.header("Set-Cookie", Constants.Cookie)
                 val response = it.body!!.string()
-                return@OnResponseListener JSONObject(response)
+                obj = JSONObject(response)
             } catch (ex: Exception) {
                 Log.e(TAG, "EXCEPTION: " + ex)
-                return@OnResponseListener null
+                obj = null
             }
-        }, headers)
+            return@OnResponseListener obj;
+        }, headers).sync()
         return ur.getReturnValue()
     }
 

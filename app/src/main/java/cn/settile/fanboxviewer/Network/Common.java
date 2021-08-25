@@ -12,8 +12,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxAPI;
@@ -35,20 +33,16 @@ public class Common {
     private static String TAG = "NetworkCommon";
     private static File cacheDir = null;
 
-    public static Future<Boolean> isLoggedIn() {
-        return Executors.newSingleThreadExecutor()
-                .submit(() -> {
-                    URLRequestor<Boolean> ur = new URLRequestor<Boolean>("https://api.fanbox.cc/bell.countUnread", (it) -> {
-                        try {
-                            JSONObject json = new JSONObject(it.body().string());
-                            return Objects.equals(json.optString("error"), "general_error");
-                        } catch (Exception ex) {
-                            Log.e(TAG, "EXCEPTION: ", ex);
-                            return false;
-                        }
-                    },null);
-                    return ur.getReturnValue();
-                });
+    public static URLRequestor<Boolean> isLoggedIn(URLRequestor.OnDoneListener<Boolean> onDone) {
+        return new URLRequestor<>("https://api.fanbox.cc/bell.countUnread", (it) -> {
+            try {
+                JSONObject json = new JSONObject(it.body().string());
+                return Objects.equals(json.optString("error"), "general_error");
+            } catch (Exception ex) {
+                Log.e(TAG, "EXCEPTION: ", ex);
+                return false;
+            }
+        }, null, onDone).async();
     }
 
     public static OkHttpClient getClientInstance() {
@@ -93,7 +87,7 @@ public class Common {
     }
 
     public static boolean download(String url, File output, Runnable success, Runnable fail) {
-        URLRequestor<Boolean> ur = new URLRequestor<Boolean>(url, (it) -> {
+        URLRequestor<Boolean> ur = new URLRequestor<>(url, (it) -> {
             try {
                 Log.d(TAG, "Downloading:" + url);
                 InputStream is = it.body().byteStream();
@@ -118,7 +112,7 @@ public class Common {
             }
             success.run();
             return true;
-        },null);
+        },null,null).sync();
 
 
         return ur.getReturnValue();
