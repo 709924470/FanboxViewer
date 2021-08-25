@@ -32,7 +32,7 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val mVp: ViewPager =
-            requireActivity().findViewById<ViewPager>(R.id.main_tab_pager) // inflating the main page
+            requireActivity().findViewById(R.id.main_tab_pager) // inflating the main page
 
         mVp.isSaveEnabled = true
         mVp.offscreenPageLimit = 2
@@ -41,7 +41,6 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
         //navigationView.getMenu().getItem(0).setChecked(true);
 
         //TODO: IMAGE Editing for club card.
-        //navigationView.getMenu().getItem(1).setEnabled(true);
         tl = requireActivity().findViewById<View>(R.id.main_page_tab) as TabLayout
 
         allPostFragment = AllPostFragment.newInstance()

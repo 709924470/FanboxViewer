@@ -24,7 +24,7 @@ import kotlin.collections.HashMap
 @Deprecated("")
 @Slf4j
 object FanboxParser {
-    private const val TAG = "Parser"
+    private const val TAG = "FanboxParser"
     public var userToName = HashMap<String, String?>()
     var postToCover = HashMap<String, String?>()
     var lastMessageList: List<MessageItem> = ArrayList()
