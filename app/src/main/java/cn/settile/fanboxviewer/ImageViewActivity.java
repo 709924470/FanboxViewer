@@ -15,12 +15,11 @@ import com.google.android.material.snackbar.Snackbar;
 import com.veinhorn.scrollgalleryview.MediaInfo;
 import com.veinhorn.scrollgalleryview.ScrollGalleryView;
 
-import java.net.CookieManager;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.settile.fanboxviewer.Network.CustomPicassoLoader;
-import cn.settile.fanboxviewer.Network.DownloadRequester;
+import cn.settile.fanboxviewer.Network.DownloadRequestor;
 import cn.settile.fanboxviewer.Util.Constants;
 
 import static cn.settile.fanboxviewer.Util.Util.toBitmap;
@@ -63,7 +62,7 @@ public class ImageViewActivity extends AppCompatActivity {
                         String extension = images.get(position)
                                 .substring(images.get(position).lastIndexOf('.'));
                         String name = detail + "_" + position + extension;
-                        new DownloadRequester((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
+                        new DownloadRequestor((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
                                 .downloadWithCookie(images.get(position), name, Constants.Cookie);
                     } catch (Exception ex) {
                         Log.e(TAG, "onCreate: ", ex);
@@ -113,7 +112,7 @@ public class ImageViewActivity extends AppCompatActivity {
                 String extension = images.get(position)
                         .substring(images.get(position).lastIndexOf('.'));
                 String name = detail + "_" + position + extension;
-                new DownloadRequester((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
+                new DownloadRequestor((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
                         .downloadWithCookie(images.get(position), name, Constants.Cookie);
             } catch (Exception ex) {
                 Log.e(TAG, "onCreate: ", ex);

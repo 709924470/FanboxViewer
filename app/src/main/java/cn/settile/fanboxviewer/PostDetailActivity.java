@@ -29,7 +29,7 @@ import java.util.concurrent.Future;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.PostDetail.PostDetailRecyclerViewAdapter;
 import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.Bean.DetailItem;
-import cn.settile.fanboxviewer.Network.DownloadRequester;
+import cn.settile.fanboxviewer.Network.DownloadRequestor;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.Util.Constants;
 import cn.settile.fanboxviewer.ViewModels.PostDetailViewModel;
@@ -112,7 +112,7 @@ public class PostDetailActivity extends AppCompatActivity {
                             .substring(images.get(i).lastIndexOf('.'));
                     String name = title + "_" + i + extension;
                     Log.d(TAG, images.get(i));
-                    new DownloadRequester((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
+                    new DownloadRequestor((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
                             .downloadWithCookie(images.get(i), name, Constants.Cookie);
                 } catch (Exception ex) {
                     Log.e(TAG, "onCreate: ", ex);
