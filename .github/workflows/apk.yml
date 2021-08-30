@@ -44,6 +44,6 @@ jobs:
       - name: go-semantic-release
         uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
-          automatic_release_tag: true
+          automatic_release_tag: ${{ steps.get_version.outputs.VERSION }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           files: app/build/outputs/apk/debug/app-debug.apk
