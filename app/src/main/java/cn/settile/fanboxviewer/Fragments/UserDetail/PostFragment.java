@@ -16,8 +16,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.CardRecyclerViewAdapterBase;
+import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.R;
 import lombok.Setter;
@@ -26,14 +26,14 @@ import lombok.Setter;
 //@Slf4j
 public class PostFragment extends Fragment {
 
-    private View v;
     public Activity c;
-    private RecyclerView recyclerView;
     public CardRecyclerViewAdapterBase adapter;
-    private SwipeRefreshLayout srl;
     @Setter
     public String userID;
     public String nextUrl = null;
+    private View v;
+    private RecyclerView recyclerView;
+    private SwipeRefreshLayout srl;
 
     public PostFragment() {
     }
@@ -57,42 +57,37 @@ public class PostFragment extends Fragment {
         v = inflate;
 
         recyclerView = v.findViewById(R.id.frag_post_list);
-
         LinearLayoutManager llm = new LinearLayoutManager(c);
         recyclerView.setLayoutManager(llm);
-
         adapter = new CardRecyclerViewAdapterBase();
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(v.getContext(), R.anim.layout_default));
         recyclerView.scheduleLayoutAnimation();
 
         srl = v.findViewById(R.id.frag_post_refresh);
-
         adapter.setOnBottomReachedListener(pos -> {
             if (srl.isRefreshing()) {
                 return;
             }
             srl.setRefreshing(true);
-            Executors.newSingleThreadExecutor().submit(() -> {
-                List<CardItem> lci = new FanboxParser(userID).getUserPosts();
-                getActivity().runOnUiThread(() -> srl.setRefreshing(false));
-                if (lci != null) {
-                    updateList(lci, false);
-                }
-                return null;
-            });
+            refreshPosts(false,false);
         });
+        srl.setOnRefreshListener(() -> refreshPosts(false,true));
+        srl.setRefreshing(true);
+        refreshPosts(true,true);
 
-        srl.setOnRefreshListener(() -> Executors.newSingleThreadExecutor().submit(() -> {
+        return inflate;
+    }
+
+    public void refreshPosts(boolean refresh, boolean refreshAll) {
+        Executors.newSingleThreadExecutor().submit(() -> {
             List<CardItem> lci = new FanboxParser(userID).getUserPosts();
             getActivity().runOnUiThread(() -> srl.setRefreshing(false));
             if (lci != null) {
-                updateList(lci, true);
+                updateList(lci, refreshAll);
             }
             return null;
-        }));
-
-        return inflate;
+        });
     }
 
     public void updateList(List<CardItem> lci, boolean refreshAll) {

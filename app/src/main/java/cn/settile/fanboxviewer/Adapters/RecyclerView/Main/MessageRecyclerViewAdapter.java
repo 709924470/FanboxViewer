@@ -10,34 +10,38 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.text.MessageFormat;
 import java.util.List;
 
-import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.Fragments.Main.MessageFragment;
+import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.R;
 
 public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecyclerViewAdapter.ViewHolder> {
 
-    private List<MessageItem> messageItems;
     private final MessageFragment parentView;
+    private List<MessageItem> messageItems;
 
     public MessageRecyclerViewAdapter(MessageFragment mf, List<MessageItem> items) {
         messageItems = items;
         this.parentView = mf;
     }
 
-    public void updateItems(List<MessageItem> lmi, boolean refreshAll){
-        if(refreshAll) {
-            if(lmi.equals(this.messageItems))
+    public void updateItems(List<MessageItem> lmi, boolean refreshAll) {
+        if (refreshAll) {
+            if (lmi.equals(this.messageItems))
                 return;
             this.messageItems = lmi;
         } else {
-            if(lmi != null && messageItems != null)
+            if (lmi != null && messageItems != null)
                 this.messageItems.addAll(lmi);
         }
         notifyDataSetChanged();
     }
 
+    @NotNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -48,7 +52,7 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = messageItems.get(position);
-        holder.mIdView.setText(messageItems.get(position).getTitle() + parentView.c.getString(R.string.published));
+        holder.mIdView.setText(MessageFormat.format("{0} {1}", messageItems.get(position).getTitle(), parentView.c.getString(R.string.published)));
         holder.mContentView.setText(messageItems.get(position).getMsg());
 
         Picasso.get()

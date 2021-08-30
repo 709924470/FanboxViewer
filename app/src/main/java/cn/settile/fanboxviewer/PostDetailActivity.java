@@ -2,7 +2,6 @@ package cn.settile.fanboxviewer;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,8 +29,7 @@ import java.util.concurrent.Future;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.PostDetail.PostDetailRecyclerViewAdapter;
 import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.Bean.DetailItem;
-import cn.settile.fanboxviewer.Network.Bean.DownloadItem;
-import cn.settile.fanboxviewer.Network.DownloadRequester;
+import cn.settile.fanboxviewer.Network.DownloadRequestor;
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
 import cn.settile.fanboxviewer.Util.Constants;
 import cn.settile.fanboxviewer.ViewModels.PostDetailViewModel;
@@ -114,7 +112,7 @@ public class PostDetailActivity extends AppCompatActivity {
                             .substring(images.get(i).lastIndexOf('.'));
                     String name = title + "_" + i + extension;
                     Log.d(TAG, images.get(i));
-                    new DownloadRequester((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
+                    new DownloadRequestor((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
                             .downloadWithCookie(images.get(i), name, Constants.Cookie);
                 } catch (Exception ex) {
                     Log.e(TAG, "onCreate: ", ex);
@@ -162,6 +160,14 @@ public class PostDetailActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     void prepareUIAndActions() {
+        findViewById(R.id.post_detail_icon).setOnClickListener(v -> {
+            Intent i1 = new Intent(v.getContext(), UserDetailActivity.class);
+            i1.putExtra("NAME", cn.settile.fanboxviewer.Network.FanboxParser.INSTANCE.getUserToName().get(viewModel.getUser_name()));
+            i1.putExtra("ICON", viewModel.getUrl_user_icon().getValue());
+            i1.putExtra("URL", viewModel.getUrl_article().getValue());
+            i1.putExtra("CID", viewModel.getUser_id().getValue());
+            v.getContext().startActivity(i1);
+        });
 
         viewModel = new ViewModelProvider(this).get(PostDetailViewModel.class);
 
