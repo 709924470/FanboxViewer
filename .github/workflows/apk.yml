@@ -34,8 +34,12 @@ jobs:
           java-version: 1.8
       - name: Build debug APK
         run: bash ./gradlew assembleDebug --stacktrace
+        
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
           name: app
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: GitHub Releases
+        uses: fnkr/github-action-ghr@v1.3
