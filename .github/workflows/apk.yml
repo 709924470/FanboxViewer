@@ -41,5 +41,7 @@ jobs:
           name: app
           path: app/build/outputs/apk/debug/app-debug.apk
 
-      - name: GitHub Releases
-        uses: fnkr/github-action-ghr@v1.3
+      - name: go-semantic-release
+        uses: go-semantic-release/action@v1.15.0
+        with: 
+          update-file: app/build/outputs/apk/debug/app-debug.apk
