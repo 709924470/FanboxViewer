@@ -44,4 +44,5 @@ jobs:
       - name: go-semantic-release
         uses: go-semantic-release/action@v1.15.0
         with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           update-file: app/build/outputs/apk/debug/app-debug.apk
