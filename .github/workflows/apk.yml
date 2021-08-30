@@ -42,7 +42,7 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
 
       - name: go-semantic-release
-        uses: ianlapham/release-and-build@v1
+        uses: marvinpinto/action-automatic-releases@v1.2.1
         with: 
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           files: app/build/outputs/apk/debug/app-debug.apk
