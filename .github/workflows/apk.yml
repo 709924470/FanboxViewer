@@ -41,9 +41,15 @@ jobs:
           name: app
           path: app/build/outputs/apk/debug/app-debug.apk
 
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v5.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: go-semantic-release
         uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
-          automatic_release_tag: ${{ steps.get_version.outputs.VERSION }}
+          automatic_release_tag: ${{ steps.tag_version.outputs.new_tag }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           files: app/build/outputs/apk/debug/app-debug.apk
