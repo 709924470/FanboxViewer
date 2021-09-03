@@ -52,5 +52,5 @@ jobs:
         with:
           automatic_release_tag: ${{ steps.tag_version.outputs.new_tag }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: false
+          prerelease: true
           files: app/build/outputs/apk/debug/app-debug.apk

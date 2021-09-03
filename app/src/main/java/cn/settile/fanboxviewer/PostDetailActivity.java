@@ -30,15 +30,15 @@ import cn.settile.fanboxviewer.Adapters.RecyclerView.PostDetail.PostDetailRecycl
 import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.Network.DownloadRequestor;
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxUserParser;
 import cn.settile.fanboxviewer.Util.Constants;
 import cn.settile.fanboxviewer.ViewModels.PostDetailViewModel;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 
-import static cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser.APIJSONFactory;
-import static cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser.client;
+import static cn.settile.fanboxviewer.Network.RESTfulClient.FanboxUserParser.APIJSONFactory;
+import static cn.settile.fanboxviewer.Network.RESTfulClient.FanboxUserParser.client;
 
 @Slf4j
 public class PostDetailActivity extends AppCompatActivity {
@@ -124,13 +124,13 @@ public class PostDetailActivity extends AppCompatActivity {
     private void setup() {
         new Thread(() -> {
             try {
-                FanboxParser fanboxParser = new FanboxParser(userId);
+                FanboxUserParser fanboxUserParser = new FanboxUserParser(userId);
                 Call<ResponseBody> creatorInfoCaller = client.getPostInfo(Integer.parseInt(url));
                 JSONObject body = APIJSONFactory(creatorInfoCaller).getJSONObject("body");
-                List<DetailItem> ldi = fanboxParser.getPostContent(body);
+                List<DetailItem> ldi = fanboxUserParser.getPostContent(body);
 
                 if (isFromURL) {
-                    CardItem detail = fanboxParser.getPostDetail(body);
+                    CardItem detail = fanboxUserParser.getPostDetail(body);
                     this.userName = detail.getCreator();
                     this.iconUrl = detail.getIconUrl();
                     this.userId = detail.getUserId();

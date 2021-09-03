@@ -27,7 +27,7 @@ import cn.settile.fanboxviewer.Network.Bean.DetailItem;
 import cn.settile.fanboxviewer.Adapters.Fragment.UserDetailFragmentAdapter;
 import cn.settile.fanboxviewer.Fragments.UserDetail.PostFragment;
 import cn.settile.fanboxviewer.Fragments.UserDetail.UserDetailFragment;
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxUserParser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -98,8 +98,8 @@ public class UserDetailActivity extends AppCompatActivity {
     private void setup(){
         new Thread(() -> {
             try {
-                FanboxParser fanboxParser = new FanboxParser(userId);
-                JSONObject detail = fanboxParser.getUserDetail();
+                FanboxUserParser fanboxUserParser = new FanboxUserParser(userId);
+                JSONObject detail = fanboxUserParser.getUserDetail();
                 JSONObject body = detail.getJSONObject("body");
                 JSONObject user = body.getJSONObject("user");
 
@@ -132,7 +132,7 @@ public class UserDetailActivity extends AppCompatActivity {
                 String uid = user.getString("userId");
                 posts.setUserID(uid);
                 Executors.newSingleThreadExecutor().submit(() -> {
-                            List<CardItem> lci = fanboxParser.getUserPosts();
+                            List<CardItem> lci = fanboxUserParser.getUserPosts();
                             posts.updateList(lci, true);
                             posts.nextUrl = null;
                             return null;

@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
 
 import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.MessageRecyclerViewAdapter;
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxUserParser;
 import cn.settile.fanboxviewer.R;
 
 /**
@@ -79,7 +79,7 @@ public class MessageFragment extends Fragment {
                     }
                     srl.setRefreshing(true);
                     Executors.newSingleThreadExecutor().submit(() -> {
-                        List<MessageItem> lmi = FanboxParser.getMessages(false);
+                        List<MessageItem> lmi = FanboxUserParser.getMessages(false);
                         srl.setRefreshing(false);
                         if (lmi != null) {
                             update(false);
@@ -97,7 +97,7 @@ public class MessageFragment extends Fragment {
         });
 
         srl.setOnRefreshListener(() -> Executors.newSingleThreadExecutor().submit(() -> {
-            List<MessageItem> lmi = FanboxParser.getMessages(true);
+            List<MessageItem> lmi = FanboxUserParser.getMessages(true);
             srl.setRefreshing(false);
             if (lmi != null) {
                 update(true);
@@ -112,7 +112,7 @@ public class MessageFragment extends Fragment {
         if (v == null || c == null) {
             return;
         }
-        Future<List<MessageItem>> flmi = Executors.newSingleThreadExecutor().submit(() -> FanboxParser.getMessages(refreshAll));
+        Future<List<MessageItem>> flmi = Executors.newSingleThreadExecutor().submit(() -> FanboxUserParser.getMessages(refreshAll));
         new Handler().post(() -> {
             while(!flmi.isDone()){}
             List<MessageItem> lmi = null;

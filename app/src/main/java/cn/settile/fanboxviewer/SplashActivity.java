@@ -175,7 +175,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
 //            i.putExtra("IS_LOGGED_IN", true);
                 sp.edit().putBoolean("LoggedIn", true).apply();
                 viewModel.update_cookie_state(Constants.CheckItemState.SUCCESS);
-//            Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> FanboxParser.getMessages(true));
+//            Future<Object> tmp = Executors.newSingleThreadExecutor().submit(() -> FanboxUserParser.getMessages(true));
 //            while (!tmp.isDone()) {
 //            }
 //            tmp.get();

@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.SubscribedPostsRecyclerViewAdapter;
 import cn.settile.fanboxviewer.Network.Bean.CardItem;
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxUserParser;
 import cn.settile.fanboxviewer.R;
 
 
@@ -76,7 +76,7 @@ public class SubscPostFragment extends Fragment {
 
     public void refreshPosts(boolean refresh, boolean refreshAll) {
         Executors.newSingleThreadExecutor().submit(() -> {
-            List<CardItem> lci = FanboxParser.getSupportingPosts(refresh, c);
+            List<CardItem> lci = FanboxUserParser.getSupportingPosts(refresh, c);
             getActivity().runOnUiThread(() -> srl.setRefreshing(false));
             if (lci != null) {
                 updateList(lci, refreshAll);

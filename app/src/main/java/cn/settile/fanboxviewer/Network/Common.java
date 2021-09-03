@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxAPI;
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxUserParser;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -78,7 +78,7 @@ public class Common {
                 .build();
 
         FanboxAPI api = fanbox.create(FanboxAPI.class);
-        FanboxParser.client = api;
+        FanboxUserParser.client = api;
         return client;
     }
 

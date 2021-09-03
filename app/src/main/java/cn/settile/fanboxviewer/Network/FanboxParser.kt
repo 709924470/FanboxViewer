@@ -23,7 +23,7 @@ import kotlin.collections.HashMap
 @Deprecated("")
 @Slf4j
 object FanboxParser {
-    private const val TAG = "FanboxParser"
+    private const val TAG = "FanboxUserParser"
     public var userToName = HashMap<String, String?>()
     var postToCover = HashMap<String, String?>()
     var lastMessageList: List<MessageItem> = ArrayList()
@@ -243,90 +243,6 @@ object FanboxParser {
 
             //            android.util.Log.d("getPosts", "Returning ...");
             return lci
-        } catch (ex: Exception) {
-            Log.e(TAG, "EXCEPTION: " + ex)
-            return null
-        }
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    fun getUserPosts(userId: String, useUrl: String?, c: Context): HashMap<Int, Any>? {
-        return try {
-            //            android.util.Log.d("getPosts", (refresh ? "t" : "f") + (all ? "t" : "f"));
-            val lci: MutableList<CardItem> = ArrayList()
-            val posts: JSONArray
-            var tmp: JSONObject?
-            val nextUrl: String
-            if (useUrl == null) {
-                tmp = getJSON(getUrl(userId))
-                tmp = tmp!!.getJSONObject("body")
-                //                tmp = tmp.getJSONObject("post");
-                posts = tmp.getJSONArray("items")
-                nextUrl = tmp.getString("nextUrl")
-            } else {
-                val refer = "https://www.pixiv.net/fanbox/creator/$userId/post"
-                tmp = getJSON(useUrl, refer)
-                tmp = tmp!!.getJSONObject("body")
-                posts = tmp.getJSONArray("items")
-                nextUrl = tmp.getString("nextUrl")
-            }
-            for (i in 0 until posts.length()) {
-                val json = posts.getJSONObject(i)
-                //                android.util.Log.d("getPosts", i + " -> " + json.toString());
-                val title = json.getString("title")
-                val desc = json.getString("excerpt")
-                val fee = json.getInt("feeRequired")
-                val plan = if (fee == 0) c.getString(R.string.plan_public) else " ¥$fee "
-                val user = json.getJSONObject("user")
-                val userName = user.getString("name")
-                val pixivId = user.getString("userId")
-                var iconUrl = user.getString("iconUrl")
-                if (userToIcon[userId] == null) {
-                    userToIcon[userId] = iconUrl
-                } else {
-                    iconUrl = userToIcon[userId]
-                }
-                if (userToName[userId] == null) {
-                    userToName[userId] = userName
-                }
-                var date = json.getString("updatedDatetime")
-                val df: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ")
-                val sdf = SimpleDateFormat(c.getString(R.string.date_formatting))
-                date = sdf.format(df.parse(date))
-                var headerUrl = json.getString("coverImageUrl")
-                if (headerUrl == null || headerUrl == "null") {
-                    val body = json.optJSONObject("body")
-                    if (body != null) {
-                        val image = body.optJSONArray("images")
-                        if (image != null) {
-                            headerUrl = image.getJSONObject(0).getString("thumbnailUrl")
-                        }
-                    }
-                }
-                val url = "https://fanbox.pixiv.net/api/post.info?postId=" + json.getString("id")
-                if (!postToCover.containsKey(json.getString("id"))) {
-                    postToCover[json.getString("id")] =
-                        headerUrl
-                }
-                lci.add(
-                    CardItem(
-                        iconUrl,
-                        headerUrl,
-                        url,
-                        title,
-                        desc,
-                        userName,
-                        date,
-                        plan,
-                        userId,
-                        pixivId
-                    )
-                )
-            }
-            val result = HashMap<Int, Any>()
-            result[0] = nextUrl
-            result[1] = lci
-            return result
         } catch (ex: Exception) {
             Log.e(TAG, "EXCEPTION: " + ex)
             return null

@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 import cn.settile.fanboxviewer.Network.Bean.CardItem;
 import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.Adapters.RecyclerView.Main.AllPostsRecyclerViewAdapter;
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxUserParser;
 import cn.settile.fanboxviewer.R;
 
 
@@ -81,8 +81,8 @@ public class AllPostFragment extends Fragment {
     public void refreshPosts(boolean refresh,boolean refreshAll){
 
         Executors.newSingleThreadExecutor().submit(() -> {
-            List<CardItem> lci = FanboxParser.getAllPosts(refresh, ctx);
-            List<MessageItem> lmi = FanboxParser.getPlans();
+            List<CardItem> lci = FanboxUserParser.getAllPosts(refresh, ctx);
+            List<MessageItem> lmi = FanboxUserParser.getPlans();
             getActivity().runOnUiThread(() -> srl.setRefreshing(false));
             if (lci != null) {
                 updateList(lci, lmi, refreshAll);

@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 
 import cn.settile.fanboxviewer.Adapters.RecyclerView.CardRecyclerViewAdapterBase;
 import cn.settile.fanboxviewer.Network.Bean.CardItem;
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser;
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxUserParser;
 import cn.settile.fanboxviewer.R;
 import lombok.Setter;
 
@@ -34,7 +34,7 @@ public class PostFragment extends Fragment {
     private View v;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout srl;
-
+    List<CardItem> lci;
     public PostFragment() {
     }
 
@@ -47,6 +47,11 @@ public class PostFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         c = getActivity();
+        try {
+            lci = new FanboxUserParser(userID).getUserPosts();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -70,18 +75,18 @@ public class PostFragment extends Fragment {
                 return;
             }
             srl.setRefreshing(true);
-            refreshPosts(false,false);
+            refreshPosts(false, false);
         });
-        srl.setOnRefreshListener(() -> refreshPosts(false,true));
+        srl.setOnRefreshListener(() -> refreshPosts(false, true));
         srl.setRefreshing(true);
-        refreshPosts(true,true);
+        refreshPosts(true, true);
 
         return inflate;
     }
 
     public void refreshPosts(boolean refresh, boolean refreshAll) {
         Executors.newSingleThreadExecutor().submit(() -> {
-            List<CardItem> lci = new FanboxParser(userID).getUserPosts();
+
             getActivity().runOnUiThread(() -> srl.setRefreshing(false));
             if (lci != null) {
                 updateList(lci, refreshAll);

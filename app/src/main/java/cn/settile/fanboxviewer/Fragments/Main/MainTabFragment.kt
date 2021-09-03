@@ -9,7 +9,7 @@ import androidx.viewpager.widget.ViewPager
 import cn.settile.fanboxviewer.Adapters.Fragment.MainFragmentAdapter
 import cn.settile.fanboxviewer.MainActivity
 import cn.settile.fanboxviewer.Network.Common
-import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxParser
+import cn.settile.fanboxviewer.Network.RESTfulClient.FanboxUserParser
 import cn.settile.fanboxviewer.Network.URLRequestor
 import cn.settile.fanboxviewer.R
 import cn.settile.fanboxviewer.Util.Constants
@@ -109,7 +109,7 @@ class MainTabFragment : Fragment(R.layout.fragment_main_tabs) {
                 val iconUrl = user.getString("iconUrl")
                 val userName = user.getString("name")
                 val userId = user.getString("userId")
-                val unread = FanboxParser.getUnreadMessagesCount()
+                val unread = FanboxUserParser.getUnreadMessagesCount()
                 requireActivity().runOnUiThread {
                     (requireActivity() as MainActivity).viewModel.update_user_info(
                         userName,

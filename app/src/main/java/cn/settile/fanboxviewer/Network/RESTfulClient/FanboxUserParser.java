@@ -26,7 +26,6 @@ import cn.settile.fanboxviewer.Network.Bean.ImageItem;
 import cn.settile.fanboxviewer.Network.Bean.MessageItem;
 import cn.settile.fanboxviewer.App;
 import cn.settile.fanboxviewer.BuildConfig;
-import cn.settile.fanboxviewer.Network.Common;
 import cn.settile.fanboxviewer.R;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ResponseBody;
@@ -38,7 +37,7 @@ import static cn.settile.fanboxviewer.Util.Constants.MAX_PLAN_LOAD_PAGE;
 import static cn.settile.fanboxviewer.Util.Util.toList;
 
 @Slf4j
-public class FanboxParser {
+public class FanboxUserParser {
     private static final String TAG = "Parser";
     public static FanboxAPI client = null;
 
@@ -49,8 +48,8 @@ public class FanboxParser {
     private final Context c = App.getContext();
     private String postNext = null;
 
-    public FanboxParser(String user) throws Exception {
-        if (Objects.equals(FanboxParser.client, null)){
+    public FanboxUserParser(String user) throws Exception {
+        if (Objects.equals(FanboxUserParser.client, null)){
             throw new AssertionError("Set client first");
         }
         //client= Common.getClientInstance();
@@ -371,8 +370,8 @@ public class FanboxParser {
     }
 
     public static void setClient(FanboxAPI client){
-        if (Objects.equals(FanboxParser.client, null)){
-            FanboxParser.client = client;
+        if (Objects.equals(FanboxUserParser.client, null)){
+            FanboxUserParser.client = client;
         }
     }
 
