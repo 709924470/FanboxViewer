@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -44,6 +45,7 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        PreferenceManager.setDefaultValues(this , R.xml.root_preferences , false);
         setTitle(R.string.loading);
         prepareUIAndActions();
         if (ContextCompat.checkSelfPermission(

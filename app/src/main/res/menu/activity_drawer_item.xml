@@ -29,11 +29,12 @@
             <item
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/ic_menu_manage"
+                android:onClick="toSettingsFragment"
                 android:title="@string/menu_tools" />
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_menu_send"
-                android:onClick="callLogout"
+                android:onClick="openLogoutDialog"
                 android:title="@string/menu_logout" />
         </menu>
     </item>

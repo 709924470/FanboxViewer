@@ -2,6 +2,7 @@ package cn.settile.fanboxviewer.Fragments.UserDetail;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -39,8 +41,7 @@ public class PostFragment extends Fragment {
     }
 
     public static PostFragment newInstance() {
-        PostFragment fragment = new PostFragment();
-        return fragment;
+        return new PostFragment();
     }
 
     @Override

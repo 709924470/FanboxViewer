@@ -2,12 +2,14 @@ package cn.settile.fanboxviewer;
 
 import android.app.DownloadManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.palette.graphics.Palette;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -39,6 +41,9 @@ public class ImageViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_view);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean loadThumb = sp.getBoolean("display_thumb", true);
+        boolean dlThumb = sp.getBoolean("download_thumb", false);
 
         Intent i = getIntent();
         this.images = i.getStringArrayListExtra("Images");
@@ -62,19 +67,24 @@ public class ImageViewActivity extends AppCompatActivity {
                         String extension = images.get(position)
                                 .substring(images.get(position).lastIndexOf('.'));
                         String name = detail + "_" + position + extension;
-                        new DownloadRequestor((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
-                                .downloadWithCookie(images.get(position), name, Constants.Cookie);
+                        if (dlThumb)
+                            new DownloadRequestor((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
+                                    .downloadWithCookie(thumbs.get(position), name, Constants.Cookie);
+                        else
+                            new DownloadRequestor((DownloadManager) getSystemService(DOWNLOAD_SERVICE))
+                                    .downloadWithCookie(images.get(position), name, Constants.Cookie);
                     } catch (Exception ex) {
                         Log.e(TAG, "onCreate: ", ex);
                     }
                 })
                 .setFragmentManager(getSupportFragmentManager());
+        CustomPicassoLoader mi;
         for (int index = 0; index < images.size(); index++) {
-            CustomPicassoLoader mi = new CustomPicassoLoader(this, thumbs.get(index));
-
-
+            if (loadThumb)
+                mi = new CustomPicassoLoader(this, thumbs.get(index));
+            else
+                mi = new CustomPicassoLoader(this, images.get(index));
             final int index1 = index;
-
             mi.onLoaded((b) -> {
                 colors.set(index1,
                         Palette.from(toBitmap(b))
@@ -86,8 +96,14 @@ public class ImageViewActivity extends AppCompatActivity {
             );
         }
         view.setCurrentItem(pos);
+        view.invalidate();
         new Thread(() -> {
             while (colors.size() - 1 < pos) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             view.setBackgroundColor(colors.get(pos));
             view.invalidate();
