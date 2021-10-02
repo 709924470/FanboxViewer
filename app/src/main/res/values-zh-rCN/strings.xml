@@ -31,4 +31,8 @@
     <string name="download">下载</string>
     <string name="download_complete">下载完成</string>
     <string name="download_failed">下载失败</string>
+    <string name="settings_performance">性能</string>
+    <string name="settings_disp_thumb_title">显示时仅加载缩略图</string>
+    <string name="settings_disp_thumb_desc">关闭此项将会增加数据使用量</string>
+    <string name="settings_dl_thumb_title">仅下载缩略图</string>
 </resources>

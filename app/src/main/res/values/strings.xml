@@ -63,4 +63,8 @@
     <string name="attachment_summary_on" translatable="false">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off" translatable="false">Only download attachments when manually requested</string>
+    <string name="settings_performance">Performance</string>
+    <string name="settings_disp_thumb_title">Load thumbnails for display</string>
+    <string name="settings_disp_thumb_desc">Turning this off might cause more data usage</string>
+    <string name="settings_dl_thumb_title">Download thumbnails only</string>
 </resources>

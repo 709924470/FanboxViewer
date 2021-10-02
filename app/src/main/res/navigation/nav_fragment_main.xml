@@ -12,13 +12,31 @@
         <action
             android:id="@+id/action_supportingFragment_to_mainTabFragment"
             app:destination="@id/mainTabFragment" />
+        <action
+            android:id="@+id/action_supportingFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/mainTabFragment"
         android:name="cn.settile.fanboxviewer.Fragments.Main.MainTabFragment"
-        android:label="fragment_main_tabs">
+        android:label="fragment_main_tabs"
+        tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainTabFragment_to_supportingFragment"
+            app:destination="@id/supportingFragment" />
+        <action
+            android:id="@+id/action_mainTabFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="cn.settile.fanboxviewer.Fragments.SettingsFragment"
+        android:label="fragment_settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_mainTabFragment"
+            app:destination="@id/mainTabFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_supportingFragment"
             app:destination="@id/supportingFragment" />
     </fragment>
 </navigation>

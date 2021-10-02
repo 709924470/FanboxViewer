@@ -7,18 +7,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -26,10 +23,9 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 import com.squareup.picasso.Picasso;
 
-import org.jetbrains.annotations.Contract;
-
 import java.util.Objects;
 
+import cn.settile.fanboxviewer.Fragments.SettingsFragment;
 import cn.settile.fanboxviewer.ViewComponents.LogoutDialog;
 import cn.settile.fanboxviewer.ViewModels.MainViewModel;
 
@@ -43,21 +39,19 @@ public class MainActivity extends AppCompatActivity
     MainActivity ctx = null;
 
     NavController navController;
+    private NavHostFragment navHostFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ctx = this;
-
         setContentView(R.layout.activity_main);
-
 
         prepareUIAndActions();
 
         setTitle(R.string.app_name);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -74,7 +68,8 @@ public class MainActivity extends AppCompatActivity
         //navigationView.getMenu().getItem(1).setEnabled(true);
         
         setResult(-1);
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_main);
+        navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_main);
+        assert navHostFragment != null;
         navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(navigationView, navController);
 
@@ -84,23 +79,17 @@ public class MainActivity extends AppCompatActivity
                         .build();
 
 
-        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-            @Override
-            public void onDestinationChanged(@NonNull NavController controller,
-                                             @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                //navHostFragment.getNavController().navigateUp();
-                Log.d(TAG, destination.getLabel().toString());
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            //navHostFragment.getNavController().navigateUp();
+            Log.d(TAG, destination.getLabel().toString());
 
-            }
         });
 
     }
 
 
     void prepareUIAndActions() {
-
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-
 
         viewModel.is_logged_in().observe(this, (it) -> {
             Log.i(TAG, it.toString());
@@ -128,15 +117,14 @@ public class MainActivity extends AppCompatActivity
         });
 
         viewModel.getUser_icon_url().observe(this, (it) -> {
-            if (!Objects.equals(it, "")) Picasso.get()
+            if (!Objects.equals(it, ""))
+                Picasso.get()
                     .load(it)
                     .placeholder(R.drawable.ic_settings_system_daydream_black_24dp)
                     .resize(180, 180)
                     .into((ImageView) findViewById(R.id.userIcon));
         });
     }
-
-    ;
 
 
     @Override
@@ -157,6 +145,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -166,6 +155,13 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            SettingsFragment sf = new SettingsFragment();
+            ft.replace(R.id.mainTabFragment, sf);
+            ft.commit();
+            if (getSupportActionBar() != null){
+                getSupportActionBar().setTitle(R.string.action_settings);
+            }
             return true;
         } else if (id == R.id.action_refresh) {
             return true;
@@ -173,6 +169,7 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -184,47 +181,58 @@ public class MainActivity extends AppCompatActivity
             //Toast.makeText(this, "HOME", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_supporting) {
             //Toast.makeText(this, "Fan Cards", Toast.LENGTH_SHORT).show();
-
         } else if (id == R.id.nav_search) {
-            Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_settings) {
-            //TODO (SettingsActivity)
-            //callSettings();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            SettingsFragment sf = new SettingsFragment();
+            ft.replace(R.id.mainTabFragment, sf);
+            ft.commit();
+            if (getSupportActionBar() != null){
+                getSupportActionBar().setTitle(R.string.action_settings);
+            }
         } else if (id == R.id.nav_logout) {
-            //Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
             new LogoutDialog(this).show();
         } else if (id == R.id.nav_recommend) {
-            Toast.makeText(this, "Recommended", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Recommended", Toast.LENGTH_SHORT).show();
         }
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    private void closeDrawer(){
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (Objects.nonNull(drawer))
+            drawer.closeDrawer(GravityCompat.START);
+    }
+
   //UICalls
     public void toSupportingFragment(MenuItem v) {
         if (navController.getCurrentDestination().getId() != R.id.supportingFragment)
             navController.navigate(R.id.supportingFragment);
+        closeDrawer();
     }
 
     public void toMainTabFragment(MenuItem v) {
         if (navController.getCurrentDestination().getId() != R.id.mainTabFragment)
             navController.navigate(R.id.mainTabFragment);
+        closeDrawer();
     }
 
+    public void toSettingsFragment(MenuItem v) {
+        if (navController.getCurrentDestination().getId() != R.id.settingsFragment)
+            navController.navigate(R.id.settingsFragment);
+        closeDrawer();
+    }
 
-    public void callLogout(MenuItem v) {
+    public void openLogoutDialog(MenuItem ignored){
         new LogoutDialog(this).show();
     }
 
-    @Contract("_->null")
+
     public void callLogin() {
         Intent intent = new Intent(this, LoginActivity.class);
         if (!viewModel.is_logged_in().getValue()) startActivityForResult(intent, -1);
-    }
-
-    public void callSettings() {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
     }
 }
