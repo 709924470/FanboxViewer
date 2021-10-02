@@ -17,9 +17,7 @@ Any question related to this project you can either use issue or join my [telegr
 Developer is too lazy to open the web page and download them one by one,\
 So he wrote this application
 
-这里我也懒得写了= =\
 我可能在完成大多数功能之后再拐回来完善这里\
-And he is too lazy to write a readme, too uwu\
 Maybe he will complete here after he finished major features.
 
 ---
