@@ -1,9 +1,6 @@
 name: Android Pull Request & Master CI
 
 on:
-  pull_request:
-    branches:
-      - 'master'
   push:
     branches:
       - 'master'
