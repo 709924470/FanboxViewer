@@ -10,7 +10,7 @@ import cn.settile.fanboxviewer.SplashActivity
 
 class LogoutDialog(ctx: Context) : AlertDialog(ctx) {
     init {
-        setTitle("Are you want to logout?")
+        setTitle("Do you want to logout?")
         setMessage("You won't lost any of your account data.")
         setButton(BUTTON_NEGATIVE, "Logout") { dialogInterface: DialogInterface, i: Int ->
 
