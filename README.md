@@ -9,6 +9,18 @@
 
 [Github Release](https://github.com/709924470/FanboxViewer/releases)
 
+### Build
+
+Just import the project to android studio or use `gradle build`
+
+### Contribution
+
+There are three branches in this project:
+
+- `feat` includes the latest features and fixes, please fork this branch and send PR to this branch as well.
+- `beta` includes the code which waiting to merge and build.
+- `master` includes the code of the latest release or prerelease.
+
 ---
 Any question related to this project you can either use issue or join my [telegram group](https://t.me/joinchat/KP2S20Y99ihwPaYeeHabBQ)\
 任何关于本工程的问题可以用Issue提交或加入[我的电报群](https://t.me/joinchat/KP2S20Y99ihwPaYeeHabBQ)
