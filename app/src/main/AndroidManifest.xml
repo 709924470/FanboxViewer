@@ -20,27 +20,47 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".PlansActivity" />
+
+        <activity android:name=".PlansActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity android:name=".ImageViewActivity" />
+            android:label="@string/title_activity_settings"
+            />
+
+        <activity android:name=".ImageViewActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+
         <activity
             android:name=".PostDetailActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:label="@string/title_activity_post_detail"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+
         <activity
             android:name=".UserDetailActivity"
             android:label="@string/title_activity_user_detail"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionAndStatusBar" />
+            android:theme="@style/AppTheme.NoActionAndStatusBar"
+            />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_drawer"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".SplashActivity">
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+
+        <activity android:name=".LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+
+        <activity android:name=".SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
