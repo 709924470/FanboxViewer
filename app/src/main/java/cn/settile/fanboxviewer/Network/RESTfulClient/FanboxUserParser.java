@@ -411,8 +411,9 @@ public class FanboxUserParser {
         SimpleDateFormat sdf = new SimpleDateFormat(c.getString(R.string.date_formatting));
         date = sdf.format(df.parse(date));
 
-        String headerUrl = json.getString("coverImageUrl");
-        if(headerUrl == null || headerUrl.equals("null")){
+        JSONObject cover = json.optJSONObject("cover");
+        String headerUrl = Objects.isNull(cover) ? "null" : cover.optString("url", "null");
+        if(headerUrl.equals("null")){
             JSONObject body = json.optJSONObject("body");
             if(body != null){
                 JSONArray image = body.optJSONArray("images");
