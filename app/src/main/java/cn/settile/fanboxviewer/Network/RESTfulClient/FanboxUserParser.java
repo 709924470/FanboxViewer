@@ -106,7 +106,7 @@ public class FanboxUserParser {
     public List<DetailItem> getPostContent(JSONObject body) throws Exception{
         List<DetailItem> items = new ArrayList<>();
 
-        if(!body.getString("restrictedFor").equals("null")){
+        if(!body.getString("feeRequired").equals("null")){
             items.add(new DetailItem(DetailItem.Type.TEXT,
                     String.format(c.getString(R.string.plan_formatting), body.getInt("feeRequired"))));
             items.add(new DetailItem(DetailItem.Type.IMAGE, "false"));

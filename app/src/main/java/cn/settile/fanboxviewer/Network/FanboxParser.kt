@@ -254,7 +254,7 @@ object FanboxParser {
         val items: MutableList<DetailItem> = ArrayList()
         val req = getJSON(url)
         val body = req!!.getJSONObject("body")
-        if (body.getString("restrictedFor") != "null") {
+        if (body.getString("feeRequired") != "null") {
             items.add(
                 DetailItem(
                     DetailItem.Type.TEXT,
