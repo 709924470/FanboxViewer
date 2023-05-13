@@ -55,6 +55,7 @@ class URLRequestor<T>(
             }
         } catch (e: Exception) {
         }
+        done=true
         onDone?.onDone(this)
         return this
     }

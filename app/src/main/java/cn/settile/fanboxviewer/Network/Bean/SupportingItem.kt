@@ -5,6 +5,7 @@ class SupportingItem(var url: String? = null,
                      var plan: String,
                      var title: String,
                      var desc: String,
-                     var paymentMethod: String) {
+                     var paymentMethod: String,
+                     var coverImgURL: String) {
 
 }

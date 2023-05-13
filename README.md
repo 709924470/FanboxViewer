@@ -15,11 +15,7 @@ Just import the project to android studio or use `gradle build`
 
 ### Contribution
 
-There are three branches in this project:
-
-- `feat` includes the latest features and fixes, please fork this branch and send PR to this branch as well.
-- `beta` includes the codes waiting to merge and build.
-- `master` includes the codes of the latest release or prerelease.
+Just fork and pull request
 
 ---
 Any question related to this project you can either use issue or join my [telegram group](https://t.me/joinchat/KP2S20Y99ihwPaYeeHabBQ)\
