@@ -24,7 +24,7 @@
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:paddingEnd="@dimen/activity_horizontal_margin"
-        app:riv_border_color="@color/colorPrimaryDark"
+        app:riv_border_color="@color/colorAccentLight"
         app:riv_border_width="2dp"
         app:riv_corner_radius="32dp"
         app:riv_mutate_background="true"
@@ -54,14 +54,17 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/nav_header_vertical_spacing"
                 android:text="@string/nav_header_title"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/colorAccent" />
 
             <TextView
 
                 android:id="@+id/main_drawer_userid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/nav_header_subtitle" />
+                android:text="@string/nav_header_subtitle"
+                android:textColor="@color/colorAccentLight"
+                android:textStyle="italic" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

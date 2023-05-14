@@ -90,6 +90,7 @@
             android:id="@+id/supporting_coverImg"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:maxWidth="80dp"
             app:srcCompat="@drawable/load_24dp" />

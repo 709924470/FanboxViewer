@@ -221,10 +221,11 @@
         android:id="@+id/check_items_title"
         android:layout_width="185dp"
         android:layout_height="28dp"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginTop="12dp"
         android:text="Check Items"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toStartOf="@+id/check_items_padding"
+        app:layout_constraintHorizontal_bias="0.322"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/splash_activity_toolbar" />
 
